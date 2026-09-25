@@ -1,0 +1,72 @@
+# Design notes — values read from Figma
+
+Read once from the Figma file (workshop → Page 4 → section **"fresh"**) and recorded here so
+the build doesn't re-scan. **There are two sections named "fresh" on Page 4 with identical
+frame names.** The left one (x≈2135) has the "dashboard variables" bound; the right one
+(x≈13503) has no variables bound and is treated as a stale duplicate. Everything below comes
+from the **left** one.
+
+Token names are the generated CSS names (`--color-surface-default` = Figma `color/surface/default`).
+
+## Shell (frame "Analytics")
+
+- App: bg `background-app`, padding 8, gap 8. Sidebar 224 (px 4, py 6, gap 2). Workspace fills the rest, radius 12, overflow clip, **no border in Figma** (brief says 1px border — Figma wins on looks).
+- Main (page area): white. Top bar h56, px 20, bottom border 1px `surface-faint`.
+  - Title: 16px icon + 13/600 primary, gap 8.
+  - Right (Analytics): "Thursday, 24 Sep - 2:30 PM" 12.5/500 `text-strong-secondary` (three texts gap 4) · gap 16 · dark button: bg `action-primary`, radius 8, px 10 py 6, gap 6, ArrowsClockwise 12px white + "Last sync: 14:00" 12.5/500 white.
+- Content: px 28, py 24, gap 24.
+  - Greeting: "Good afternoon, Amara" 26/600 tracking -0.52 · gap 4 · "Below is your analytics. Hop last checked everything at 2:00 PM." 14/400 lh20 secondary.
+- Hop panel: 368 wide, white, left border 1px `surface-divider-tint`.
+  - Header h56, px 16, bottom border `surface-faint`: avatar (30px) + "Hop" 14/600, gap 10 · New chat icon 20px (filled speech-bubble-plus, black).
+  - Conversation: px 16, py 14, gap 16. Empty state = spacer + prompt cues at bottom.
+  - Prompt cues: wrap, gap 6. Cue: border 1px `surface-border-tint`, radius 999, px 11 py 6, 12.5/400 `text-strong-secondary`.
+  - Composer: px 12, pt 4, pb 12. Input box: white, border 1px `palette-tone-14`, radius 14, shadow composer, pl 14 pr 12 pt 12 pb 10, gap 14.
+    - Row 1: "Select any frame" hint: bg `surface-subtle`, radius 6, px 8 py 4, 11.5/500 secondary.
+    - Row 2: placeholder "Ask Hop about sales, posts, stock or customers…" 13/400 muted · send button 28px circle (radius 14) `action-primary` with 14px up-arrow white.
+
+## Sidebar
+
+- Store switcher: px 8 py 6, space-between. Logo 22px `action-primary` radius 6 "AA" 9/700 white · "Amara Atelier" 13/600 · chevron 14px muted. Right: panel icon 16px muted.
+- Nav stack: pt 16, gap 2. Item: px 10, py 7, gap 10, radius 8, icon 16. Active: white bg, 0.5px border `surface-border-tint`, shadow nav-active, text 13/600 primary, icon primary. Inactive: 13/500 secondary, icon secondary.
+- Badges: px 7 py 1 radius 10, 11/600. Inventory "4" warning-soft/warning-text. Customers "3" danger-soft/danger-text.
+- "Recent with Hop": pt 16, gap 2. Header px 10 pb 6: "Recent with Hop" 11.5/500 muted + history icon 13px muted. Items px 10 py 6 gap 8 radius 6: avatar 16px radius 8 (initial 8.5/600 white) + text 12.5/400 `text-tone-01`, ellipsis.
+  Items: A "How are we doing today?", I "Restock plan for linen sets", D "Reply drafts for late DMs", Z "Weekend content ideas".
+- Spacer, then Settings (sliders icon, 13/500 `text-strong-secondary`, px 10 py 7), then user: px 10 py 8 gap 10, avatar 28 radius 14 "A" 12/600 · "Amara Obi" 13/500 primary / "Owner" 11.5/400 muted (gap 1).
+- **No search box in Figma** (brief A6 mentions one) — Figma wins.
+
+## Analytics body
+
+- Quick stats box: border 1px `surface-border-tint`, radius 12, p 6, gap 4.
+  - KPI tabs row gap 4, each flex-1, px 12 py 10, gap 4, radius 8; selected = bg `surface-subtle`.
+    Label 12/400 secondary · value row gap 6 baseline: value 20/600 tracking -0.2 · change 12/500 success-text (DMs today: "3 over 2h" danger-text; past: "all answered" success-text).
+  - Chart section: w 752 (fills), pl 14 pr 18 pt 14 pb 10, gap 12.
+    - Title 13/500 primary. Toggle: bg `surface-subtle` radius 9 p 6 gap 6; options p 8 gap 6, 8px legend dot + 12px secondary text (active 500, inactive 400). Thumb = white, radius 6 (last-week frame adds shadow 0 1 2 rgba(0,0,0,.08)).
+      Legend dots: this week active → green `status-success`, last week `palette-tone-04`; swapped when last week is on.
+    - Chart box 720×150 (see Chart geometry).
+    - X axis 11.5: past/future labels `text-tone-02` 400; the "current" label `status-success-text` 500 (Today; or the selected day; Sun in last week).
+- Cards row: gap 12, two equal cards (flex-1), fixed h 246 in Figma. Card: white, border 1px border-tint, radius 12, p 16, gap 12. Spacer pushes footer down. Footer: top border 1px `surface-faint`, pt 10, 12px, left 400 secondary / right 500 primary.
+  - Header: title 13/600 · link "Open X" 12/500 secondary + arrow 12px, gap 4.
+  - Product row (gap 10): image 36px radius 6 gradient swatch · name 13.5/500 (ellipsis) / sub 12/400 secondary (gap 2) · optional tag · amount 13.5/600.
+  - Order row: avatar 32 radius 16 initials 11/600 white · name 13.5/500 / "item × n · time" 12 secondary · tag "To pack" (warning-soft/warning-text) · amount 13.5/600.
+    Avatars: TB `palette-tone-01`, AW `palette-tone-15`, GM `palette-tone-02`, CE `palette-tone-17`.
+  - Post row: thumbnail 30×38 radius 5 gradient · title 13.5/500 / meta 12 · right column (end-aligned): likes 13.5/600 + "likes" 11/400 muted.
+  - Source row: col gap 6 — label row space-between (13.5/500 primary · "132 · 62%" 12.5/400 secondary) + bar h6 radius 3 bg `palette-tone-16`, fill `status-success` width = share %.
+  - DM row: avatar 32 · name 13.5/500 / quote 12 · tag waiting time (danger-soft/danger-text).
+  - Tags: px 8 py 2 radius 10, 11/600.
+- Urgent card ("Card/Needs you"): title "Urgent" 13/600. Rows gap 10: icon tile 30px radius 8 (msg → danger-soft + danger icon; box → warning-soft + warning icon; users → `palette-tone-09` + `palette-tone-10` icon), 15px icon · title 13/500 / sub 12 (gap 2) · button px 10 py 6 radius 8 12/500: primary = `action-primary` bg white text; secondary = white, 1px border-tint, primary text. Done state = the secondary style with "Resolved/Completed/Attended".
+
+## Chart geometry (720×150 box)
+
+- Day x = 12 + 116·i (Mon 12 … Sun 708). Value → y = 140 − v/max·118 (zero at y 140, max at y 22).
+- Baseline y 146, 1px `surface-border-tint`: solid to x 360, dashed 3/4 to 720 (this week); solid 0→708 (last week).
+- Area: line → down to y 146, fill `palette-tone-05`. Line 2px `status-success`. Comparison (last week) 1.5px `palette-tone-06`, full 7 days.
+- Dots: normal r4 white fill, 1.5 green stroke. Active (today / selected day / Sun in last week) r5 green fill, 2px white stroke.
+- Selected day guide: from dot y+8 down to 146, 1px green, dash 2/3.
+- Figma's curve is hand-drawn; brief says d3 `curveMonotoneX` (very close).
+
+## Card content per state
+
+- Today cards: see brief A7. Figma adds: posts meta "Post · Mon · by Zee" (brief omits "by Zee").
+- Wednesday: title "Wednesday, 23 Sep". KPI label stays "Revenue today" in Figma (brief B7.1 says drop "today" → we drop it). Card "Top revenue generators · Wed", subs "10 sold · 29% of the day". Swatches reuse sand / emerald / indigo in row order. Urgent done: msg "2 delivery addresses incomplete / Both updated by 10:30 AM → Resolved", box "Emerald dress size 12 low / Restocked before noon → Completed", users "4 priority DMs / Dayo replied by 1:15 PM → Attended".
+- Last week: labels drop "today" ("Revenue"). Title "Last week · 14-20 Sep" (brief writes 14–20). Card "Top revenue generators · last week", subs "31 sold · 18% of the week"; swatches sand / terracotta (#E0772E→#B45309) / indigo. Footer $8,800 in Figma → $9,200 per B11. Urgent done: msg "Weekend return requests / All 7 requests closed → Resolved", box "Mocha robe stock check / Supplier confirmed 60 units → Completed", users "Post-sale customer follow-up / 18 customers contacted → Attended".
+- Followers: Figma/brief show 981 for last week; the series sums to 881. Displayed 981 as designed; flagged.
