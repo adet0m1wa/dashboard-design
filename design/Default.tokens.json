@@ -1,0 +1,2725 @@
+{
+  "color": {
+    "background": {
+      "app": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.954514741897583,
+            0.954514741897583,
+            0.954514741897583
+          ],
+          "alpha": 1,
+          "hex": "#F3F3F3"
+        },
+        "$description": "Extracted from dashboard fills usage.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:315",
+          "com.figma.scopes": [
+            "ALL_FILLS"
+          ]
+        }
+      }
+    },
+    "action": {
+      "primary": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.10196078568696976,
+            0.10196078568696976,
+            0.0941176488995552
+          ],
+          "alpha": 1,
+          "hex": "#1A1A18"
+        },
+        "$description": "Extracted from dashboard fills usage.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:316",
+          "com.figma.scopes": [
+            "ALL_FILLS"
+          ]
+        }
+      }
+    },
+    "text": {
+      "on-dark": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1,
+          "hex": "#FFFFFF"
+        },
+        "$description": "Extracted from dashboard fills usage.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:317",
+          "com.figma.scopes": [
+            "TEXT_FILL"
+          ]
+        }
+      },
+      "primary": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.10196078568696976,
+            0.10196078568696976,
+            0.0941176488995552
+          ],
+          "alpha": 1,
+          "hex": "#1A1A18"
+        },
+        "$description": "Extracted from dashboard fills usage.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:318",
+          "com.figma.scopes": [
+            "TEXT_FILL"
+          ]
+        }
+      },
+      "secondary": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.41960784792900085,
+            0.4156862795352936,
+            0.4000000059604645
+          ],
+          "alpha": 1,
+          "hex": "#6B6A66"
+        },
+        "$description": "Extracted from dashboard fills usage.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:323",
+          "com.figma.scopes": [
+            "TEXT_FILL"
+          ]
+        }
+      },
+      "muted": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.6117647290229797,
+            0.6039215922355652,
+            0.5803921818733215
+          ],
+          "alpha": 1,
+          "hex": "#9C9A94"
+        },
+        "$description": "Extracted from dashboard fills usage.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:328",
+          "com.figma.scopes": [
+            "TEXT_FILL"
+          ]
+        }
+      },
+      "tone-01": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.29019609093666077,
+            0.2862745225429535,
+            0.2705882489681244
+          ],
+          "alpha": 1,
+          "hex": "#4A4945"
+        },
+        "$description": "Extracted from dashboard fills usage.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:329",
+          "com.figma.scopes": [
+            "TEXT_FILL"
+          ]
+        }
+      },
+      "strong-secondary": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.239215686917305,
+            0.23529411852359772,
+            0.2235294133424759
+          ],
+          "alpha": 1,
+          "hex": "#3D3C39"
+        },
+        "$description": "Extracted from dashboard fills usage.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:333",
+          "com.figma.scopes": [
+            "TEXT_FILL"
+          ]
+        }
+      },
+      "tone-02": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.5607843399047852,
+            0.772549033164978,
+            0.6470588445663452
+          ],
+          "alpha": 1,
+          "hex": "#8FC5A5"
+        },
+        "$description": "Extracted from dashboard fills usage.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:342",
+          "com.figma.scopes": [
+            "TEXT_FILL"
+          ]
+        }
+      },
+      "tone-03": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.7098039388656616,
+            0.7019608020782471,
+            0.6784313917160034
+          ],
+          "alpha": 1,
+          "hex": "#B5B3AD"
+        },
+        "$description": "Extracted from dashboard fills usage.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:359",
+          "com.figma.scopes": [
+            "TEXT_FILL"
+          ]
+        }
+      },
+      "tone-04": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.11372549086809158,
+            0.30588236451148987,
+            0.8470588326454163
+          ],
+          "alpha": 1,
+          "hex": "#1D4ED8"
+        },
+        "$description": "Extracted from dashboard fills usage.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:362",
+          "com.figma.scopes": [
+            "TEXT_FILL"
+          ]
+        }
+      },
+      "black": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1,
+          "hex": "#000000"
+        },
+        "$description": "Extracted from dashboard fills usage.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:373",
+          "com.figma.scopes": [
+            "TEXT_FILL"
+          ]
+        }
+      }
+    },
+    "surface": {
+      "muted-ink": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.6117647290229797,
+            0.6039215922355652,
+            0.5803921818733215
+          ],
+          "alpha": 1,
+          "hex": "#9C9A94"
+        },
+        "$description": "Extracted from dashboard strokes usage.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:319",
+          "com.figma.scopes": [
+            "ALL_FILLS"
+          ]
+        }
+      },
+      "default": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1,
+          "hex": "#FFFFFF"
+        },
+        "$description": "Extracted from dashboard fills usage.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:320",
+          "com.figma.scopes": [
+            "ALL_FILLS"
+          ]
+        }
+      },
+      "border-tint": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9098039269447327,
+            0.9019607901573181,
+            0.8823529481887817
+          ],
+          "alpha": 1,
+          "hex": "#E8E6E1"
+        },
+        "$description": "Extracted from dashboard strokes usage.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:321",
+          "com.figma.scopes": [
+            "ALL_FILLS"
+          ]
+        }
+      },
+      "secondary-ink": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.41960784792900085,
+            0.4156862795352936,
+            0.4000000059604645
+          ],
+          "alpha": 1,
+          "hex": "#6B6A66"
+        },
+        "$description": "Extracted from dashboard fills usage.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:322",
+          "com.figma.scopes": [
+            "ALL_FILLS"
+          ]
+        }
+      },
+      "canvas": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9803921580314636,
+            0.9803921580314636,
+            0.9725490212440491
+          ],
+          "alpha": 1,
+          "hex": "#FAFAF8"
+        },
+        "$description": "Extracted from dashboard fills usage.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:334",
+          "com.figma.scopes": [
+            "ALL_FILLS"
+          ]
+        }
+      },
+      "faint": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9372549057006836,
+            0.929411768913269,
+            0.9137254953384399
+          ],
+          "alpha": 1,
+          "hex": "#EFEDE9"
+        },
+        "$description": "Extracted from dashboard strokes usage.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:335",
+          "com.figma.scopes": [
+            "ALL_FILLS"
+          ]
+        }
+      },
+      "subtle": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9607843160629272,
+            0.95686274766922,
+            0.9450980424880981
+          ],
+          "alpha": 1,
+          "hex": "#F5F4F1"
+        },
+        "$description": "Extracted from dashboard fills usage.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:336",
+          "com.figma.scopes": [
+            "ALL_FILLS"
+          ]
+        }
+      },
+      "divider-tint": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9176470637321472,
+            0.9098039269447327,
+            0.8901960849761963
+          ],
+          "alpha": 1,
+          "hex": "#EAE8E3"
+        },
+        "$description": "Extracted from dashboard strokes usage.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:347",
+          "com.figma.scopes": [
+            "ALL_FILLS"
+          ]
+        }
+      },
+      "black": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1,
+          "hex": "#000000"
+        },
+        "$description": "Extracted from dashboard fills usage.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:351",
+          "com.figma.scopes": [
+            "ALL_FILLS"
+          ]
+        }
+      }
+    },
+    "status": {
+      "warning-soft": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9960784316062927,
+            0.9529411792755127,
+            0.7803921699523926
+          ],
+          "alpha": 1,
+          "hex": "#FEF3C7"
+        },
+        "$description": "Extracted from dashboard fills usage.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:324",
+          "com.figma.scopes": [
+            "ALL_FILLS"
+          ]
+        }
+      },
+      "warning-text": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.7058823704719543,
+            0.32549020648002625,
+            0.03529411926865578
+          ],
+          "alpha": 1,
+          "hex": "#B45309"
+        },
+        "$description": "Extracted from dashboard fills usage.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:325",
+          "com.figma.scopes": [
+            "TEXT_FILL"
+          ]
+        }
+      },
+      "danger-soft": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9921568632125854,
+            0.9254902005195618,
+            0.8941176533699036
+          ],
+          "alpha": 1,
+          "hex": "#FDECE4"
+        },
+        "$description": "Extracted from dashboard fills usage.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:326",
+          "com.figma.scopes": [
+            "ALL_FILLS"
+          ]
+        }
+      },
+      "danger-text": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.7607843279838562,
+            0.2549019753932953,
+            0.0470588244497776
+          ],
+          "alpha": 1,
+          "hex": "#C2410C"
+        },
+        "$description": "Extracted from dashboard fills usage.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:327",
+          "com.figma.scopes": [
+            "TEXT_FILL"
+          ]
+        }
+      },
+      "success-text": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.12156862765550613,
+            0.5411764979362488,
+            0.2980392277240753
+          ],
+          "alpha": 1,
+          "hex": "#1F8A4C"
+        },
+        "$description": "Extracted from dashboard fills usage.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:337",
+          "com.figma.scopes": [
+            "TEXT_FILL"
+          ]
+        }
+      },
+      "success": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.12156862765550613,
+            0.5411764979362488,
+            0.2980392277240753
+          ],
+          "alpha": 1,
+          "hex": "#1F8A4C"
+        },
+        "$description": "Extracted from dashboard fills usage.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:338",
+          "com.figma.scopes": [
+            "ALL_FILLS"
+          ]
+        }
+      },
+      "info": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.14509804546833038,
+            0.38823530077934265,
+            0.9215686321258545
+          ],
+          "alpha": 1,
+          "hex": "#2563EB"
+        },
+        "$description": "Extracted from dashboard strokes usage.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:357",
+          "com.figma.scopes": [
+            "ALL_FILLS"
+          ]
+        }
+      },
+      "live": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.16862745583057404,
+            0.7019608020782471,
+            0.3529411852359772
+          ],
+          "alpha": 1,
+          "hex": "#2BB35A"
+        },
+        "$description": "Extracted from dashboard fills usage.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:365",
+          "com.figma.scopes": [
+            "ALL_FILLS"
+          ]
+        }
+      },
+      "success-soft": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9058823585510254,
+            0.9607843160629272,
+            0.9254902005195618
+          ],
+          "alpha": 1,
+          "hex": "#E7F5EC"
+        },
+        "$description": "Extracted from dashboard fills usage.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:366",
+          "com.figma.scopes": [
+            "ALL_FILLS"
+          ]
+        }
+      }
+    },
+    "palette": {
+      "tone-01": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.48627451062202454,
+            0.3607843220233917,
+            0.9803921580314636
+          ],
+          "alpha": 1,
+          "hex": "#7C5CFA"
+        },
+        "$description": "Extracted from dashboard fills usage.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:330",
+          "com.figma.scopes": [
+            "ALL_FILLS"
+          ]
+        }
+      },
+      "tone-02": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.8784313797950745,
+            0.46666666865348816,
+            0.18039216101169586
+          ],
+          "alpha": 1,
+          "hex": "#E0772E"
+        },
+        "$description": "Extracted from dashboard fills usage.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:331",
+          "com.figma.scopes": [
+            "ALL_FILLS"
+          ]
+        }
+      },
+      "tone-03": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.8392156958580017,
+            0.2705882489681244,
+            0.47843137383461
+          ],
+          "alpha": 1,
+          "hex": "#D6457A"
+        },
+        "$description": "Extracted from dashboard fills usage.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:332",
+          "com.figma.scopes": [
+            "ALL_FILLS"
+          ]
+        }
+      },
+      "tone-04": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.8032602071762085,
+            0.8032602071762085,
+            0.8032602071762085
+          ],
+          "alpha": 1,
+          "hex": "#CDCDCD"
+        },
+        "$description": "Extracted from dashboard fills usage.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:339",
+          "com.figma.scopes": [
+            "ALL_FILLS"
+          ]
+        }
+      },
+      "tone-05": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9372549057006836,
+            0.9686274528503418,
+            0.9490196108818054
+          ],
+          "alpha": 1,
+          "hex": "#EFF7F2"
+        },
+        "$description": "Extracted from dashboard fills usage.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:340",
+          "com.figma.scopes": [
+            "ALL_FILLS"
+          ]
+        }
+      },
+      "tone-06": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.8117647171020508,
+            0.8117647171020508,
+            0.8117647171020508
+          ],
+          "alpha": 1,
+          "hex": "#CFCFCF"
+        },
+        "$description": "Extracted from dashboard strokes usage.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:341",
+          "com.figma.scopes": [
+            "ALL_FILLS"
+          ]
+        }
+      },
+      "tone-07": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.8627451062202454,
+            0.14901961386203766,
+            0.14901961386203766
+          ],
+          "alpha": 1,
+          "hex": "#DC2626"
+        },
+        "$description": "Extracted from dashboard strokes usage.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:343",
+          "com.figma.scopes": [
+            "ALL_FILLS"
+          ]
+        }
+      },
+      "tone-08": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.8509804010391235,
+            0.46666666865348816,
+            0.0235294122248888
+          ],
+          "alpha": 1,
+          "hex": "#D97706"
+        },
+        "$description": "Extracted from dashboard strokes usage.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:344",
+          "com.figma.scopes": [
+            "ALL_FILLS"
+          ]
+        }
+      },
+      "tone-09": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9333333373069763,
+            0.9450980424880981,
+            1
+          ],
+          "alpha": 1,
+          "hex": "#EEF1FF"
+        },
+        "$description": "Extracted from dashboard fills usage.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:345",
+          "com.figma.scopes": [
+            "ALL_FILLS"
+          ]
+        }
+      },
+      "tone-10": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.35686275362968445,
+            0.35686275362968445,
+            0.8392156958580017
+          ],
+          "alpha": 1,
+          "hex": "#5B5BD6"
+        },
+        "$description": "Extracted from dashboard strokes usage.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:346",
+          "com.figma.scopes": [
+            "ALL_FILLS"
+          ]
+        }
+      },
+      "tone-11": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.04313725605607033,
+            0.04313725605607033,
+            0.03921568766236305
+          ],
+          "alpha": 1,
+          "hex": "#0B0B0A"
+        },
+        "$description": "Extracted from dashboard fills usage.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:348",
+          "com.figma.scopes": [
+            "ALL_FILLS"
+          ]
+        }
+      },
+      "tone-12": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.20392157137393951,
+            0.20392157137393951,
+            0.18431372940540314
+          ],
+          "alpha": 1,
+          "hex": "#34342F"
+        },
+        "$description": "Extracted from dashboard strokes usage.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:349",
+          "com.figma.scopes": [
+            "ALL_FILLS"
+          ]
+        }
+      },
+      "tone-13": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9137254953384399,
+            1,
+            0.9411764740943909
+          ],
+          "alpha": 1,
+          "hex": "#E9FFF0"
+        },
+        "$description": "Extracted from dashboard fills usage.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:350",
+          "com.figma.scopes": [
+            "ALL_FILLS"
+          ]
+        }
+      },
+      "tone-14": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.8666666746139526,
+            0.8549019694328308,
+            0.8274509906768799
+          ],
+          "alpha": 1,
+          "hex": "#DDDAD3"
+        },
+        "$description": "Extracted from dashboard strokes usage.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:352",
+          "com.figma.scopes": [
+            "ALL_FILLS"
+          ]
+        }
+      },
+      "tone-15": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.3960784375667572,
+            0.6392157077789307,
+            0.05098039284348488
+          ],
+          "alpha": 1,
+          "hex": "#65A30D"
+        },
+        "$description": "Extracted from dashboard fills usage.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:353",
+          "com.figma.scopes": [
+            "ALL_FILLS"
+          ]
+        }
+      },
+      "tone-16": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9333333373069763,
+            0.9254902005195618,
+            0.9058823585510254
+          ],
+          "alpha": 1,
+          "hex": "#EEECE7"
+        },
+        "$description": "Extracted from dashboard fills usage.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:354",
+          "com.figma.scopes": [
+            "ALL_FILLS"
+          ]
+        }
+      },
+      "tone-17": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.054901961237192154,
+            0.6235294342041016,
+            0.4313725531101227
+          ],
+          "alpha": 1,
+          "hex": "#0E9F6E"
+        },
+        "$description": "Extracted from dashboard fills usage.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:355",
+          "com.figma.scopes": [
+            "ALL_FILLS"
+          ]
+        }
+      },
+      "tone-18": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.5607843399047852,
+            0.772549033164978,
+            0.6470588445663452
+          ],
+          "alpha": 1,
+          "hex": "#8FC5A5"
+        },
+        "$description": "Extracted from dashboard strokes usage.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:356",
+          "com.figma.scopes": [
+            "ALL_FILLS"
+          ]
+        }
+      },
+      "tone-19": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9411764740943909,
+            0.9411764740943909,
+            0.9333333373069763
+          ],
+          "alpha": 1,
+          "hex": "#F0F0EE"
+        },
+        "$description": "Extracted from dashboard fills usage.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:358",
+          "com.figma.scopes": [
+            "ALL_FILLS"
+          ]
+        }
+      },
+      "tone-20": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9333333373069763,
+            0.9529411792755127,
+            0.9960784316062927
+          ],
+          "alpha": 1,
+          "hex": "#EEF3FE"
+        },
+        "$description": "Extracted from dashboard fills usage.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:360",
+          "com.figma.scopes": [
+            "ALL_FILLS"
+          ]
+        }
+      },
+      "tone-21": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.7803921699523926,
+            0.843137264251709,
+            0.9843137264251709
+          ],
+          "alpha": 1,
+          "hex": "#C7D7FB"
+        },
+        "$description": "Extracted from dashboard strokes usage.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:361",
+          "com.figma.scopes": [
+            "ALL_FILLS"
+          ]
+        }
+      },
+      "tone-22": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9591721892356873,
+            0.9591721892356873,
+            0.9591721892356873
+          ],
+          "alpha": 1,
+          "hex": "#F5F5F5"
+        },
+        "$description": "Extracted from dashboard fills usage.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:363",
+          "com.figma.scopes": [
+            "ALL_FILLS"
+          ]
+        }
+      },
+      "tone-23": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9607843160629272,
+            0.6196078658103943,
+            0.04313725605607033
+          ],
+          "alpha": 1,
+          "hex": "#F59E0B"
+        },
+        "$description": "Extracted from dashboard fills usage.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:364",
+          "com.figma.scopes": [
+            "ALL_FILLS"
+          ]
+        }
+      },
+      "tone-24": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9372549057006836,
+            0.2666666805744171,
+            0.2666666805744171
+          ],
+          "alpha": 1,
+          "hex": "#EF4444"
+        },
+        "$description": "Extracted from dashboard fills usage.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:367",
+          "com.figma.scopes": [
+            "ALL_FILLS"
+          ]
+        }
+      },
+      "tone-25": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.22745098173618317,
+            0.22745098173618317,
+            0.21176470816135406
+          ],
+          "alpha": 1,
+          "hex": "#3A3A36"
+        },
+        "$description": "Extracted from dashboard fills usage.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:368",
+          "com.figma.scopes": [
+            "ALL_FILLS"
+          ]
+        }
+      },
+      "tone-26": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.13333334028720856,
+            0.772549033164978,
+            0.3686274588108063
+          ],
+          "alpha": 1,
+          "hex": "#22C55E"
+        },
+        "$description": "Extracted from dashboard fills usage.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:369",
+          "com.figma.scopes": [
+            "ALL_FILLS"
+          ]
+        }
+      },
+      "tone-27": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.7882353067398071,
+            0.7764706015586853,
+            0.7490196228027344
+          ],
+          "alpha": 1,
+          "hex": "#C9C6BF"
+        },
+        "$description": "Extracted from dashboard strokes usage.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:370",
+          "com.figma.scopes": [
+            "ALL_FILLS"
+          ]
+        }
+      },
+      "tone-28": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9607843160629272,
+            0.9607843160629272,
+            0.9529411792755127
+          ],
+          "alpha": 1,
+          "hex": "#F5F5F3"
+        },
+        "$description": "Extracted from dashboard fills usage.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:371",
+          "com.figma.scopes": [
+            "ALL_FILLS"
+          ]
+        }
+      },
+      "tone-29": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9686274528503418,
+            0.9647058844566345,
+            0.9529411792755127
+          ],
+          "alpha": 1,
+          "hex": "#F7F6F3"
+        },
+        "$description": "Extracted from dashboard fills usage.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:372",
+          "com.figma.scopes": [
+            "ALL_FILLS"
+          ]
+        }
+      }
+    }
+  },
+  "spacing": {
+    "0": {
+      "$type": "number",
+      "$value": 0,
+      "$description": "Dashboard spacing scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:375",
+        "com.figma.scopes": [
+          "GAP"
+        ]
+      }
+    },
+    "1": {
+      "$type": "number",
+      "$value": 1,
+      "$description": "Dashboard spacing scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:410",
+        "com.figma.scopes": [
+          "GAP"
+        ]
+      }
+    },
+    "2": {
+      "$type": "number",
+      "$value": 2,
+      "$description": "Dashboard spacing scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:381",
+        "com.figma.scopes": [
+          "GAP"
+        ]
+      }
+    },
+    "3": {
+      "$type": "number",
+      "$value": 3,
+      "$description": "Dashboard spacing scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:451",
+        "com.figma.scopes": [
+          "GAP"
+        ]
+      }
+    },
+    "4": {
+      "$type": "number",
+      "$value": 4,
+      "$description": "Dashboard spacing scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:380",
+        "com.figma.scopes": [
+          "GAP"
+        ]
+      }
+    },
+    "5": {
+      "$type": "number",
+      "$value": 5,
+      "$description": "Dashboard spacing scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:462",
+        "com.figma.scopes": [
+          "GAP"
+        ]
+      }
+    },
+    "6": {
+      "$type": "number",
+      "$value": 6,
+      "$description": "Dashboard spacing scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:379",
+        "com.figma.scopes": [
+          "GAP"
+        ]
+      }
+    },
+    "7": {
+      "$type": "number",
+      "$value": 7,
+      "$description": "Dashboard spacing scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:398",
+        "com.figma.scopes": [
+          "GAP"
+        ]
+      }
+    },
+    "8": {
+      "$type": "number",
+      "$value": 8,
+      "$description": "Dashboard spacing scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:374",
+        "com.figma.scopes": [
+          "GAP"
+        ]
+      }
+    },
+    "9": {
+      "$type": "number",
+      "$value": 9,
+      "$description": "Dashboard spacing scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:458",
+        "com.figma.scopes": [
+          "GAP"
+        ]
+      }
+    },
+    "10": {
+      "$type": "number",
+      "$value": 10,
+      "$description": "Dashboard spacing scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:399",
+        "com.figma.scopes": [
+          "GAP"
+        ]
+      }
+    },
+    "11": {
+      "$type": "number",
+      "$value": 11,
+      "$description": "Dashboard spacing scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:445",
+        "com.figma.scopes": [
+          "GAP"
+        ]
+      }
+    },
+    "12": {
+      "$type": "number",
+      "$value": 12,
+      "$description": "Dashboard spacing scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:431",
+        "com.figma.scopes": [
+          "GAP"
+        ]
+      }
+    },
+    "14": {
+      "$type": "number",
+      "$value": 14,
+      "$description": "Dashboard spacing scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:434",
+        "com.figma.scopes": [
+          "GAP"
+        ]
+      }
+    },
+    "16": {
+      "$type": "number",
+      "$value": 16,
+      "$description": "Dashboard spacing scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:397",
+        "com.figma.scopes": [
+          "GAP"
+        ]
+      }
+    },
+    "18": {
+      "$type": "number",
+      "$value": 18,
+      "$description": "Dashboard spacing scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:435",
+        "com.figma.scopes": [
+          "GAP"
+        ]
+      }
+    },
+    "20": {
+      "$type": "number",
+      "$value": 20,
+      "$description": "Dashboard spacing scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:423",
+        "com.figma.scopes": [
+          "GAP"
+        ]
+      }
+    },
+    "24": {
+      "$type": "number",
+      "$value": 24,
+      "$description": "Dashboard spacing scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:425",
+        "com.figma.scopes": [
+          "GAP"
+        ]
+      }
+    },
+    "28": {
+      "$type": "number",
+      "$value": 28,
+      "$description": "Dashboard spacing scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:426",
+        "com.figma.scopes": [
+          "GAP"
+        ]
+      }
+    },
+    "16-6": {
+      "$type": "number",
+      "$value": 16.59864044189453,
+      "$description": "Dashboard spacing scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:469",
+        "com.figma.scopes": [
+          "GAP"
+        ]
+      }
+    },
+    "6-64": {
+      "$type": "number",
+      "$value": 6.639455795288086,
+      "$description": "Dashboard spacing scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:470",
+        "com.figma.scopes": [
+          "GAP"
+        ]
+      }
+    },
+    "0-83": {
+      "$type": "number",
+      "$value": 0.8299319744110107,
+      "$description": "Dashboard spacing scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:474",
+        "com.figma.scopes": [
+          "GAP"
+        ]
+      }
+    },
+    "4-98": {
+      "$type": "number",
+      "$value": 4.9795918464660645,
+      "$description": "Dashboard spacing scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:477",
+        "com.figma.scopes": [
+          "GAP"
+        ]
+      }
+    },
+    "8-3": {
+      "$type": "number",
+      "$value": 8.299320220947266,
+      "$description": "Dashboard spacing scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:478",
+        "com.figma.scopes": [
+          "GAP"
+        ]
+      }
+    },
+    "11-62": {
+      "$type": "number",
+      "$value": 11.619047164916992,
+      "$description": "Dashboard spacing scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:482",
+        "com.figma.scopes": [
+          "GAP"
+        ]
+      }
+    },
+    "13-28": {
+      "$type": "number",
+      "$value": 13.278911590576172,
+      "$description": "Dashboard spacing scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:483",
+        "com.figma.scopes": [
+          "GAP"
+        ]
+      }
+    },
+    "5-81": {
+      "$type": "number",
+      "$value": 5.809523582458496,
+      "$description": "Dashboard spacing scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:484",
+        "com.figma.scopes": [
+          "GAP"
+        ]
+      }
+    },
+    "7-47": {
+      "$type": "number",
+      "$value": 7.469388008117676,
+      "$description": "Dashboard spacing scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:485",
+        "com.figma.scopes": [
+          "GAP"
+        ]
+      }
+    },
+    "2-49": {
+      "$type": "number",
+      "$value": 2.4897959232330322,
+      "$description": "Dashboard spacing scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:489",
+        "com.figma.scopes": [
+          "GAP"
+        ]
+      }
+    },
+    "19-92": {
+      "$type": "number",
+      "$value": 19.918367385864258,
+      "$description": "Dashboard spacing scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:492",
+        "com.figma.scopes": [
+          "GAP"
+        ]
+      }
+    },
+    "3-32": {
+      "$type": "number",
+      "$value": 3.319727897644043,
+      "$description": "Dashboard spacing scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:493",
+        "com.figma.scopes": [
+          "GAP"
+        ]
+      }
+    },
+    "9-96": {
+      "$type": "number",
+      "$value": 9.959183692932129,
+      "$description": "Dashboard spacing scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:496",
+        "com.figma.scopes": [
+          "GAP"
+        ]
+      }
+    },
+    "1-66": {
+      "$type": "number",
+      "$value": 1.6598639488220215,
+      "$description": "Dashboard spacing scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:498",
+        "com.figma.scopes": [
+          "GAP"
+        ]
+      }
+    },
+    "9-13": {
+      "$type": "number",
+      "$value": 9.129251480102539,
+      "$description": "Dashboard spacing scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:507",
+        "com.figma.scopes": [
+          "GAP"
+        ]
+      }
+    }
+  },
+  "radius": {
+    "0": {
+      "$type": "number",
+      "$value": 0,
+      "$description": "Dashboard corner radius scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:376",
+        "com.figma.scopes": [
+          "CORNER_RADIUS"
+        ]
+      }
+    },
+    "2": {
+      "$type": "number",
+      "$value": 2,
+      "$description": "Dashboard corner radius scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:459",
+        "com.figma.scopes": [
+          "CORNER_RADIUS"
+        ]
+      }
+    },
+    "3": {
+      "$type": "number",
+      "$value": 3,
+      "$description": "Dashboard corner radius scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:449",
+        "com.figma.scopes": [
+          "CORNER_RADIUS"
+        ]
+      }
+    },
+    "4": {
+      "$type": "number",
+      "$value": 4,
+      "$description": "Dashboard corner radius scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:454",
+        "com.figma.scopes": [
+          "CORNER_RADIUS"
+        ]
+      }
+    },
+    "5": {
+      "$type": "number",
+      "$value": 5,
+      "$description": "Dashboard corner radius scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:448",
+        "com.figma.scopes": [
+          "CORNER_RADIUS"
+        ]
+      }
+    },
+    "6": {
+      "$type": "number",
+      "$value": 6,
+      "$description": "Dashboard corner radius scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:382",
+        "com.figma.scopes": [
+          "CORNER_RADIUS"
+        ]
+      }
+    },
+    "8": {
+      "$type": "number",
+      "$value": 8,
+      "$description": "Dashboard corner radius scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:400",
+        "com.figma.scopes": [
+          "CORNER_RADIUS"
+        ]
+      }
+    },
+    "9": {
+      "$type": "number",
+      "$value": 9,
+      "$description": "Dashboard corner radius scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:436",
+        "com.figma.scopes": [
+          "CORNER_RADIUS"
+        ]
+      }
+    },
+    "10": {
+      "$type": "number",
+      "$value": 10,
+      "$description": "Dashboard corner radius scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:411",
+        "com.figma.scopes": [
+          "CORNER_RADIUS"
+        ]
+      }
+    },
+    "12": {
+      "$type": "number",
+      "$value": 12,
+      "$description": "Dashboard corner radius scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:422",
+        "com.figma.scopes": [
+          "CORNER_RADIUS"
+        ]
+      }
+    },
+    "14": {
+      "$type": "number",
+      "$value": 14,
+      "$description": "Dashboard corner radius scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:420",
+        "com.figma.scopes": [
+          "CORNER_RADIUS"
+        ]
+      }
+    },
+    "16": {
+      "$type": "number",
+      "$value": 16,
+      "$description": "Dashboard corner radius scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:447",
+        "com.figma.scopes": [
+          "CORNER_RADIUS"
+        ]
+      }
+    },
+    "106": {
+      "$type": "number",
+      "$value": 1.0606061220169067,
+      "$description": "Dashboard corner radius scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:406",
+        "com.figma.scopes": [
+          "CORNER_RADIUS"
+        ]
+      }
+    },
+    "999": {
+      "$type": "number",
+      "$value": 999,
+      "$description": "Dashboard corner radius scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:446",
+        "com.figma.scopes": [
+          "CORNER_RADIUS"
+        ]
+      }
+    },
+    "3-5": {
+      "$type": "number",
+      "$value": 3.5,
+      "$description": "Dashboard corner radius scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:402",
+        "com.figma.scopes": [
+          "CORNER_RADIUS"
+        ]
+      }
+    },
+    "1-75": {
+      "$type": "number",
+      "$value": 1.75,
+      "$description": "Dashboard corner radius scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:404",
+        "com.figma.scopes": [
+          "CORNER_RADIUS"
+        ]
+      }
+    },
+    "7-5": {
+      "$type": "number",
+      "$value": 7.5,
+      "$description": "Dashboard corner radius scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:442",
+        "com.figma.scopes": [
+          "CORNER_RADIUS"
+        ]
+      }
+    },
+    "1-88": {
+      "$type": "number",
+      "$value": 1.875,
+      "$description": "Dashboard corner radius scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:444",
+        "com.figma.scopes": [
+          "CORNER_RADIUS"
+        ]
+      }
+    },
+    "9-75": {
+      "$type": "number",
+      "$value": 9.75,
+      "$description": "Dashboard corner radius scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:460",
+        "com.figma.scopes": [
+          "CORNER_RADIUS"
+        ]
+      }
+    },
+    "5-85": {
+      "$type": "number",
+      "$value": 5.849999904632568,
+      "$description": "Dashboard corner radius scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:465",
+        "com.figma.scopes": [
+          "CORNER_RADIUS"
+        ]
+      }
+    },
+    "3-6": {
+      "$type": "number",
+      "$value": 3.6000001430511475,
+      "$description": "Dashboard corner radius scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:466",
+        "com.figma.scopes": [
+          "CORNER_RADIUS"
+        ]
+      }
+    },
+    "1-13": {
+      "$type": "number",
+      "$value": 1.125,
+      "$description": "Dashboard corner radius scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:467",
+        "com.figma.scopes": [
+          "CORNER_RADIUS"
+        ]
+      }
+    },
+    "8-3": {
+      "$type": "number",
+      "$value": 8.299320220947266,
+      "$description": "Dashboard corner radius scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:475",
+        "com.figma.scopes": [
+          "CORNER_RADIUS"
+        ]
+      }
+    },
+    "6-64": {
+      "$type": "number",
+      "$value": 6.639455795288086,
+      "$description": "Dashboard corner radius scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:479",
+        "com.figma.scopes": [
+          "CORNER_RADIUS"
+        ]
+      }
+    },
+    "4-98": {
+      "$type": "number",
+      "$value": 4.9795918464660645,
+      "$description": "Dashboard corner radius scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:488",
+        "com.figma.scopes": [
+          "CORNER_RADIUS"
+        ]
+      }
+    },
+    "1-66": {
+      "$type": "number",
+      "$value": 1.6598639488220215,
+      "$description": "Dashboard corner radius scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:491",
+        "com.figma.scopes": [
+          "CORNER_RADIUS"
+        ]
+      }
+    },
+    "11-62": {
+      "$type": "number",
+      "$value": 11.619047164916992,
+      "$description": "Dashboard corner radius scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:497",
+        "com.figma.scopes": [
+          "CORNER_RADIUS"
+        ]
+      }
+    },
+    "16-6": {
+      "$type": "number",
+      "$value": 16.59864044189453,
+      "$description": "Dashboard corner radius scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:499",
+        "com.figma.scopes": [
+          "CORNER_RADIUS"
+        ]
+      }
+    },
+    "9-96": {
+      "$type": "number",
+      "$value": 9.959183692932129,
+      "$description": "Dashboard corner radius scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:503",
+        "com.figma.scopes": [
+          "CORNER_RADIUS"
+        ]
+      }
+    },
+    "10-79": {
+      "$type": "number",
+      "$value": 10.789115905761719,
+      "$description": "Dashboard corner radius scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:504",
+        "com.figma.scopes": [
+          "CORNER_RADIUS"
+        ]
+      }
+    },
+    "4-5": {
+      "$type": "number",
+      "$value": 4.5,
+      "$description": "Dashboard corner radius scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:506",
+        "com.figma.scopes": [
+          "CORNER_RADIUS"
+        ]
+      }
+    },
+    "2-49": {
+      "$type": "number",
+      "$value": 2.4897959232330322,
+      "$description": "Dashboard corner radius scale.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:509",
+        "com.figma.scopes": [
+          "CORNER_RADIUS"
+        ]
+      }
+    }
+  },
+  "stroke": {
+    "weight-1": {
+      "$type": "number",
+      "$value": 0.9959183931350708,
+      "$description": "Dashboard stroke weight.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:377",
+        "com.figma.scopes": [
+          "STROKE_FLOAT"
+        ]
+      }
+    },
+    "weight-0-58": {
+      "$type": "number",
+      "$value": 0.5833333730697632,
+      "$description": "Dashboard stroke weight.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:393",
+        "com.figma.scopes": [
+          "STROKE_FLOAT"
+        ]
+      }
+    },
+    "weight-1-17": {
+      "$type": "number",
+      "$value": 1.1666667461395264,
+      "$description": "Dashboard stroke weight.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:394",
+        "com.figma.scopes": [
+          "STROKE_FLOAT"
+        ]
+      }
+    },
+    "weight-0-67": {
+      "$type": "number",
+      "$value": 0.6666666865348816,
+      "$description": "Dashboard stroke weight.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:395",
+        "com.figma.scopes": [
+          "STROKE_FLOAT"
+        ]
+      }
+    },
+    "weight-1-33": {
+      "$type": "number",
+      "$value": 1.3333333730697632,
+      "$description": "Dashboard stroke weight.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:396",
+        "com.figma.scopes": [
+          "STROKE_FLOAT"
+        ]
+      }
+    },
+    "weight-0-5": {
+      "$type": "number",
+      "$value": 0.5,
+      "$description": "Dashboard stroke weight.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:401",
+        "com.figma.scopes": [
+          "STROKE_FLOAT"
+        ]
+      }
+    },
+    "weight-1-16": {
+      "$type": "number",
+      "$value": 1.1619046926498413,
+      "$description": "Dashboard stroke weight.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:403",
+        "com.figma.scopes": [
+          "STROKE_FLOAT"
+        ]
+      }
+    },
+    "weight-1-14": {
+      "$type": "number",
+      "$value": 1.1375000476837158,
+      "$description": "Dashboard stroke weight.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:405",
+        "com.figma.scopes": [
+          "STROKE_FLOAT"
+        ]
+      }
+    },
+    "weight-009": {
+      "$type": "number",
+      "$value": 0.09375,
+      "$description": "Dashboard stroke weight.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:407",
+        "com.figma.scopes": [
+          "STROKE_FLOAT"
+        ]
+      }
+    },
+    "weight-0-54": {
+      "$type": "number",
+      "$value": 0.5416666865348816,
+      "$description": "Dashboard stroke weight.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:414",
+        "com.figma.scopes": [
+          "STROKE_FLOAT"
+        ]
+      }
+    },
+    "weight-108": {
+      "$type": "number",
+      "$value": 1.0833333730697632,
+      "$description": "Dashboard stroke weight.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:415",
+        "com.figma.scopes": [
+          "STROKE_FLOAT"
+        ]
+      }
+    },
+    "weight-0": {
+      "$type": "number",
+      "$value": 0,
+      "$description": "Dashboard per-side stroke weight.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:424",
+        "com.figma.scopes": [
+          "STROKE_FLOAT"
+        ]
+      }
+    },
+    "weight-1-5": {
+      "$type": "number",
+      "$value": 1.5,
+      "$description": "Dashboard stroke weight.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:437",
+        "com.figma.scopes": [
+          "STROKE_FLOAT"
+        ]
+      }
+    },
+    "weight-2": {
+      "$type": "number",
+      "$value": 2,
+      "$description": "Dashboard stroke weight.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:438",
+        "com.figma.scopes": [
+          "STROKE_FLOAT"
+        ]
+      }
+    },
+    "weight-0-63": {
+      "$type": "number",
+      "$value": 0.625,
+      "$description": "Dashboard stroke weight.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:440",
+        "com.figma.scopes": [
+          "STROKE_FLOAT"
+        ]
+      }
+    },
+    "weight-1-25": {
+      "$type": "number",
+      "$value": 1.25,
+      "$description": "Dashboard stroke weight.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:441",
+        "com.figma.scopes": [
+          "STROKE_FLOAT"
+        ]
+      }
+    },
+    "weight-0-75": {
+      "$type": "number",
+      "$value": 0.75,
+      "$description": "Dashboard stroke weight.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:443",
+        "com.figma.scopes": [
+          "STROKE_FLOAT"
+        ]
+      }
+    },
+    "weight-1-2": {
+      "$type": "number",
+      "$value": 1.2000000476837158,
+      "$description": "Dashboard stroke weight.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:450",
+        "com.figma.scopes": [
+          "STROKE_FLOAT"
+        ]
+      }
+    },
+    "weight-0-46": {
+      "$type": "number",
+      "$value": 0.4583333432674408,
+      "$description": "Dashboard stroke weight.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:452",
+        "com.figma.scopes": [
+          "STROKE_FLOAT"
+        ]
+      }
+    },
+    "weight-0-92": {
+      "$type": "number",
+      "$value": 0.9166666865348816,
+      "$description": "Dashboard stroke weight.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:453",
+        "com.figma.scopes": [
+          "STROKE_FLOAT"
+        ]
+      }
+    },
+    "weight-0-45": {
+      "$type": "number",
+      "$value": 0.45000001788139343,
+      "$description": "Dashboard stroke weight.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:464",
+        "com.figma.scopes": [
+          "STROKE_FLOAT"
+        ]
+      }
+    },
+    "weight-0-83": {
+      "$type": "number",
+      "$value": 0.8299319744110107,
+      "$description": "Dashboard stroke weight.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:468",
+        "com.figma.scopes": [
+          "STROKE_FLOAT"
+        ]
+      }
+    },
+    "weight-0-52": {
+      "$type": "number",
+      "$value": 0.5187075138092041,
+      "$description": "Dashboard stroke weight.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:471",
+        "com.figma.scopes": [
+          "STROKE_FLOAT"
+        ]
+      }
+    },
+    "weight-104": {
+      "$type": "number",
+      "$value": 1.0374150276184082,
+      "$description": "Dashboard stroke weight.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:472",
+        "com.figma.scopes": [
+          "STROKE_FLOAT"
+        ]
+      }
+    },
+    "weight-0-9": {
+      "$type": "number",
+      "$value": 0.8990930318832397,
+      "$description": "Dashboard stroke weight.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:481",
+        "com.figma.scopes": [
+          "STROKE_FLOAT"
+        ]
+      }
+    },
+    "weight-1-24": {
+      "$type": "number",
+      "$value": 1.2448979616165161,
+      "$description": "Dashboard stroke weight.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:501",
+        "com.figma.scopes": [
+          "STROKE_FLOAT"
+        ]
+      }
+    }
+  },
+  "opacity": {
+    "0": {
+      "$type": "number",
+      "$value": 0,
+      "$description": "Dashboard layer opacity.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:461",
+        "com.figma.scopes": [
+          "OPACITY"
+        ]
+      }
+    },
+    "100": {
+      "$type": "number",
+      "$value": 100,
+      "$description": "Dashboard layer opacity.",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:1885:378",
+        "com.figma.scopes": [
+          "OPACITY"
+        ]
+      }
+    }
+  },
+  "typography": {
+    "font-family": {
+      "geist": {
+        "$type": "string",
+        "$value": "Geist",
+        "$description": "Dashboard font family.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:383",
+          "com.figma.scopes": [
+            "FONT_FAMILY"
+          ],
+          "com.figma.type": "string"
+        }
+      },
+      "inter": {
+        "$type": "string",
+        "$value": "Inter",
+        "$description": "Dashboard font family.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:510",
+          "com.figma.scopes": [
+            "FONT_FAMILY"
+          ],
+          "com.figma.type": "string"
+        }
+      }
+    },
+    "font-size": {
+      "9": {
+        "$type": "number",
+        "$value": 9,
+        "$description": "Dashboard type scale.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:385",
+          "com.figma.scopes": [
+            "FONT_SIZE"
+          ]
+        }
+      },
+      "11": {
+        "$type": "number",
+        "$value": 11,
+        "$description": "Dashboard type scale.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:412",
+          "com.figma.scopes": [
+            "FONT_SIZE"
+          ]
+        }
+      },
+      "12": {
+        "$type": "number",
+        "$value": 12,
+        "$description": "Dashboard type scale.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:421",
+          "com.figma.scopes": [
+            "FONT_SIZE"
+          ]
+        }
+      },
+      "13": {
+        "$type": "number",
+        "$value": 13,
+        "$description": "Dashboard type scale.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:391",
+          "com.figma.scopes": [
+            "FONT_SIZE"
+          ]
+        }
+      },
+      "14": {
+        "$type": "number",
+        "$value": 14,
+        "$description": "Dashboard type scale.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:429",
+          "com.figma.scopes": [
+            "FONT_SIZE"
+          ]
+        }
+      },
+      "15": {
+        "$type": "number",
+        "$value": 15,
+        "$description": "Dashboard type scale.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:457",
+          "com.figma.scopes": [
+            "FONT_SIZE"
+          ]
+        }
+      },
+      "20": {
+        "$type": "number",
+        "$value": 20,
+        "$description": "Dashboard type scale.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:432",
+          "com.figma.scopes": [
+            "FONT_SIZE"
+          ]
+        }
+      },
+      "26": {
+        "$type": "number",
+        "$value": 26,
+        "$description": "Dashboard type scale.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:427",
+          "com.figma.scopes": [
+            "FONT_SIZE"
+          ]
+        }
+      },
+      "11-5": {
+        "$type": "number",
+        "$value": 11.5,
+        "$description": "Dashboard type scale.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:413",
+          "com.figma.scopes": [
+            "FONT_SIZE"
+          ]
+        }
+      },
+      "8-5": {
+        "$type": "number",
+        "$value": 8.5,
+        "$description": "Dashboard type scale.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:416",
+          "com.figma.scopes": [
+            "FONT_SIZE"
+          ]
+        }
+      },
+      "12-5": {
+        "$type": "number",
+        "$value": 12.5,
+        "$description": "Dashboard type scale.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:418",
+          "com.figma.scopes": [
+            "FONT_SIZE"
+          ]
+        }
+      },
+      "13-5": {
+        "$type": "number",
+        "$value": 13.5,
+        "$description": "Dashboard type scale.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:439",
+          "com.figma.scopes": [
+            "FONT_SIZE"
+          ]
+        }
+      },
+      "10-5": {
+        "$type": "number",
+        "$value": 10.5,
+        "$description": "Dashboard type scale.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:456",
+          "com.figma.scopes": [
+            "FONT_SIZE"
+          ]
+        }
+      },
+      "10-79": {
+        "$type": "number",
+        "$value": 10.789115905761719,
+        "$description": "Dashboard type scale.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:473",
+          "com.figma.scopes": [
+            "FONT_SIZE"
+          ]
+        }
+      },
+      "9-54": {
+        "$type": "number",
+        "$value": 9.544218063354492,
+        "$description": "Dashboard type scale.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:476",
+          "com.figma.scopes": [
+            "FONT_SIZE"
+          ]
+        }
+      },
+      "10-37": {
+        "$type": "number",
+        "$value": 10.374149322509766,
+        "$description": "Dashboard type scale.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:480",
+          "com.figma.scopes": [
+            "FONT_SIZE"
+          ]
+        }
+      },
+      "8-71": {
+        "$type": "number",
+        "$value": 8.714285850524902,
+        "$description": "Dashboard type scale.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:486",
+          "com.figma.scopes": [
+            "FONT_SIZE"
+          ]
+        }
+      },
+      "11-62": {
+        "$type": "number",
+        "$value": 11.619047164916992,
+        "$description": "Dashboard type scale.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:487",
+          "com.figma.scopes": [
+            "FONT_SIZE"
+          ]
+        }
+      },
+      "9-13": {
+        "$type": "number",
+        "$value": 9.129251480102539,
+        "$description": "Dashboard type scale.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:490",
+          "com.figma.scopes": [
+            "FONT_SIZE"
+          ]
+        }
+      },
+      "14-11": {
+        "$type": "number",
+        "$value": 14.108843803405762,
+        "$description": "Dashboard type scale.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:494",
+          "com.figma.scopes": [
+            "FONT_SIZE"
+          ]
+        }
+      },
+      "9-96": {
+        "$type": "number",
+        "$value": 9.959183692932129,
+        "$description": "Dashboard type scale.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:495",
+          "com.figma.scopes": [
+            "FONT_SIZE"
+          ]
+        }
+      },
+      "14-94": {
+        "$type": "number",
+        "$value": 14.938776016235352,
+        "$description": "Dashboard type scale.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:502",
+          "com.figma.scopes": [
+            "FONT_SIZE"
+          ]
+        }
+      },
+      "8-3": {
+        "$type": "number",
+        "$value": 8.299320220947266,
+        "$description": "Dashboard type scale.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:505",
+          "com.figma.scopes": [
+            "FONT_SIZE"
+          ]
+        }
+      },
+      "16-6": {
+        "$type": "number",
+        "$value": 16.59864044189453,
+        "$description": "Dashboard type scale.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:508",
+          "com.figma.scopes": [
+            "FONT_SIZE"
+          ]
+        }
+      }
+    },
+    "font-weight": {
+      "400": {
+        "$type": "number",
+        "$value": 400,
+        "$description": "Dashboard font weight scale.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:419",
+          "com.figma.scopes": [
+            "FONT_STYLE"
+          ]
+        }
+      },
+      "500": {
+        "$type": "number",
+        "$value": 500,
+        "$description": "Dashboard font weight scale.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:409",
+          "com.figma.scopes": [
+            "FONT_STYLE"
+          ]
+        }
+      },
+      "600": {
+        "$type": "number",
+        "$value": 600,
+        "$description": "Dashboard font weight scale.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:392",
+          "com.figma.scopes": [
+            "FONT_STYLE"
+          ]
+        }
+      },
+      "700": {
+        "$type": "number",
+        "$value": 700,
+        "$description": "Dashboard font weight scale.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:386",
+          "com.figma.scopes": [
+            "FONT_STYLE"
+          ]
+        }
+      }
+    },
+    "paragraph-spacing": {
+      "0": {
+        "$type": "number",
+        "$value": 0,
+        "$description": "Dashboard paragraph spacing.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:388",
+          "com.figma.scopes": [
+            "PARAGRAPH_SPACING"
+          ]
+        }
+      }
+    },
+    "paragraph-indent": {
+      "0": {
+        "$type": "number",
+        "$value": 0,
+        "$description": "Dashboard paragraph indent.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:389",
+          "com.figma.scopes": [
+            "PARAGRAPH_INDENT"
+          ]
+        }
+      }
+    },
+    "line-height": {
+      "pixels-20": {
+        "$type": "number",
+        "$value": 20,
+        "$description": "Dashboard line-height scale.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:430",
+          "com.figma.scopes": [
+            "LINE_HEIGHT"
+          ]
+        }
+      },
+      "pixels-19": {
+        "$type": "number",
+        "$value": 19,
+        "$description": "Dashboard line-height scale.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:455",
+          "com.figma.scopes": [
+            "LINE_HEIGHT"
+          ]
+        }
+      },
+      "pixels-18": {
+        "$type": "number",
+        "$value": 18,
+        "$description": "Dashboard line-height scale.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:463",
+          "com.figma.scopes": [
+            "LINE_HEIGHT"
+          ]
+        }
+      },
+      "pixels-12-45": {
+        "$type": "number",
+        "$value": 12.448979377746582,
+        "$description": "Dashboard line-height scale.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:500",
+          "com.figma.scopes": [
+            "LINE_HEIGHT"
+          ]
+        }
+      }
+    },
+    "letter-spacing": {
+      "px-0": {
+        "$type": "number",
+        "$value": 0,
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:5387",
+          "com.figma.scopes": [
+            "LETTER_SPACING"
+          ]
+        }
+      },
+      "px-0-52": {
+        "$type": "number",
+        "$value": -0.5199999809265137,
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:5388",
+          "com.figma.scopes": [
+            "LETTER_SPACING"
+          ]
+        }
+      },
+      "px-0-2": {
+        "$type": "number",
+        "$value": -0.20000000298023224,
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:5389",
+          "com.figma.scopes": [
+            "LETTER_SPACING"
+          ]
+        }
+      },
+      "px-0-116": {
+        "$type": "number",
+        "$value": -0.11619047075510025,
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:5390",
+          "com.figma.scopes": [
+            "LETTER_SPACING"
+          ]
+        }
+      },
+      "px-0-141": {
+        "$type": "number",
+        "$value": -0.14108844101428986,
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:5391",
+          "com.figma.scopes": [
+            "LETTER_SPACING"
+          ]
+        }
+      },
+      "px-0-149": {
+        "$type": "number",
+        "$value": -0.14938776195049286,
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:5392",
+          "com.figma.scopes": [
+            "LETTER_SPACING"
+          ]
+        }
+      },
+      "px-0-166": {
+        "$type": "number",
+        "$value": -0.16598640382289886,
+        "$extensions": {
+          "com.figma.variableId": "VariableID:1885:5393",
+          "com.figma.scopes": [
+            "LETTER_SPACING"
+          ]
+        }
+      }
+    }
+  },
+  "$extensions": {
+    "com.figma.modeName": "Default"
+  }
+}
