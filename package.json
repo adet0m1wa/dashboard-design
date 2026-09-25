@@ -1,0 +1,36 @@
+{
+  "name": "hop-prototype",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "tokens": "node scripts/gen-tokens.mjs",
+    "predev": "node scripts/gen-tokens.mjs",
+    "dev": "next dev",
+    "prebuild": "node scripts/gen-tokens.mjs",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "check:tokens": "node scripts/check-tokens.mjs",
+    "check": "npm run typecheck && npm run check:tokens",
+    "screenshots": "node scripts/screenshots.mjs"
+  },
+  "dependencies": {
+    "d3-shape": "^3.2.0",
+    "geist": "^1.7.2",
+    "motion": "^13.4.4",
+    "next": "^16.3.6",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "zustand": "^5.0.15"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.3",
+    "@types/d3-shape": "^3.2.0",
+    "@types/node": "^24.19.0",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "puppeteer-core": "^25.12.0",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^5.9.3"
+  }
+}

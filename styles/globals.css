@@ -1,0 +1,54 @@
+@import "tailwindcss";
+@import "./tokens.css";
+
+/* Readable aliases for the non-semantic palette tokens (brief A8).
+ * The originals stay in tokens.css; components can use either. */
+@theme static {
+  /* 1 spacing unit = 1px, so w-224 is 224px. Padding/margin/gap must still use a
+   * spacing token number (p-16, gap-8) — scripts/check-tokens.mjs enforces it. */
+  --spacing: 1px;
+  --font-sans: var(--font-geist);
+
+  --color-selection: var(--color-status-info);
+  --color-tag-bg: var(--color-palette-tone-20);
+  --color-tag-border: var(--color-palette-tone-21);
+  --color-tag-text: var(--color-text-tone-04);
+  --color-chart-fill: var(--color-palette-tone-05);
+  --color-chart-compare: var(--color-palette-tone-06);
+  --color-chart-future: var(--color-text-tone-02);
+  --color-legend-off: var(--color-palette-tone-04);
+  --color-trail: var(--color-palette-tone-27);
+  --color-chip-off-bg: var(--color-palette-tone-19);
+  --color-chip-off-text: var(--color-text-tone-03);
+  --color-composer-border: var(--color-palette-tone-14);
+  --color-info-soft: var(--color-palette-tone-09);
+  --color-info-icon: var(--color-palette-tone-10);
+  --color-hop-screen: var(--color-palette-tone-11);
+  --color-hop-bezel: var(--color-palette-tone-12);
+  --color-hop-eye: var(--color-palette-tone-13);
+  --color-avatar-amara: var(--color-text-primary);
+  --color-avatar-ife: var(--color-palette-tone-01);
+  --color-avatar-dayo: var(--color-palette-tone-02);
+  --color-avatar-zee: var(--color-palette-tone-03);
+}
+
+@layer base {
+  html,
+  body {
+    height: 100%;
+  }
+  body {
+    background: var(--color-background-app);
+    color: var(--color-text-primary);
+    font-family: var(--font-geist);
+    -webkit-font-smoothing: antialiased;
+  }
+  /* Brief B5: visible focus rings everywhere — 2px selection blue, 2px offset. */
+  :focus-visible {
+    outline: var(--stroke-2) solid var(--color-status-info);
+    outline-offset: var(--spacing-2);
+  }
+  button {
+    cursor: pointer;
+  }
+}

@@ -1,0 +1,72 @@
+{
+  "$description": "Values the Figma frames use that are NOT in the 'dashboard variables' collection (Figma styles, raw fills, layout constants from the brief). Hand-maintained; each entry notes where it came from. Default.tokens.json stays untouched.",
+  "shadow": {
+    "nav-active": {
+      "value": "0px 1px 2px 0px rgba(0, 0, 0, 0.03)",
+      "source": "Analytics > Sidebar > Nav/Home"
+    },
+    "composer": {
+      "value": "0px 2px 8px 0px rgba(0, 0, 0, 0.05)",
+      "source": "Analytics > Hop — Agent panel > Composer > Input"
+    },
+    "hop-eye": {
+      "value": "0px 0px 3px 0px rgba(43, 178, 89, 0.7)",
+      "source": "Analytics > Agent header > Eye left/right"
+    },
+    "toggle-thumb": {
+      "value": "0px 1px 2px 0px rgba(0, 0, 0, 0.08)",
+      "source": "Analytics - Last week selected > Mode toggle > Row / Last week"
+    }
+  },
+  "gradient": {
+    "hop-head": {
+      "from": "#40403B",
+      "to": "#12120F",
+      "source": "Analytics > Agent header > Head"
+    },
+    "swatch-sand": {
+      "from": "#EADCC4",
+      "to": "#C3A67E",
+      "source": "Analytics > Card/Top revenue generators > Linen two-piece (Sand)"
+    },
+    "swatch-emerald": {
+      "from": "#3A8C66",
+      "to": "#154D37",
+      "source": "Analytics > Card/Top revenue generators > Satin slip dress (Emerald)"
+    },
+    "swatch-indigo": {
+      "from": "#5362B0",
+      "to": "#262E66",
+      "source": "Analytics > Card/Top revenue generators > Wrap kimono (Indigo)"
+    },
+    "swatch-terracotta": {
+      "from": "#E0772E",
+      "to": "#B45309",
+      "source": "Analytics - Last week selected > Silk scarf (Terracotta)"
+    },
+    "post-sand-reel": {
+      "from": "#E3D0B0",
+      "to": "#6E5236",
+      "source": "Analytics — Instagram likes selected > Post/Styling the Sand set 3 ways"
+    },
+    "post-fit-check": {
+      "from": "#E8C9A8",
+      "to": "#9A6B45",
+      "source": "Analytics — Instagram likes selected > Post/Fit check: Tolu in Sand"
+    }
+  },
+  "layout": {
+    "sidebar": {
+      "value": 224,
+      "source": "brief A6 / Analytics > Sidebar"
+    },
+    "panel": {
+      "value": 368,
+      "source": "brief A6 / Analytics > Hop — Agent panel"
+    },
+    "bar": {
+      "value": 56,
+      "source": "brief A6 / Top bar + Agent header"
+    }
+  }
+}
