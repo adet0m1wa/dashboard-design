@@ -10,10 +10,11 @@ import { ArrowIcon } from '@/components/icons/figma';
 import { HopFrame } from '@/components/select/HopFrame';
 import { InitialsAvatar } from '@/components/ui/PersonAvatar';
 import { Tag } from '@/components/ui/Tag';
+import { Crossfade, SwapRow, SwapRows } from './swap';
 
 // The card beside Urgent, one variant per KPI (brief A7, B7.1). Card: p 16, gap 12, radius 12,
 // 1px border; a spacer keeps the footer pinned to the bottom when the row stretches.
-export function KpiCard({ card, period }: { card: Card; period: PeriodKey }) {
+export function KpiCard({ card, period, className = '' }: { card: Card; period: PeriodKey; className?: string }) {
   const navigate = useHop((s) => s.navigate);
 
   return (
@@ -22,27 +23,37 @@ export function KpiCard({ card, period }: { card: Card; period: PeriodKey }) {
       label={card.title}
       page="analytics"
       jumpTarget={card.link.page}
-      className="flex min-w-0 flex-col gap-12 rounded-12 border border-surface-border-tint bg-surface-default p-16"
+      className={`flex min-w-0 flex-col gap-12 rounded-12 border border-surface-border-tint bg-surface-default p-16 ${className}`}
     >
       <div className="flex items-center justify-between">
-        <h3 className="whitespace-nowrap text-13 font-600 text-text-primary">{card.title}</h3>
-        <motion.button
-          type="button"
-          whileTap={press}
-          onClick={() => navigate(card.link.page, 'link')}
-          className="flex items-center gap-4 rounded-4 text-12 font-500 text-text-secondary transition-colors duration-(--dur-fast) ease-hop-out hover:text-text-primary"
-        >
-          {card.link.label}
-          <ArrowIcon />
-        </motion.button>
+        <Crossfade k={card.title}>
+          <h3 className="whitespace-nowrap text-13 font-600 text-text-primary">{card.title}</h3>
+        </Crossfade>
+        <Crossfade k={card.link.label} className="justify-items-end">
+          <motion.button
+            type="button"
+            whileTap={press}
+            onClick={() => navigate(card.link.page, 'link')}
+            className="flex items-center gap-4 rounded-4 text-12 font-500 text-text-secondary transition-colors duration-(--dur-fast) ease-hop-out hover:text-text-primary"
+          >
+            {card.link.label}
+            <ArrowIcon />
+          </motion.button>
+        </Crossfade>
       </div>
 
-      <CardRows card={card} period={period} />
+      <SwapRows swapKey={`${card.kind}:${card.title}`} className="flex flex-col gap-12">
+        <CardRows card={card} period={period} />
+      </SwapRows>
 
       <div className="min-h-0 flex-1" />
-      <div className="flex justify-between border-t border-surface-faint pt-10 text-12 tabular-nums">
-        <span className="text-text-secondary">{card.footer[0]}</span>
-        <span className="font-500 text-text-primary">{card.footer[1]}</span>
+      <div className="border-t border-surface-faint pt-10 text-12 tabular-nums">
+        <Crossfade k={card.footer.join('|')}>
+          <div className="flex justify-between">
+            <span className="text-text-secondary">{card.footer[0]}</span>
+            <span className="font-500 text-text-primary">{card.footer[1]}</span>
+          </div>
+        </Crossfade>
       </div>
     </HopFrame>
   );
@@ -85,9 +96,11 @@ function CardRows({ card, period }: { card: Card; period: PeriodKey }) {
 
 function RowFrame({ id, label, jump, children }: { id: string; label: string; jump: Page; children: React.ReactNode }) {
   return (
-    <HopFrame id={`analytics.card.${id}`} label={label} page="analytics" jumpTarget={jump} className="rounded-6">
-      {children}
-    </HopFrame>
+    <SwapRow>
+      <HopFrame id={`analytics.card.${id}`} label={label} page="analytics" jumpTarget={jump} className="rounded-6">
+        {children}
+      </HopFrame>
+    </SwapRow>
   );
 }
 

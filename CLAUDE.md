@@ -52,6 +52,9 @@ npm run check      # typecheck + token check
   drives headless Chrome (local install, puppeteer-core) and prints PASS/FAIL per check plus console
   errors. `scripts/shot.mjs` takes one screenshot; `scripts/compare.mjs figma.png app.png out.png
   [--region=x,y,w,h] [--zoom=2]` makes a Figma | app | diff strip. Figma renders live in `docs/figma/`.
+- Never put `initial={false}` on an AnimatePresence that wraps a whole page: it switches off every
+  nested initial animation too (it silently killed the first-load entrance once). Skip the
+  wrapper's own first animation instead (see PageArea).
 - Figma text uses the font's "normal" line height; `html { line-height: normal }` in globals.css
   matches it (Tailwind's 1.5 made every row 2.5px taller).
 
@@ -62,14 +65,14 @@ npm run check      # typecheck + token check
 | 0 Setup | done | Next 16 + Tailwind 4 (`@theme static`) + Motion 13 + Zustand; tokens, motion, data, icons, `/tokens` test page |
 | 1 Shell | done | Sidebar, workspace, top bar (title crossfade), empty Hop panel, 6 routes, page transitions. `scripts/flows/phase1.mjs`: 42/42 |
 | 2 Analytics (static) | done | KPI tabs (tablist, arrows), chart (d3 curveMonotoneX), 5 card variants, Urgent, Wed + last week states. `phase2.mjs` 21/21; each state within ~2.7% pixel diff of its frame (text anti-aliasing + curve shape) |
-| 3 Analytics (interactive) | – | |
+| 3 Analytics (interactive) | done | KPI morph (values + max tween), DMs tint, card/Urgent swaps, hover + tooltip, day select + Esc, week redraw, equal heights, first-load entrance, Last sync, Remind Ife toast. `phase3.mjs` 32/32, `--reduced` 30/30 |
 | 4 Hop panel | – | |
 | 5 Selection system | – | |
 | 6 Inventory + jump chips | – | |
 | 7 History | – | |
 | 8 Polish + QA | – | |
 
-**Next step:** phase 3 — Analytics interactive (chart morph + hover, day select, week toggle anims, equal-height animation, first-load entrance, Last sync, reduced motion).
+**Next step:** phase 4 — Hop panel (cues, send, typing dots, streamed answers, blocks, New chat, fade mask).
 
 ## Decisions (not in the brief)
 
@@ -94,3 +97,11 @@ npm run check      # typecheck + token check
 - Past-day KPI labels drop "today" per the brief (the Wednesday frame still says "Revenue today").
 - "Last week · 14–20 Sep" uses an en dash as in the brief (Figma types a hyphen).
 - Last week followers show 981 as designed, though the daily series adds up to 881.
+- The app renders client-only (`ClientShell`, `ssr: false`): the server can't know reduced-motion
+  or whether the entrance should play, and server-rendering caused hydration mismatches.
+- Chart tooltip (not designed): dark pill, value + "+30% vs last Wed"; in last week "Last week · Wed".
+  Keyboard focus on a day shows it too; a mouse click on a day doesn't leave it up.
+- Equal-height cards: the grid row and cards have Motion `layout` (base); with today's data no
+  state changes their height, so it never visibly runs.
+- The first-load entrance plays the first time Analytics shows in a session (not on later visits).
+- Settings and the store switcher / panel icon are shown as designed but aren't interactive.

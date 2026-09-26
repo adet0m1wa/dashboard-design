@@ -6,6 +6,7 @@ import { useEffect } from 'react';
 import type { Page } from '@/data/types';
 import { HopStoreProvider, isPage, useHop, useHopApi } from '@/lib/store';
 import { HopPanel } from '@/components/hop/HopPanel';
+import { Toast } from '@/components/ui/Toast';
 import { PageArea } from './PageArea';
 import { Sidebar } from './Sidebar';
 import { TopBar } from './TopBar';
@@ -20,9 +21,10 @@ export function AppShell({ initialPage }: { initialPage: Page }) {
         <div className="flex h-screen gap-8 overflow-hidden bg-background-app p-8">
           <Sidebar />
           <div className="flex min-w-0 flex-1 overflow-hidden rounded-12 bg-surface-default">
-            <main className="flex min-w-0 flex-1 flex-col">
+            <main className="relative flex min-w-0 flex-1 flex-col">
               <TopBar />
               <PageArea />
+              <Toast />
             </main>
             <HopPanel />
           </div>
