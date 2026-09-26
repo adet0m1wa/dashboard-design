@@ -27,6 +27,10 @@ export function CameraIcon(props: IconProps) {
   return (<svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false" {...props}><path d="M9.66667 2.66667H6.33333L4.66667 4.66667H2.66667C2.31304 4.66667 1.97391 4.80714 1.72386 5.05719C1.47381 5.30724 1.33333 5.64638 1.33333 6V12C1.33333 12.3536 1.47381 12.6928 1.72386 12.9428C1.97391 13.1929 2.31304 13.3333 2.66667 13.3333H13.3333C13.687 13.3333 14.0261 13.1929 14.2761 12.9428C14.5262 12.6928 14.6667 12.3536 14.6667 12V6C14.6667 5.64638 14.5262 5.30724 14.2761 5.05719C14.0261 4.80714 13.687 4.66667 13.3333 4.66667H11.3333L9.66667 2.66667Z" stroke="currentColor" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round"/><path d="M8 10.6667C9.10457 10.6667 10 9.77124 10 8.66667C10 7.5621 9.10457 6.66667 8 6.66667C6.89543 6.66667 6 7.5621 6 8.66667C6 9.77124 6.89543 10.6667 8 10.6667Z" stroke="currentColor" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round"/></svg>);
 }
 
+export function Chev13Icon(props: IconProps) {
+  return (<svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true" focusable="false" {...props}><path d="M3.25 4.875L6.5 8.125L9.75 4.875" stroke="currentColor" strokeWidth="1.08333" strokeLinecap="round" strokeLinejoin="round"/></svg>);
+}
+
 export function ChevIcon(props: IconProps) {
   return (<svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true" focusable="false" {...props}><path d="M3.5 5.25L7 8.75L10.5 5.25" stroke="currentColor" strokeWidth="1.16667" strokeLinecap="round" strokeLinejoin="round"/></svg>);
 }
@@ -53,6 +57,10 @@ export function NewChatIcon(props: IconProps) {
 
 export function PanelIcon(props: IconProps) {
   return (<svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false" {...props}><path d="M12.6667 2H3.33333C2.59695 2 2 2.59695 2 3.33333V12.6667C2 13.403 2.59695 14 3.33333 14H12.6667C13.403 14 14 13.403 14 12.6667V3.33333C14 2.59695 13.403 2 12.6667 2Z" stroke="currentColor" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round"/><path d="M6 2V14" stroke="currentColor" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round"/></svg>);
+}
+
+export function PlusIcon(props: IconProps) {
+  return (<svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true" focusable="false" {...props}><path d="M6.5 2.70833V10.2917" stroke="currentColor" strokeWidth="1.08333" strokeLinecap="round" strokeLinejoin="round"/><path d="M2.70833 6.5H10.2917" stroke="currentColor" strokeWidth="1.08333" strokeLinecap="round" strokeLinejoin="round"/></svg>);
 }
 
 export function SalesIcon(props: IconProps) {

@@ -6,6 +6,7 @@ import type { Page } from '@/data/types';
 import { duration, easeIn, easeOut, timing } from '@/lib/motion';
 import { useHop } from '@/lib/store';
 import { AnalyticsPage } from '@/components/pages/AnalyticsPage';
+import { InventoryPage } from '@/components/pages/InventoryPage';
 import { useSelection } from '@/components/select/useSelection';
 import { PlaceholderPage } from '@/components/pages/PlaceholderPage';
 
@@ -60,6 +61,8 @@ function PageContent({ page }: { page: Page }) {
   switch (page) {
     case 'analytics':
       return <AnalyticsPage />;
+    case 'inventory':
+      return <InventoryPage />;
     default:
       return <PlaceholderPage page={page} />;
   }

@@ -18,12 +18,20 @@ export interface HopFrameProps {
   className?: string;
   /** Corner radius of the outline, from the radius tokens. Rows use 8 (Figma); cards 14. */
   radius?: 8 | 10 | 14;
+  role?: string;
   children: ReactNode;
 }
 
-export function HopFrame({ id, label, page, jumpTarget, as: Tag = 'div', className, radius = 8, children }: HopFrameProps) {
+export function HopFrame({ id, label, page, jumpTarget, as: Tag = 'div', className, radius = 8, role, children }: HopFrameProps) {
   return (
-    <Tag data-hop-frame={id} data-hop-label={label} data-hop-page={page} data-hop-jump={jumpTarget} className={`relative ${className ?? ''}`}>
+    <Tag
+      role={role}
+      data-hop-frame={id}
+      data-hop-label={label}
+      data-hop-page={page}
+      data-hop-jump={jumpTarget}
+      className={`relative ${className ?? ''}`}
+    >
       {children}
       <FrameOverlay id={id} radius={radius} />
     </Tag>

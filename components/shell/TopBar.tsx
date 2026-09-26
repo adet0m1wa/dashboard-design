@@ -7,6 +7,7 @@ import { enter, leave } from '@/lib/motion';
 import { useHop } from '@/lib/store';
 import { PageIcon } from './PageIcon';
 import { AnalyticsTopActions } from '@/components/analytics/AnalyticsTopActions';
+import { InventoryTopActions } from '@/components/pages/InventoryTopActions';
 
 // The page top bar: 56px, lines up with the Hop panel header. Only the title and the
 // page's own actions change between pages; they crossfade (brief B7.6).
@@ -48,5 +49,6 @@ export function TopBar() {
 
 function TopActions({ page }: { page: Page }) {
   if (page === 'analytics') return <AnalyticsTopActions />;
+  if (page === 'inventory') return <InventoryTopActions />;
   return null;
 }
