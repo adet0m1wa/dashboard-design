@@ -32,6 +32,7 @@ for (const file of readdirSync(dir).filter((f) => f.endsWith('.svg')).sort()) {
     .replace(/<g>\s*/g, '')
     .replace(/\s*<\/g>/g, '')
     .replace(/<svg ([^>]*)>/, '<svg $1 aria-hidden="true" focusable="false" {...props}>')
+    .replace(/>\s+</g, '><')
     .replace(/\n\s*/g, ' ');
   out.push(`export function ${pascal(file.replace('.svg', ''))}Icon(props: IconProps) {`, `  return (${svg});`, '}', '');
 }

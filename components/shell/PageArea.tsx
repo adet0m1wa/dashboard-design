@@ -1,6 +1,7 @@
 'use client';
 
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
+import { useEffect, useRef } from 'react';
 import type { Page } from '@/data/types';
 import { duration, easeIn, easeOut, timing } from '@/lib/motion';
 import { useHop } from '@/lib/store';
@@ -13,6 +14,13 @@ import { PlaceholderPage } from '@/components/pages/PlaceholderPage';
 export function PageArea() {
   const page = useHop((s) => s.page);
   const reduce = useReducedMotion();
+  // The first page shows without a slide. Done on the wrapper, not with
+  // <AnimatePresence initial={false}>, which would also switch off every initial animation
+  // nested inside the page (the Analytics first-load entrance).
+  const first = useRef(true);
+  useEffect(() => {
+    first.current = false;
+  }, []);
 
   const variants = reduce
     ? {
@@ -28,12 +36,12 @@ export function PageArea() {
 
   return (
     <div className="relative min-h-0 flex-1">
-      <AnimatePresence mode="wait" initial={false}>
+      <AnimatePresence mode="wait">
         <motion.div
           key={page}
           className="absolute inset-0 overflow-y-auto"
           variants={variants}
-          initial="initial"
+          initial={first.current ? false : 'initial'}
           animate="animate"
           exit="exit"
           data-page={page}

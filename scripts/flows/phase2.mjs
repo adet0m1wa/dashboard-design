@@ -17,7 +17,7 @@ export default async function (t) {
     await t.check(`${id}: card "${cardTitle}"`, () => t.eval((c) => document.querySelector('[data-hop-frame="analytics.card"] h3')?.textContent === c, cardTitle));
     await t.check(`${id}: both cards same height`, () =>
       t.eval(() => {
-        const [a, b] = document.querySelector('[data-hop-frame="analytics.card"]').parentElement.children;
+        const [a, b] = document.querySelector('[data-hop-frame="analytics.card"]').closest('.grid').children;
         return Math.abs(a.getBoundingClientRect().height - b.getBoundingClientRect().height) < 0.5;
       }),
     );

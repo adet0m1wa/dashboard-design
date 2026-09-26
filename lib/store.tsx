@@ -3,6 +3,7 @@
 import { createContext, useContext, useState, type ReactNode } from 'react';
 import { createStore, useStore, type StoreApi } from 'zustand';
 import { TODAY_INDEX } from '@/data/kpis';
+import { timing } from '@/lib/motion';
 import type { Kpi, Page } from '@/data/types';
 
 // App state, shaped like brief B3. One store per AppShell (created in a provider so SSR
@@ -37,8 +38,16 @@ export interface HopState {
   selection: HopFrameRef | null;
   jumpOrigin: Page | null;
   history: HistoryState;
+  /** The one orchestrated Analytics entrance plays the first time Analytics shows (B7.1). */
+  analyticsIntroPending: boolean;
+  sync: 'idle' | 'syncing' | 'synced';
+  toast: { id: number; text: string } | null;
 
   navigate: (page: Page, source: NavSource) => void;
+  finishAnalyticsIntro: () => void;
+  startSync: () => void;
+  showToast: (text: string) => void;
+  hideToast: (id: number) => void;
   setKpi: (kpi: Kpi) => void;
   setRange: (range: AnalyticsState['range']) => void;
   /** Select a past day on the chart (0 = Mon). null or today's index = back to today. */
@@ -56,6 +65,9 @@ export function createHopStore(initialPage: Page) {
     selection: null,
     jumpOrigin: null,
     history: { selectedId: 'b-2-33', expanded: false, person: 'all', pageFilter: 'all', query: '' },
+    analyticsIntroPending: true,
+    sync: 'idle',
+    toast: null,
 
     navigate: (page, source) => {
       if (page === get().page) return;
@@ -65,6 +77,17 @@ export function createHopStore(initialPage: Page) {
         jumpOrigin: source === 'sidebar' || source === 'link' ? null : get().jumpOrigin,
       });
     },
+
+    finishAnalyticsIntro: () => set({ analyticsIntroPending: false }),
+
+    startSync: () => {
+      if (get().sync === 'syncing') return;
+      set({ sync: 'syncing' });
+      setTimeout(() => set({ sync: 'synced' }), timing.syncSpin * 1000);
+    },
+
+    showToast: (text) => set({ toast: { id: Date.now(), text } }),
+    hideToast: (id) => set((s) => (s.toast?.id === id ? { toast: null } : {})),
 
     setKpi: (kpi) => set((s) => ({ analytics: { ...s.analytics, kpi } })),
     setRange: (range) => set((s) => ({ analytics: { ...s.analytics, range, day: null } })),
