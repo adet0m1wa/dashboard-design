@@ -69,11 +69,11 @@ npm run check      # typecheck + token check
 | 3 Analytics (interactive) | done | KPI morph (values + max tween), DMs tint, card/Urgent swaps, hover + tooltip, day select + Esc, week redraw, equal heights, first-load entrance, Last sync, Remind Ife toast. `phase3.mjs` 32/32, `--reduced` 30/30 |
 | 4 Hop panel | done | Cues, send (Enter / Shift+Enter), typing dots, word streaming, blocks, markers, New chat (saves thread), fade mask, aria-live. `phase4.mjs` 20/20 both modes (Sizes block + answer buttons verified in phase 5 — they only come with tagged answers) |
 | 5 Selection system | done | HopFrame hover/select/scan overlay, page-level click + Alt+click + Esc, composer tag chip + placeholder crossfade, jump chips, clear on answer, re-highlight from tags (navigates + scrolls), Urgent Draft replies / Reorder → tagged scan. `phase5.mjs` 31/31, reduced 30/30. Panel matches the three selection frames (≤4% diff, 1px offset) |
-| 6 Inventory + jump chips | – | |
+| 6 Inventory + jump chips | done | Tiles, attention pill, stock table (hover fill, bars grow on first visit, Edit/Add/All stubs), jump → marker → chips flip → chips stay → Go to Analytics, sidebar/link clear the chips. `phase6.mjs` 19/19, reduced 18/18; matches the Inventory frame |
 | 7 History | – | |
 | 8 Polish + QA | – | |
 
-**Next step:** phase 6 — Inventory page (summary tiles, stock table, bars, Edit/Add/All stubs) + jump-chip flow + page markers; match "Inventory — nothing selected, jump chips stay".
+**Next step:** phase 7 — History (brief chain + dotted trail, selection pill slide, three left-side types, filters, Expand/Back, Recent with Hop links, saved threads from New chat).
 
 ## Decisions (not in the brief)
 
@@ -121,3 +121,9 @@ npm run check      # typecheck + token check
 - Outline radius: rows 8 (Figma), KPI tabs and chart 10, whole cards 14 (= element radius + 2).
 - Jump chips always read "Go to <page>" + "Go to Analytics"; the older selection frames say "Go to Chat".
 - In reduced motion, the scan shows a small blue "Hop is reading…" label on the outline's top edge.
+- Inventory rows not in the conversation get tag labels in the same style ("Linen two-piece (Olive)").
+- The stock table isn't overflow-clipped (its corners are rounded per row instead) so a selected
+  row's outline isn't cut off at the table edge.
+- Inventory stubs: Edit → "Product page coming soon"; All products / Add product → "… coming soon" toasts.
+- The conversation stays scrolled to the newest message; the Inventory frame shows it from the top.
+- The attention pill says "3 need attention" (brief + Figma text; the layer is named "4 need attention").

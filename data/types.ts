@@ -12,7 +12,12 @@ export type Swatch =
   | 'swatch-indigo'
   | 'swatch-terracotta'
   | 'post-sand-reel'
-  | 'post-fit-check';
+  | 'post-fit-check'
+  | 'swatch-olive'
+  | 'swatch-ecru'
+  | 'swatch-adire'
+  | 'swatch-white'
+  | 'swatch-rust';
 
 export type Tone = 'success' | 'warning' | 'danger' | 'info';
 export type NumberFormat = 'currency' | 'int' | 'compact';

@@ -56,6 +56,7 @@ export interface HopState {
   history: HistoryState;
   /** The one orchestrated Analytics entrance plays the first time Analytics shows (B7.1). */
   analyticsIntroPending: boolean;
+  inventoryIntroPending: boolean; // stock bars grow from 0 on the first visit only (B7.4)
   messages: Message[];
   hopStatus: 'idle' | 'thinking' | 'streaming';
   scanning: boolean;
@@ -71,6 +72,7 @@ export interface HopState {
 
   navigate: (page: Page, source: NavSource) => void;
   finishAnalyticsIntro: () => void;
+  finishInventoryIntro: () => void;
   setHover: (id: string | null) => void;
   select: (ref: HopFrameRef) => void;
   deselect: () => void;
@@ -103,6 +105,7 @@ export function createHopStore(initialPage: Page) {
     jumpOrigin: null,
     history: { selectedId: 'b-2-33', expanded: false, person: 'all', pageFilter: 'all', query: '' },
     analyticsIntroPending: true,
+    inventoryIntroPending: true,
     messages: [],
     hopStatus: 'idle',
     scanning: false,
@@ -241,6 +244,7 @@ export function createHopStore(initialPage: Page) {
     },
 
     finishAnalyticsIntro: () => set({ analyticsIntroPending: false }),
+    finishInventoryIntro: () => set({ inventoryIntroPending: false }),
 
     startSync: () => {
       if (get().sync === 'syncing') return;

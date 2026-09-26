@@ -53,6 +53,31 @@
       "from": "#E8C9A8",
       "to": "#9A6B45",
       "source": "Analytics — Instagram likes selected > Post/Fit check: Tolu in Sand"
+    },
+    "swatch-olive": {
+      "from": "#8A9A5B",
+      "to": "#4F5B2E",
+      "source": "Inventory — nothing selected, jump chips stay > Stock table > Linen two-piece Olive"
+    },
+    "swatch-ecru": {
+      "from": "#F0E9DA",
+      "to": "#CFC3A8",
+      "source": "Inventory — nothing selected, jump chips stay > Stock table > Wide-leg trousers Ecru"
+    },
+    "swatch-adire": {
+      "from": "#2F4A7A",
+      "to": "#15233F",
+      "source": "Inventory — nothing selected, jump chips stay > Stock table > Adire shirt dress Blue"
+    },
+    "swatch-white": {
+      "from": "#F4F2EE",
+      "to": "#D8D4CC",
+      "source": "Inventory — nothing selected, jump chips stay > Stock table > Linen shirt White"
+    },
+    "swatch-rust": {
+      "from": "#C2562E",
+      "to": "#7A2E14",
+      "source": "Inventory — nothing selected, jump chips stay > Stock table > Silk scarf Rust"
     }
   },
   "layout": {
