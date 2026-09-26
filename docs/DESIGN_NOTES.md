@@ -96,3 +96,15 @@ Token names are the generated CSS names (`--color-surface-default` = Figma `colo
 - Jump chips ("Page cues"): column gap 8. Label "Jump to" 11/500 muted. Chips row gap 6: px 12, py 7,
   radius 999, 12.5/500. Inactive: bg `palette-tone-19`, text `text-tone-03`. Active: bg `action-primary`,
   text on-dark + 12px arrow-right (white).
+
+## Selection (frames "Analytics — frame selected, before asking" / "tag clicked, highlight back on")
+
+- Selection outline: 1.5px `status-info`, radius 8, drawn 2px outside the frame left/right and 4px
+  above/below (product row 36px tall → outline 44px).
+- Handles: 7×7, white, 1.2px `status-info` border, centred on each outline corner (offset −5px).
+- Composer when something is selected: the tag chip replaces "Select any frame" — same chip as in
+  messages plus an 11px × (icon/x). Placeholder "Ask about this frame…" (one line → composer 105px tall).
+- Active tag ("Selected frame chip — active"): bg + border `status-info`, text/icon on-dark,
+  shadow 0 0 0 3px blue at 25%.
+- Jump chips: "Jump to" + [Go to Inventory →] active first, then [Go to Analytics] inactive
+  (this older frame still says "Go to Chat" — brief says Analytics).

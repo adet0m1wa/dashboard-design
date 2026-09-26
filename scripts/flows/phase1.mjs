@@ -10,6 +10,7 @@ const PAGES = [
 
 export default async function (t) {
   await t.goto('/analytics');
+  const reduced = await t.eval(() => matchMedia('(prefers-reduced-motion: reduce)').matches);
   await t.check('loads /analytics with Analytics active', () =>
     t.eval(() => document.querySelector('[aria-current=page]')?.textContent.trim() === 'Analytics'),
   );
@@ -42,10 +43,12 @@ export default async function (t) {
     await t.check(`${label}: one page in the page area`, state.pages.length === 1 && state.pages[0] === slug);
     await t.check(`${label}: sidebar active item`, state.active?.startsWith(label));
     await t.check(`${label}: pill settled on the active item`, state.pill);
-    await t.check(
-      `${label}: pill slides (at 60ms: ${mid?.toFixed(1)} between ${from?.toFixed(1)} → ${to?.toFixed(1)})`,
-      mid > Math.min(from, to) + 1 && mid < Math.max(from, to) - 1,
-    );
+    if (reduced) await t.check(`[reduced] ${label}: pill moves without sliding`, Math.abs(mid - to) < 1);
+    else
+      await t.check(
+        `${label}: pill slides (at 60ms: ${mid?.toFixed(1)} between ${from?.toFixed(1)} → ${to?.toFixed(1)})`,
+        mid > Math.min(from, to) + 1 && mid < Math.max(from, to) - 1,
+      );
     await t.shot(`phase1-${slug}`);
   }
 

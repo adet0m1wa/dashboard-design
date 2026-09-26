@@ -21,6 +21,12 @@ export const PROMPT_CUES = [
   'What’s running low?',
 ] as const;
 
+/** What the Urgent buttons ask, tagged with their row (brief B7.1). */
+export const URGENT_QUESTIONS = {
+  draft: 'Draft replies for the 3 customers',
+  reorder: 'Reorder the Sand linen set',
+} as const;
+
 /** When a tag is sent with no typed text, this is what gets asked (matches the frames). */
 export const DEFAULT_TAGGED_QUESTION = 'Tell me more about this';
 

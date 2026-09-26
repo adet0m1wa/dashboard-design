@@ -3,6 +3,7 @@
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { useEffect, useState } from 'react';
 import { cardFor, periodOf, SNAPSHOTS } from '@/data/analytics';
+import { URGENT_QUESTIONS } from '@/data/conversation';
 import { SYNC } from '@/data/team';
 import type { UrgentItem } from '@/data/types';
 import { duration, easeOut, enter, leave, timing } from '@/lib/motion';
@@ -23,6 +24,7 @@ export function AnalyticsPage() {
   const sync = useHop((s) => s.sync);
   const setDay = useHop((s) => s.setDay);
   const showToast = useHop((s) => s.showToast);
+  const askAbout = useHop((s) => s.askAbout);
   const period = periodOf(view);
   const card = cardFor(view);
   const play = intro && !reduce;
@@ -41,9 +43,13 @@ export function AnalyticsPage() {
     return () => window.removeEventListener('keydown', onKey);
   }, [api, setDay]);
 
+  // Urgent actions (brief B7.1): "Draft replies" and "Reorder" send a Hop message tagged with
+  // that row, which runs the normal scan → answer flow; "Remind Ife" is a toast.
   const onUrgentAction = (item: UrgentItem) => {
-    // "Draft replies" and "Reorder" send tagged Hop messages — wired with the selection system (phase 5).
-    if (item.action?.kind === 'remind') showToast('Reminder sent to Ife');
+    const ref = { id: `analytics.urgent.${item.id}`, label: item.title, page: 'analytics' as const, jumpTarget: item.jumpTarget };
+    if (item.action?.kind === 'draft') askAbout(ref, URGENT_QUESTIONS.draft);
+    else if (item.action?.kind === 'reorder') askAbout(ref, URGENT_QUESTIONS.reorder);
+    else if (item.action?.kind === 'remind') showToast('Reminder sent to Ife');
   };
 
   const checkedAt = sync === 'synced' ? SYNC.checkedAfter : SYNC.checkedBefore;

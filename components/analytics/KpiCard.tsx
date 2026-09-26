@@ -23,6 +23,7 @@ export function KpiCard({ card, period, className = '' }: { card: Card; period: 
       label={card.title}
       page="analytics"
       jumpTarget={card.link.page}
+      radius={14}
       className={`flex min-w-0 flex-col gap-12 rounded-12 border border-surface-border-tint bg-surface-default p-16 ${className}`}
     >
       <div className="flex items-center justify-between">

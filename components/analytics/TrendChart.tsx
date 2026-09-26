@@ -78,7 +78,7 @@ export function TrendChart() {
   };
 
   return (
-    <HopFrame id="analytics.chart" label={title} page="analytics" jumpTarget="sales" className="flex flex-col gap-12 pb-10 pl-14 pr-18 pt-14">
+    <HopFrame id="analytics.chart" label={title} page="analytics" jumpTarget="sales" radius={10} className="flex flex-col gap-12 pb-10 pl-14 pr-18 pt-14">
       <div className="flex items-center justify-between">
         <div className="grid">
           <AnimatePresence initial={false}>

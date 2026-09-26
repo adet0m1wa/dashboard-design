@@ -31,6 +31,7 @@ export interface SavedThread {
   messages: Message[];
 }
 
+/** How a page change happened — decides what happens to jumpOrigin (brief B3). */
 export type NavSource = 'sidebar' | 'jump' | 'link' | 'history' | 'tag';
 
 export interface AnalyticsState {
@@ -61,11 +62,22 @@ export interface HopState {
   clock: number; // minutes since midnight
   announce: string; // last finished answer, for the aria-live region
   threads: SavedThread[];
+  hoverId: string | null; // deepest selectable under the pointer
+  selectPulse: number; // bumps on every select, so the Select animation can replay
+  revealPulse: number; // bumps when a tag in an old message asks for its frame to be scrolled into view
+  activeTagId: string | null; // the old message whose tag is showing the "active" style
   sync: 'idle' | 'syncing' | 'synced';
   toast: { id: number; text: string } | null;
 
   navigate: (page: Page, source: NavSource) => void;
   finishAnalyticsIntro: () => void;
+  setHover: (id: string | null) => void;
+  select: (ref: HopFrameRef) => void;
+  deselect: () => void;
+  /** Urgent "Draft replies" / "Reorder": tag that row and ask in one go (brief B7.1). */
+  askAbout: (ref: HopFrameRef, text: string) => void;
+  /** Click on a tag in an earlier message: go to its page, highlight it again (brief B6). */
+  rehighlight: (messageId: string) => void;
   /** Send a question. Uses the current selection as the tag. */
   ask: (text: string) => void;
   finishAnswer: (id: string) => void;
@@ -97,6 +109,10 @@ export function createHopStore(initialPage: Page) {
     clock: START_MINUTES,
     announce: '',
     threads: [],
+    hoverId: null,
+    selectPulse: 0,
+    revealPulse: 0,
+    activeTagId: null,
     sync: 'idle',
     toast: null,
 
@@ -106,10 +122,19 @@ export function createHopStore(initialPage: Page) {
       // With a thread open, moving page drops a "Moved to …" marker into it (brief B7.2).
       const marker = s.messages.length > 0;
       const clock = marker ? s.clock + 1 : s.clock;
+      // jumpOrigin (brief B3): set only by a jump chip; cleared by the sidebar, card links,
+      // "Go to Analytics", or anything else that lands back where the jump started.
+      let jumpOrigin = s.jumpOrigin;
+      if (source === 'sidebar' || source === 'link') jumpOrigin = null;
+      else if (source === 'jump') jumpOrigin = page === 'analytics' ? null : s.page;
+      if (jumpOrigin === page) jumpOrigin = null;
       set({
         page,
-        // Brief B3: sidebar navigation and card links clear jumpOrigin.
-        jumpOrigin: source === 'sidebar' || source === 'link' ? null : s.jumpOrigin,
+        jumpOrigin,
+        // The selected frame belongs to the page she's leaving.
+        selection: null,
+        hoverId: null,
+        activeTagId: null,
         clock,
         messages: marker
           ? [...s.messages, { id: nextId(), kind: 'marker', text: `Moved to ${PAGE_TITLES[page]}`, time: clockLabel(clock) }]
@@ -131,6 +156,7 @@ export function createHopStore(initialPage: Page) {
         clock,
         hopStatus: 'thinking',
         scanning: Boolean(tag),
+        activeTagId: null,
         messages: [
           ...s.messages,
           { id: nextId(), kind: 'user', author: 'amara', time, text, tag, page: s.page },
@@ -145,7 +171,9 @@ export function createHopStore(initialPage: Page) {
         set({
           hopStatus: 'streaming',
           scanning: false,
+          // The answer is here: the highlight and the tag clear (brief B6 step 5).
           selection: tag ? null : now.selection,
+          activeTagId: tag ? null : now.activeTagId,
           messages: now.messages.map((m) => (m.id === answerId && m.kind === 'hop' ? { ...m, status: 'streaming' } : m)),
         });
       }, (tag ? timing.scanMin : timing.think) * 1000);
@@ -162,6 +190,42 @@ export function createHopStore(initialPage: Page) {
       });
     },
 
+    setHover: (id) => {
+      if (get().hoverId !== id) set({ hoverId: id });
+    },
+
+    select: (ref) => {
+      const s = get();
+      if (s.scanning) return; // the frame being read stays put until the answer lands
+      set({ selection: ref, selectPulse: s.selectPulse + 1, activeTagId: null });
+    },
+
+    deselect: () => {
+      const s = get();
+      if (s.scanning || !s.selection) return;
+      set({ selection: null, activeTagId: null });
+    },
+
+    askAbout: (ref, text) => {
+      if (get().hopStatus !== 'idle') return;
+      get().select(ref);
+      get().ask(text);
+    },
+
+    rehighlight: (messageId) => {
+      const s = get();
+      const msg = s.messages.find((m) => m.id === messageId);
+      if (!msg || msg.kind !== 'user' || !msg.tag || s.scanning) return;
+      if (msg.tag.page !== s.page) get().navigate(msg.tag.page, 'tag');
+      const now = get();
+      set({
+        selection: msg.tag,
+        selectPulse: now.selectPulse + 1,
+        revealPulse: now.revealPulse + 1,
+        activeTagId: messageId,
+      });
+    },
+
     newChat: () => {
       const s = get();
       if (s.messages.length === 0) return;
@@ -170,6 +234,8 @@ export function createHopStore(initialPage: Page) {
         messages: [],
         hopStatus: 'idle',
         scanning: false,
+        selection: null,
+        activeTagId: null,
         threads: hasQuestion ? [{ id: nextId(), savedAt: s.clock, messages: s.messages }, ...s.threads] : s.threads,
       });
     },
