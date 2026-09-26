@@ -30,12 +30,29 @@
   --color-avatar-ife: var(--color-palette-tone-01);
   --color-avatar-dayo: var(--color-palette-tone-02);
   --color-avatar-zee: var(--color-palette-tone-03);
+
+  /* Motion for plain CSS transitions — mirrors lib/motion.ts (brief B4). Keep them in sync. */
+  --ease-hop-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-hop-in: cubic-bezier(0.4, 0, 1, 1);
+}
+
+:root {
+  --dur-fast: 120ms;
+  --dur-base: 200ms;
+  --dur-slow: 320ms;
+  --dur-data: 450ms;
 }
 
 @layer base {
   html,
   body {
     height: 100%;
+  }
+  /* Figma text uses the font's own "normal" line height (13px Geist → 17px box); Tailwind's
+   * preflight sets 1.5, which made every row taller than the frames. Explicit line heights
+   * (leading-20 …) still override this where Figma sets one. */
+  html {
+    line-height: normal;
   }
   body {
     background: var(--color-background-app);
