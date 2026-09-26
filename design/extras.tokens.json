@@ -16,6 +16,10 @@
     "toggle-thumb": {
       "value": "0px 1px 2px 0px rgba(0, 0, 0, 0.08)",
       "source": "Analytics - Last week selected > Mode toggle > Row / Last week"
+    },
+    "screenshot-card": {
+      "value": "0px 6px 20px 0px rgba(0, 0, 0, 0.08)",
+      "source": "History — asked on another page (screenshot) > Screenshot"
     }
   },
   "gradient": {

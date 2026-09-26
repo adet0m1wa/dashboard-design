@@ -212,6 +212,7 @@
   --shadow-composer: 0px 2px 8px 0px rgba(0, 0, 0, 0.05);
   --shadow-hop-eye: 0px 0px 3px 0px rgba(43, 178, 89, 0.7);
   --shadow-toggle-thumb: 0px 1px 2px 0px rgba(0, 0, 0, 0.08);
+  --shadow-screenshot-card: 0px 6px 20px 0px rgba(0, 0, 0, 0.08);
   --gradient-hop-head: linear-gradient(to bottom, #40403B, #12120F);
   --gradient-hop-head-from: #40403B;
   --gradient-hop-head-to: #12120F;

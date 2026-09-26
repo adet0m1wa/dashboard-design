@@ -70,10 +70,10 @@ npm run check      # typecheck + token check
 | 4 Hop panel | done | Cues, send (Enter / Shift+Enter), typing dots, word streaming, blocks, markers, New chat (saves thread), fade mask, aria-live. `phase4.mjs` 20/20 both modes (Sizes block + answer buttons verified in phase 5 — they only come with tagged answers) |
 | 5 Selection system | done | HopFrame hover/select/scan overlay, page-level click + Alt+click + Esc, composer tag chip + placeholder crossfade, jump chips, clear on answer, re-highlight from tags (navigates + scrolls), Urgent Draft replies / Reorder → tagged scan. `phase5.mjs` 31/31, reduced 30/30. Panel matches the three selection frames (≤4% diff, 1px offset) |
 | 6 Inventory + jump chips | done | Tiles, attention pill, stock table (hover fill, bars grow on first visit, Edit/Add/All stubs), jump → marker → chips flip → chips stay → Go to Analytics, sidebar/link clear the chips. `phase6.mjs` 19/19, reduced 18/18; matches the Inventory frame |
-| 7 History | – | |
+| 7 History | **in progress** | Branch `phase-7-history`. Done: History spec recorded (DESIGN_NOTES > History), icons (Search, Expand, Frame11, Time, Screenshot), card shadow token, Instagram screenshot image, Figma renders in docs/figma/history-*.png. Not started: data (summaries into data/history.ts), right-column swap in AppShell, BriefChain + trail, left snapshots, filters, Expand/Back, Recent-with-Hop links, New-chat threads as briefs, phase7 flow |
 | 8 Polish + QA | – | |
 
-**Next step:** phase 7 — History (brief chain + dotted trail, selection pill slide, three left-side types, filters, Expand/Back, Recent with Hop links, saved threads from New chat).
+**Next step (stopped here, usage limit):** continue phase 7 on branch `phase-7-history` from DESIGN_NOTES > History — no more Figma reads needed except, optionally, the expanded-chat frame's header. Then phase 8 (polish + QA), then the brief's final 10-flow test with screenshots in docs/screenshots/, then the final report. Run `bash scripts/test-all.sh` first to confirm phases 1–6 are still green.
 
 ## Decisions (not in the brief)
 
