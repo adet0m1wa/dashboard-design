@@ -61,7 +61,7 @@ npm run check      # typecheck + token check
 |---|---|---|
 | 0 Setup | done | Next 16 + Tailwind 4 (`@theme static`) + Motion 13 + Zustand; tokens, motion, data, icons, `/tokens` test page |
 | 1 Shell | done | Sidebar, workspace, top bar (title crossfade), empty Hop panel, 6 routes, page transitions. `scripts/flows/phase1.mjs`: 42/42 |
-| 2 Analytics (static) | – | |
+| 2 Analytics (static) | done | KPI tabs (tablist, arrows), chart (d3 curveMonotoneX), 5 card variants, Urgent, Wed + last week states. `phase2.mjs` 21/21; each state within ~2.7% pixel diff of its frame (text anti-aliasing + curve shape) |
 | 3 Analytics (interactive) | – | |
 | 4 Hop panel | – | |
 | 5 Selection system | – | |
@@ -69,7 +69,7 @@ npm run check      # typecheck + token check
 | 7 History | – | |
 | 8 Polish + QA | – | |
 
-**Next step:** phase 2 — Analytics static (KPI tabs, chart, 5 card variants, Urgent).
+**Next step:** phase 3 — Analytics interactive (chart morph + hover, day select, week toggle anims, equal-height animation, first-load entrance, Last sync, reduced motion).
 
 ## Decisions (not in the brief)
 
@@ -87,3 +87,10 @@ npm run check      # typecheck + token check
 - Prompt-cue, KPI, chart and Urgent-action answers are written for the prototype from the A7
   numbers (`data/conversation.ts`); the Sand and Adire answers are from the brief.
 - A tag sent with no text asks "Tell me more about this" (the frames' question).
+- DMs chart is red (brief A5/A7/B7.1); the Figma DMs frame still draws it green. Area uses
+  `status/danger-soft`; the active axis label and toggle legend dot follow the chart colour.
+- Axis labels are centred under their dots (they're buttons); Figma spaces them justify-between (≤3px off).
+- The week-toggle thumb always has the 0 1 2 rgba(0,0,0,.08) shadow (Figma only shows it in the last-week frame).
+- Past-day KPI labels drop "today" per the brief (the Wednesday frame still says "Revenue today").
+- "Last week · 14–20 Sep" uses an en dash as in the brief (Figma types a hyphen).
+- Last week followers show 981 as designed, though the daily series adds up to 881.

@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState, type ReactNode } from 'react';
 import { createStore, useStore, type StoreApi } from 'zustand';
+import { TODAY_INDEX } from '@/data/kpis';
 import type { Kpi, Page } from '@/data/types';
 
 // App state, shaped like brief B3. One store per AppShell (created in a provider so SSR
@@ -38,6 +39,10 @@ export interface HopState {
   history: HistoryState;
 
   navigate: (page: Page, source: NavSource) => void;
+  setKpi: (kpi: Kpi) => void;
+  setRange: (range: AnalyticsState['range']) => void;
+  /** Select a past day on the chart (0 = Mon). null or today's index = back to today. */
+  setDay: (day: number | null) => void;
   /** Sidebar "Recent with Hop": open History with that brief selected. */
   openBrief: (briefId: string | null) => void;
 }
@@ -60,6 +65,11 @@ export function createHopStore(initialPage: Page) {
         jumpOrigin: source === 'sidebar' || source === 'link' ? null : get().jumpOrigin,
       });
     },
+
+    setKpi: (kpi) => set((s) => ({ analytics: { ...s.analytics, kpi } })),
+    setRange: (range) => set((s) => ({ analytics: { ...s.analytics, range, day: null } })),
+    setDay: (day) =>
+      set((s) => ({ analytics: { ...s.analytics, range: 'thisWeek', day: day === TODAY_INDEX ? null : day } })),
 
     openBrief: (briefId) => {
       if (briefId) set((s) => ({ history: { ...s.history, selectedId: briefId, expanded: false } }));
