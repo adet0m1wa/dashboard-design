@@ -34,6 +34,7 @@ export const timing = {
   tooltipFollow: 0.08, // chart tooltip position updates
   guideDraw: 0.16, // dashed day guide
   weekLineDraw: 0.45, // full-week line draw
+  think: 0.5, // typing dots before an untagged answer streams (not in the brief — kept short)
   scanSweep: 1.1, // one scan band pass (loops)
   scanMin: 0.9, // scan always runs at least this long
   glowLoop: 1.2, // selection glow pulse loop

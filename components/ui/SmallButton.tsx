@@ -12,14 +12,16 @@ const STYLE = {
 
 export function SmallButton({
   variant = 'secondary',
+  wide = false,
   className = '',
   ...props
-}: { variant?: keyof typeof STYLE } & HTMLMotionProps<'button'>) {
+}: { variant?: keyof typeof STYLE; wide?: boolean } & HTMLMotionProps<'button'>) {
+  // `wide`: the 11px side padding Hop's answer buttons use ("Button/Add to restock").
   return (
     <motion.button
       type="button"
       whileTap={press}
-      className={`shrink-0 whitespace-nowrap rounded-8 px-10 py-6 text-12 font-500 transition-colors duration-(--dur-fast) ease-hop-out ${STYLE[variant]} ${className}`}
+      className={`shrink-0 whitespace-nowrap rounded-8 py-6 text-12 font-500 ${wide ? 'px-11' : 'px-10'} transition-colors duration-(--dur-fast) ease-hop-out ${STYLE[variant]} ${className}`}
       {...props}
     />
   );
