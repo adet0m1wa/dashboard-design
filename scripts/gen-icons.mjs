@@ -20,6 +20,8 @@ const out = [
 for (const file of readdirSync(dir).filter((f) => f.endsWith('.svg')).sort()) {
   let svg = readFileSync(join(dir, file), 'utf8').trim();
   svg = svg
+    .replace(/<defs>[\s\S]*?<\/defs>/g, '') // Figma's full-size clip rects clip nothing
+    .replace(/ clip-path="[^"]*"/g, '')
     .replace(/ (preserveAspectRatio|overflow|style|id)="[^"]*"/g, '')
     .replace(/(stroke|fill)="(?!none)[^"]*"/g, '$1="currentColor"')
     .replace(/stroke-width=/g, 'strokeWidth=')

@@ -70,3 +70,29 @@ Token names are the generated CSS names (`--color-surface-default` = Figma `colo
 - Wednesday: title "Wednesday, 23 Sep". KPI label stays "Revenue today" in Figma (brief B7.1 says drop "today" → we drop it). Card "Top revenue generators · Wed", subs "10 sold · 29% of the day". Swatches reuse sand / emerald / indigo in row order. Urgent done: msg "2 delivery addresses incomplete / Both updated by 10:30 AM → Resolved", box "Emerald dress size 12 low / Restocked before noon → Completed", users "4 priority DMs / Dayo replied by 1:15 PM → Attended".
 - Last week: labels drop "today" ("Revenue"). Title "Last week · 14-20 Sep" (brief writes 14–20). Card "Top revenue generators · last week", subs "31 sold · 18% of the week"; swatches sand / terracotta (#E0772E→#B45309) / indigo. Footer $8,800 in Figma → $9,200 per B11. Urgent done: msg "Weekend return requests / All 7 requests closed → Resolved", box "Mocha robe stock check / Supplier confirmed 60 units → Completed", users "Post-sale customer follow-up / 18 customers contacted → Attended".
 - Followers: Figma/brief show 981 for last week; the series sums to 881. Displayed 981 as designed; flagged.
+
+## Hop panel — conversation (frame "Inventory — nothing selected, jump chips stay" > Hop — Agent panel)
+
+- Header avatar here is the **Agent character** ("Hop · character (Rive slot)", 30px = the 40px
+  component scaled): antenna `palette-tone-25`, antenna light `status-live`, head gradient hop-head,
+  screen `palette-tone-11` + 1px `palette-tone-12`, eyes `palette-tone-13` with a green glow (blur 4,
+  #2BB35A 70%). The "Analytics" frame draws a simplified head without the antenna; we use the component.
+- This frame's header says "Hop · Synced 2:00 PM" with no New chat button → B11 #3: use the Analytics header.
+- Conversation: px 16, py 14, gap 16. Messages column gap 16.
+- User message: column, items-end, gap 6.
+  - Meta row gap 6: "Amara · 2:31 PM" 11/500 muted + 16px avatar.
+  - Tag chip ("Selected frame chip"): bg `palette-tone-20`, 1px `palette-tone-21`, radius 6, px 8 py 3, gap 6:
+    frame icon 12px (`status-info` strokes) + name 11.5/500 `text-tone-04`.
+  - Bubble: bg `background-app`, px 14 py 10, radius 12 12 4 12 (bottom-right 4), 13/400 lh 19 primary.
+- Hop message: column, gap 8, full width.
+  - Meta: "Hop · 2:31 PM · read Inventory, Sales" 11/500 muted.
+  - Paragraphs 13/400 lh 19 primary.
+  - Sizes left: 1px border-tint, radius 10, p 12, gap 8. Title "Sizes left" 11.5/500 secondary.
+    Row gap 6, five equal cells, py 6, radius 8, gap 1, centred: "Size 8" 10.5/400 + count 15/600.
+    Normal cell `surface-subtle` (secondary / primary text); zero cell `status-danger-soft`, both texts `status-danger-text`.
+  - Action buttons row gap 8: px 11, py 6, radius 8, 12/500. Primary dark / secondary white + 1px border-tint.
+- Marker: row gap 8: 1px `surface-divider-tint` line · "Moved to Inventory · 2:32 PM" 11/500 muted · line.
+- Fade mask over the bottom of the messages (Figma: transparent → white from 78% of the box); brief: CSS mask-image, bottom 48px.
+- Jump chips ("Page cues"): column gap 8. Label "Jump to" 11/500 muted. Chips row gap 6: px 12, py 7,
+  radius 999, 12.5/500. Inactive: bg `palette-tone-19`, text `text-tone-03`. Active: bg `action-primary`,
+  text on-dark + 12px arrow-right (white).

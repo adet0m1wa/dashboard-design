@@ -66,13 +66,13 @@ npm run check      # typecheck + token check
 | 1 Shell | done | Sidebar, workspace, top bar (title crossfade), empty Hop panel, 6 routes, page transitions. `scripts/flows/phase1.mjs`: 42/42 |
 | 2 Analytics (static) | done | KPI tabs (tablist, arrows), chart (d3 curveMonotoneX), 5 card variants, Urgent, Wed + last week states. `phase2.mjs` 21/21; each state within ~2.7% pixel diff of its frame (text anti-aliasing + curve shape) |
 | 3 Analytics (interactive) | done | KPI morph (values + max tween), DMs tint, card/Urgent swaps, hover + tooltip, day select + Esc, week redraw, equal heights, first-load entrance, Last sync, Remind Ife toast. `phase3.mjs` 32/32, `--reduced` 30/30 |
-| 4 Hop panel | – | |
+| 4 Hop panel | done | Cues, send (Enter / Shift+Enter), typing dots, word streaming, blocks, markers, New chat (saves thread), fade mask, aria-live. `phase4.mjs` 20/20 both modes (Sizes block + answer buttons verified in phase 5 — they only come with tagged answers) |
 | 5 Selection system | – | |
 | 6 Inventory + jump chips | – | |
 | 7 History | – | |
 | 8 Polish + QA | – | |
 
-**Next step:** phase 4 — Hop panel (cues, send, typing dots, streamed answers, blocks, New chat, fade mask).
+**Next step:** phase 5 — selection system (HopFrame hover/select, tag chip, scan, clear on answer, re-highlight from tags, Alt+click, Urgent Draft replies / Reorder).
 
 ## Decisions (not in the brief)
 
@@ -81,8 +81,9 @@ npm run check      # typecheck + token check
 - Tagging interactive elements (KPI tabs, buttons): **Alt/Option + click** (brief B6 open question).
 - Workspace has no 1px border: the Figma frame has none (brief A6 says there is one).
 - No sidebar search box: not in the Figma frame (brief A6 mentions one).
-- Hop avatar follows the "fresh" header drawing (no antenna), so "scanning" pulses the eye glow
-  instead of an antenna light.
+- Hop avatar = the Figma component "Agent character" (antenna + green light), as used in the
+  Inventory frame's panel ("Hop · character (Rive slot)"). The Analytics frames draw a simpler head
+  without the antenna; the component is what the brief names, and "scanning" pulses its antenna light.
 - Monday/Tuesday breakdowns and done items are written for the prototype (`data/earlierDays.ts`);
   their KPIs come from the chart series.
 - Past periods (a selected day, last week) only have a revenue breakdown, so the card beside
@@ -105,3 +106,11 @@ npm run check      # typecheck + token check
   state changes their height, so it never visibly runs.
 - The first-load entrance plays the first time Analytics shows in a session (not on later visits).
 - Settings and the store switcher / panel icon are shown as designed but aren't interactive.
+- Prompt cues come back after an answer and on deselect (brief B6); the "answered, highlight off"
+  frame shows no cues.
+- Before an untagged answer streams, typing dots show for 0.5s (`timing.think`); tagged ones scan ≥ 900ms.
+- The send button keeps Figma's dark look even when empty; it's aria-disabled and does nothing then.
+- Hop's answer text still streams with reduced motion on (it's pacing, not movement); blocks and
+  buttons appear without fading.
+- Clock: 2:30 PM, and each question / page marker moves it on a minute (reproduces 2:31, 2:32, 2:33).
+- Answer action buttons (Add to restock, Send all 3 …) show a toast; Hop drafts, people approve.
