@@ -48,6 +48,7 @@ npm run check      # typecheck + token check
 
 - The in-app browser pane throttles `requestAnimationFrame` while it's hidden (1 frame per ~500ms),
   so animations crawl there. Use it for clicking and console checks only.
+- `bash scripts/test-all.sh [out-dir]` runs every phase flow in both motion modes (dev server must be up).
 - Timing, layout and screenshots: `node scripts/flow.mjs scripts/flows/<flow>.mjs [--reduced]`
   drives headless Chrome (local install, puppeteer-core) and prints PASS/FAIL per check plus console
   errors. `scripts/shot.mjs` takes one screenshot; `scripts/compare.mjs figma.png app.png out.png
@@ -67,12 +68,12 @@ npm run check      # typecheck + token check
 | 2 Analytics (static) | done | KPI tabs (tablist, arrows), chart (d3 curveMonotoneX), 5 card variants, Urgent, Wed + last week states. `phase2.mjs` 21/21; each state within ~2.7% pixel diff of its frame (text anti-aliasing + curve shape) |
 | 3 Analytics (interactive) | done | KPI morph (values + max tween), DMs tint, card/Urgent swaps, hover + tooltip, day select + Esc, week redraw, equal heights, first-load entrance, Last sync, Remind Ife toast. `phase3.mjs` 32/32, `--reduced` 30/30 |
 | 4 Hop panel | done | Cues, send (Enter / Shift+Enter), typing dots, word streaming, blocks, markers, New chat (saves thread), fade mask, aria-live. `phase4.mjs` 20/20 both modes (Sizes block + answer buttons verified in phase 5 — they only come with tagged answers) |
-| 5 Selection system | – | |
+| 5 Selection system | done | HopFrame hover/select/scan overlay, page-level click + Alt+click + Esc, composer tag chip + placeholder crossfade, jump chips, clear on answer, re-highlight from tags (navigates + scrolls), Urgent Draft replies / Reorder → tagged scan. `phase5.mjs` 31/31, reduced 30/30. Panel matches the three selection frames (≤4% diff, 1px offset) |
 | 6 Inventory + jump chips | – | |
 | 7 History | – | |
 | 8 Polish + QA | – | |
 
-**Next step:** phase 5 — selection system (HopFrame hover/select, tag chip, scan, clear on answer, re-highlight from tags, Alt+click, Urgent Draft replies / Reorder).
+**Next step:** phase 6 — Inventory page (summary tiles, stock table, bars, Edit/Add/All stubs) + jump-chip flow + page markers; match "Inventory — nothing selected, jump chips stay".
 
 ## Decisions (not in the brief)
 
@@ -114,3 +115,9 @@ npm run check      # typecheck + token check
   buttons appear without fading.
 - Clock: 2:30 PM, and each question / page marker moves it on a minute (reproduces 2:31, 2:32, 2:33).
 - Answer action buttons (Add to restock, Send all 3 …) show a toast; Hop drafts, people approve.
+- Hover outline only shows where a click would select: not over a button/tab/link unless Alt is held.
+- Changing page clears the selection (the frame belongs to the page she left); the jump chips stay.
+- While a frame is scanning, clicks can't change the selection (it clears when the answer lands).
+- Outline radius: rows 8 (Figma), KPI tabs and chart 10, whole cards 14 (= element radius + 2).
+- Jump chips always read "Go to <page>" + "Go to Analytics"; the older selection frames say "Go to Chat".
+- In reduced motion, the scan shows a small blue "Hop is reading…" label on the outline's top edge.

@@ -6,6 +6,7 @@ import type { Page } from '@/data/types';
 import { duration, easeIn, easeOut, timing } from '@/lib/motion';
 import { useHop } from '@/lib/store';
 import { AnalyticsPage } from '@/components/pages/AnalyticsPage';
+import { useSelection } from '@/components/select/useSelection';
 import { PlaceholderPage } from '@/components/pages/PlaceholderPage';
 
 // Only the page area changes between pages; the sidebar and Hop panel stay put (brief B7.6).
@@ -18,6 +19,8 @@ export function PageArea() {
   // <AnimatePresence initial={false}>, which would also switch off every initial animation
   // nested inside the page (the Analytics first-load entrance).
   const first = useRef(true);
+  const area = useRef<HTMLDivElement>(null);
+  useSelection(area);
   useEffect(() => {
     first.current = false;
   }, []);
@@ -35,7 +38,7 @@ export function PageArea() {
       };
 
   return (
-    <div className="relative min-h-0 flex-1">
+    <div ref={area} className="relative min-h-0 flex-1">
       <AnimatePresence mode="wait">
         <motion.div
           key={page}

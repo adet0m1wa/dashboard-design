@@ -1,8 +1,8 @@
 'use client';
 
 import { motion } from 'motion/react';
-import { duration, press } from '@/lib/motion';
-import { FrameIcon } from '@/components/icons/figma';
+import { press } from '@/lib/motion';
+import { FrameIcon, XIcon } from '@/components/icons/figma';
 
 // The blue chip that names a tagged frame (Figma "Selected frame chip"): bg tone-20, 1px tone-21,
 // radius 6, px 8 py 3, frame icon + name 11.5/500 text-tone-04.
@@ -25,7 +25,7 @@ export function TagChip({
     </>
   );
   const look = `flex max-w-full items-center gap-6 rounded-6 border px-8 py-3 text-11-5 font-500 transition-[background-color,color,border-color,box-shadow] duration-(--dur-fast) ease-hop-out ${
-    active ? 'border-selection bg-selection text-text-on-dark ring-3 ring-selection/20' : 'border-tag-border bg-tag-bg text-tag-text'
+    active ? 'border-selection bg-selection text-text-on-dark ring-3 ring-selection/25' : 'border-tag-border bg-tag-bg text-tag-text'
   }`;
 
   if (onClick) {
@@ -43,12 +43,9 @@ export function TagChip({
           type="button"
           onClick={onRemove}
           aria-label={`Remove ${label}`}
-          className="-mr-2 ml-2 flex size-[14px] items-center justify-center rounded-4 text-tag-text transition-colors hover:bg-tag-border"
-          style={{ transitionDuration: `${duration.fast}s` }}
+          className="-my-2 -mr-2 flex shrink-0 items-center rounded-4 text-selection transition-colors duration-(--dur-fast) ease-hop-out hover:bg-tag-border"
         >
-          <svg width="8" height="8" viewBox="0 0 8 8" aria-hidden="true">
-            <path d="M1 1l6 6M7 1L1 7" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
-          </svg>
+          <XIcon />
         </button>
       )}
     </span>

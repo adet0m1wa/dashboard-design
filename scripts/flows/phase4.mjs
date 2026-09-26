@@ -23,7 +23,7 @@ export default async function (t) {
   await t.check('answer text is the scripted one', full.startsWith('A good day so far. $2,480 from 34 orders'));
   await t.check('meta shows "Hop · 2:31 PM · read Sales, Instagram, Customers"', async () => (await t.eval(panelText)).includes('Hop · 2:31 PM · read Sales, Instagram, Customers'));
   await t.check('cues return after the answer', () => t.eval(cuesVisible));
-  await t.check('answer announced politely', () => t.eval(() => document.querySelector('aside[aria-label=Hop] [aria-live=polite]')?.textContent.startsWith('A good day so far')));
+  await t.check('answer announced politely', () => t.eval(() => document.querySelector('aside[aria-label=Hop] .sr-only[aria-live=polite]')?.textContent.startsWith('A good day so far')));
   await t.check('fade mask on the conversation above the cues', () => t.eval(() => getComputedStyle(document.querySelector('[role=log]')).maskImage.includes('gradient')));
   await t.shot('phase4-answered');
 
