@@ -42,14 +42,25 @@ npm run check      # typecheck + token check
 - Next.js 16 App Router. `app/[page]/layout.tsx` renders one persistent `AppShell` for all six
   pages; moving between pages is `history.pushState` + store state, so the sidebar and Hop panel
   never remount and page transitions are ours (brief B7.6). `/tokens` is the phase-0 token test page.
-- State: one Zustand store (`lib/store.ts`) created per shell, shaped like brief B3.
+- State: one Zustand store (`lib/store.tsx`) created per shell, shaped like brief B3.
+
+## Testing
+
+- The in-app browser pane throttles `requestAnimationFrame` while it's hidden (1 frame per ~500ms),
+  so animations crawl there. Use it for clicking and console checks only.
+- Timing, layout and screenshots: `node scripts/flow.mjs scripts/flows/<flow>.mjs [--reduced]`
+  drives headless Chrome (local install, puppeteer-core) and prints PASS/FAIL per check plus console
+  errors. `scripts/shot.mjs` takes one screenshot; `scripts/compare.mjs figma.png app.png out.png
+  [--region=x,y,w,h] [--zoom=2]` makes a Figma | app | diff strip. Figma renders live in `docs/figma/`.
+- Figma text uses the font's "normal" line height; `html { line-height: normal }` in globals.css
+  matches it (Tailwind's 1.5 made every row 2.5px taller).
 
 ## Progress
 
 | Phase | Status | Notes |
 |---|---|---|
 | 0 Setup | done | Next 16 + Tailwind 4 (`@theme static`) + Motion 13 + Zustand; tokens, motion, data, icons, `/tokens` test page |
-| 1 Shell | – | |
+| 1 Shell | done | Sidebar, workspace, top bar (title crossfade), empty Hop panel, 6 routes, page transitions. `scripts/flows/phase1.mjs`: 42/42 |
 | 2 Analytics (static) | – | |
 | 3 Analytics (interactive) | – | |
 | 4 Hop panel | – | |
@@ -58,7 +69,7 @@ npm run check      # typecheck + token check
 | 7 History | – | |
 | 8 Polish + QA | – | |
 
-**Next step:** phase 1 — shell (sidebar, workspace, top bar, empty Hop panel, routing for all 6 pages).
+**Next step:** phase 2 — Analytics static (KPI tabs, chart, 5 card variants, Urgent).
 
 ## Decisions (not in the brief)
 
