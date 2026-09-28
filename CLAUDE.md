@@ -20,9 +20,12 @@ npm run check      # typecheck + token check
 ## Working rules
 
 - **Figma decides how things look; the brief decides how things behave.** Known mismatches: brief B11.
-- Figma: file `10tguKfuD7CG5DsbNi2gDS`, Page 4 → section **"fresh"**. Refer to frames by name.
-  There are **two** sections named "fresh" with identical frame names; use the **left** one
-  (x≈2135, the one with the "dashboard variables" bound). The right one is an unbound duplicate.
+- Figma: file `10tguKfuD7CG5DsbNi2gDS`, Page 4 (canvas `1775:2502`) → section **"fresh"**
+  (`1816:4657`). Refer to frames by name; DESIGN_NOTES also records node IDs. Since 2026-09-28
+  there is only one "fresh" section (the unbound duplicate is gone). `get_metadata` without a node
+  only lists the page that's open in Figma, so ask for `1775:2502` directly.
+- User feedback overrides the brief where they disagree (feedback round 1, 2026-09-28: collapsible
+  sidebars, highlight mode, markers only on tagged questions, composer focus border, chart).
 - Tokens only. `design/Default.tokens.json` (never edit) + `design/extras.tokens.json` (Figma styles
   that aren't variables) → `npm run tokens` → `styles/tokens.css` (a Tailwind `@theme`). Tailwind's
   default palette, radii and type scale are cleared, so only tokens exist as utilities:
@@ -70,16 +73,42 @@ npm run check      # typecheck + token check
 | 4 Hop panel | done | Cues, send (Enter / Shift+Enter), typing dots, word streaming, blocks, markers, New chat (saves thread), fade mask, aria-live. `phase4.mjs` 20/20 both modes (Sizes block + answer buttons verified in phase 5 — they only come with tagged answers) |
 | 5 Selection system | done | HopFrame hover/select/scan overlay, page-level click + Alt+click + Esc, composer tag chip + placeholder crossfade, jump chips, clear on answer, re-highlight from tags (navigates + scrolls), Urgent Draft replies / Reorder → tagged scan. `phase5.mjs` 31/31, reduced 30/30. Panel matches the three selection frames (≤4% diff, 1px offset) |
 | 6 Inventory + jump chips | done | Tiles, attention pill, stock table (hover fill, bars grow on first visit, Edit/Add/All stubs), jump → marker → chips flip → chips stay → Go to Analytics, sidebar/link clear the chips. `phase6.mjs` 19/19, reduced 18/18; matches the Inventory frame |
-| 7 History | – | |
+| 7 History | **in progress** | Branch `phase-7-history`. Done: History spec recorded (DESIGN_NOTES > History), icons (Search, Expand, Frame11, Time, Screenshot), card shadow token, Instagram screenshot image, Figma renders in docs/figma/history-*.png. Not started: data (summaries into data/history.ts), right-column swap in AppShell, BriefChain + trail, left snapshots, filters, Expand/Back, Recent-with-Hop links, New-chat threads as briefs, phase7 flow |
 | 8 Polish + QA | – | |
 
-**Next step:** phase 7 — History (brief chain + dotted trail, selection pill slide, three left-side types, filters, Expand/Back, Recent with Hop links, saved threads from New chat).
+**Next step (stopped here, usage limit):** continue phase 7 on branch `phase-7-history` from DESIGN_NOTES > History — no more Figma reads needed except, optionally, the expanded-chat frame's header. Then phase 8 (polish + QA), then the brief's final 10-flow test with screenshots in docs/screenshots/, then the final report. Run `bash scripts/test-all.sh` first to confirm phases 1–6 are still green.
 
 ## Decisions (not in the brief)
 
 - Stack: Next.js (the brief's default), not Vite. `agentRules: false` stops `next dev` appending to this file.
 - Tokens are emitted with `@theme static`: plain `@theme` drops variables no utility uses, which broke inline `var(--…)` swatches.
-- Tagging interactive elements (KPI tabs, buttons): **Alt/Option + click** (brief B6 open question).
+- ~~Tagging interactive elements: Alt/Option + click~~ — replaced by **highlight mode** (feedback 1):
+  frames can only be hovered/picked while the BoundingBox button in Hop's header is on, and then a
+  click on any frame (buttons and tabs too) picks it instead of running its action.
+- Highlight mode ends when a tagged question is sent, when Hop's panel is closed, or on Esc with
+  nothing selected (the first Esc drops the selection). Its "on" look isn't in Figma: blue icon on
+  the tag background.
+- Highlight geometry (`lib/outline.ts`): the outline sits on existing strokes — a card's own border;
+  for a row across a bordered box, the box's side strokes and the nearest divider/edge above and
+  below (else 4px out, as in "example 3"); otherwise the frame's own edges. Hover = 1px blue, no
+  handles; selected = 1.5px + handles popping in.
+- Outside highlight mode a click on plain page space still puts away a highlight that's up
+  (from a tag in the chat or an Urgent action).
+- Picking a frame, or an Urgent action, opens a closed Hop panel (the tag and answer land there).
+- "Moved to …" markers go in only right before a tagged question asked on a page other than the
+  thread's page (its last marker, else its first question); none on navigation. The marker takes a
+  clock minute, so the brief's 2:31 / 2:32 / 2:33 PM sequence still holds.
+- Sidebar and panel collapse: CSS width transition (slow, ease-out) using the layout tokens
+  (`sidebar-rail` 56, `panel-rail` 63); the sidebar's two layouts crossfade, the panel's contents
+  fade and become `inert`. Keyboard toggling keeps focus on the toggle. Rail badges use gap 2 under
+  both icons (Figma: 2 under Inventory, 4 under Customers).
+- Chart: tweens each day's height (value ÷ chart max) instead of the brief's "values and max
+  together" — tweening raw values and max made the line sit still and snap at the end when scales
+  differ (revenue → orders). The plot fills its box (720 at the default layout, as Figma) and
+  re-lays itself out while the sidebars slide; the hover guide glides with the tooltip.
+- Composer focus: its own border turns blue (no outer ring).
+- "example 1" shows last week's "Everything else" as $8,800; the app keeps $9,200 (= $15,810 − the
+  three rows, and what the "Last week selected" frame shows).
 - Workspace has no 1px border: the Figma frame has none (brief A6 says there is one).
 - No sidebar search box: not in the Figma frame (brief A6 mentions one).
 - Hop avatar = the Figma component "Agent character" (antenna + green light), as used in the

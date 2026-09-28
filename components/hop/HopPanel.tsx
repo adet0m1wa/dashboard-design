@@ -6,13 +6,16 @@ import { PROMPT_CUES } from '@/data/conversation';
 import { PAGE_TITLES } from '@/data/nav';
 import { duration, easeIn, easeOut, press, timing } from '@/lib/motion';
 import { useHop, type Message } from '@/lib/store';
-import { ArrowRIcon, NewChatIcon } from '@/components/icons/figma';
+import { ArrowRIcon, BoundingBoxIcon, ChatCenteredIcon } from '@/components/icons/figma';
 import { HopAvatar, type HopAvatarState } from './HopAvatar';
 import { Composer } from './Composer';
 import { HopMessage, Marker, UserMessage } from './Message';
 
-// The Hop panel, on every page (brief B7.2). Header (avatar + "Hop" + New chat — the Analytics
-// header everywhere, B11 #3), the conversation, prompt cues / jump chips, and the composer.
+// The Hop panel, on every page (brief B7.2). Header (avatar + "Hop" + New chat + Highlight —
+// Figma "example 1"), the conversation, prompt cues / jump chips, and the composer.
+// The mascot opens and closes the panel ("example 2": a 63px strip with only the mascot). The
+// width slides (slow) and everything but the mascot fades; the conversation stays mounted, so an
+// answer that is streaming keeps going while the panel is shut.
 export function HopPanel() {
   const page = useHop((s) => s.page);
   const selection = useHop((s) => s.selection);
@@ -22,6 +25,11 @@ export function HopPanel() {
   const announce = useHop((s) => s.announce);
   const newChat = useHop((s) => s.newChat);
   const ask = useHop((s) => s.ask);
+  const collapsed = useHop((s) => s.panelCollapsed);
+  const togglePanel = useHop((s) => s.togglePanel);
+  const highlightMode = useHop((s) => s.highlightMode);
+  const setHighlightMode = useHop((s) => s.setHighlightMode);
+  const hidden = `transition-opacity duration-(--dur-base) ease-hop-out motion-reduce:transition-none ${collapsed ? 'opacity-0' : 'opacity-100'}`;
 
   const avatar: HopAvatarState = scanning ? 'scanning' : hopStatus === 'thinking' ? 'thinking' : 'idle';
   // Jump chips (brief B3): Analytics with a selection that has a jump target, or any page
@@ -32,46 +40,80 @@ export function HopPanel() {
   const bottom = showChips ? 'chips' : showCues ? 'cues' : null;
 
   return (
-    <aside className="flex w-panel shrink-0 flex-col border-l border-surface-divider-tint bg-surface-default" aria-label="Hop">
-      <header className="flex h-bar shrink-0 items-center justify-between border-b border-surface-faint px-16">
-        <div className="flex items-center gap-10">
-          <HopAvatar state={avatar} />
-          <span className="text-14 font-600 text-text-primary">Hop</span>
-        </div>
-        <motion.button type="button" whileTap={press} onClick={newChat} aria-label="New chat" className="rounded-4 text-text-black">
-          <NewChatIcon />
-        </motion.button>
-      </header>
-
-      <div className="flex min-h-0 flex-1 flex-col gap-16 px-16 py-14">
-        <MessageList masked={bottom !== null} />
-        <AnimatePresence initial={false} mode="wait">
-          {bottom === 'chips' && <JumpChips key="chips" />}
-          {bottom === 'cues' && (
-            <motion.div
-              key="cues"
-              className="flex shrink-0 flex-wrap gap-6"
-              initial={{ opacity: 0, y: 6 }}
-              animate={{ opacity: 1, y: 0, transition: { duration: duration.base, ease: easeOut } }}
-              exit={{ opacity: 0, y: -4, transition: { duration: duration.fast, ease: easeIn } }}
+    <aside
+      className={`shrink-0 overflow-hidden border-l border-surface-divider-tint bg-surface-default transition-[width] duration-(--dur-slow) ease-hop-out motion-reduce:transition-none ${
+        collapsed ? 'w-panel-rail' : 'w-panel'
+      }`}
+      aria-label="Hop"
+    >
+      {/* Fixed width inside, so closing clips the panel instead of squashing it. */}
+      <div className="flex h-full w-panel flex-col">
+        <header className="flex h-bar shrink-0 items-center justify-between border-b border-surface-faint px-16">
+          <div className="flex items-center gap-10">
+            <motion.button
+              type="button"
+              whileTap={press}
+              onClick={togglePanel}
+              aria-label={collapsed ? 'Open Hop' : 'Close Hop'}
+              aria-expanded={!collapsed}
+              className="rounded-8"
             >
-              {PROMPT_CUES.map((cue) => (
-                <motion.button
-                  key={cue}
-                  type="button"
-                  whileTap={press}
-                  onClick={() => ask(cue)}
-                  className="rounded-999 border border-surface-border-tint px-11 py-6 text-12-5 text-text-strong-secondary transition-colors duration-(--dur-fast) ease-hop-out hover:bg-surface-subtle"
-                >
-                  {cue}
-                </motion.button>
-              ))}
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
+              <HopAvatar state={avatar} />
+            </motion.button>
+            <span className={`text-14 font-600 text-text-primary ${hidden}`}>Hop</span>
+          </div>
+          <div className={`flex items-center gap-14 ${hidden}`} inert={collapsed}>
+            <motion.button type="button" whileTap={press} onClick={newChat} aria-label="New chat" className="rounded-4 text-text-black">
+              <ChatCenteredIcon />
+            </motion.button>
+            {/* Highlight mode: only while it's on can frames on the page be hovered and picked. */}
+            <motion.button
+              type="button"
+              whileTap={press}
+              onClick={() => setHighlightMode(!highlightMode)}
+              aria-label="Highlight a frame"
+              aria-pressed={highlightMode}
+              className={`-m-4 rounded-6 p-4 transition-colors duration-(--dur-fast) ease-hop-out ${
+                highlightMode ? 'bg-tag-bg text-selection' : 'text-text-black hover:bg-surface-subtle'
+              }`}
+            >
+              <BoundingBoxIcon />
+            </motion.button>
+          </div>
+        </header>
 
-      <Composer />
+        <div className={`flex min-h-0 flex-1 flex-col ${hidden}`} inert={collapsed}>
+          <div className="flex min-h-0 flex-1 flex-col gap-16 px-16 py-14">
+            <MessageList masked={bottom !== null} />
+            <AnimatePresence initial={false} mode="wait">
+              {bottom === 'chips' && <JumpChips key="chips" />}
+              {bottom === 'cues' && (
+                <motion.div
+                  key="cues"
+                  className="flex shrink-0 flex-wrap gap-6"
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0, transition: { duration: duration.base, ease: easeOut } }}
+                  exit={{ opacity: 0, y: -4, transition: { duration: duration.fast, ease: easeIn } }}
+                >
+                  {PROMPT_CUES.map((cue) => (
+                    <motion.button
+                      key={cue}
+                      type="button"
+                      whileTap={press}
+                      onClick={() => ask(cue)}
+                      className="rounded-999 border border-surface-border-tint px-11 py-6 text-12-5 text-text-strong-secondary transition-colors duration-(--dur-fast) ease-hop-out hover:bg-surface-subtle"
+                    >
+                      {cue}
+                    </motion.button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          <Composer />
+        </div>
+      </div>
       <div className="sr-only" aria-live="polite">
         {announce}
       </div>

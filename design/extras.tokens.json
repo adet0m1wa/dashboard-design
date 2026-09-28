@@ -16,6 +16,10 @@
     "toggle-thumb": {
       "value": "0px 1px 2px 0px rgba(0, 0, 0, 0.08)",
       "source": "Analytics - Last week selected > Mode toggle > Row / Last week"
+    },
+    "screenshot-card": {
+      "value": "0px 6px 20px 0px rgba(0, 0, 0, 0.08)",
+      "source": "History — asked on another page (screenshot) > Screenshot"
     }
   },
   "gradient": {
@@ -92,6 +96,14 @@
     "bar": {
       "value": 56,
       "source": "brief A6 / Top bar + Agent header"
+    },
+    "sidebar-rail": {
+      "value": 56,
+      "source": "example 1 (1909:462) > Sidebar, collapsed"
+    },
+    "panel-rail": {
+      "value": 63,
+      "source": "example 2 (1913:334) > Hop - Agent panel, collapsed (62 + 1px border)"
     }
   },
   "color": {

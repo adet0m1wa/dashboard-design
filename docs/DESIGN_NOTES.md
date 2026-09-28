@@ -108,3 +108,71 @@ Token names are the generated CSS names (`--color-surface-default` = Figma `colo
   shadow 0 0 0 3px blue at 25%.
 - Jump chips: "Jump to" + [Go to Inventory →] active first, then [Go to Analytics] inactive
   (this older frame still says "Go to Chat" — brief says Analytics).
+
+## History (frames "History — …"; read 2026-09-26, not built yet)
+
+- Layout: NO Hop panel on History. Top bar spans the whole workspace (1192). Below it: left
+  "Content" 832 + right "Brief chain" 360 (border-l divider-tint). "Chat expanded" swaps the chain
+  for that brief's chat with "← Back". Plan: one right column that crossfades Hop panel ↔ chain;
+  keep HopPanel mounted but hidden on History so streaming/typing survive.
+- Chain: person filter row pt14 pb10 px16 wrap gap6 — "Everyone" active: bg action-primary px11 py4
+  radius 999 12/500 on-dark; person chips: 1px border-tint, pl4 pr10 py3, radius 999, gap 6, avatar 18
+  (radius 9, initial 9/600) + name 12/500 strong-secondary. Figma shows Everyone/Amara/Ife/Dayo; brief
+  adds Zee (row wraps). Search row px16 pb12 gap8 border-b divider-tint: search box flex-1 white,
+  1px border-tint, radius 8, px10 py7, gap8, search icon 13 + "Search briefs" 12.5 muted; "All pages"
+  button same box, 12.5/500 strong-secondary + Chev13.
+- Day header: pt14 pb4 px16, "Today"/"Yesterday" 11/500 muted.
+- Brief item: px16 gap12. Trail column w18 self-stretch: above segment h14, avatar 18, below segment
+  flex-1; segments = 1.5px dashed left border `palette-tone-27`; hide above on a day's first item,
+  below on its last. Content col flex-1 gap5 py14: meta row gap8 ("Amara · 2:40 PM" 11.5/500 muted
+  flex-1 + page pill bg surface-subtle px7 py1 radius 6 11/500 secondary); question 13.5/600 primary
+  truncate; tag chip bg tone-20 1px tone-21 px7 py2 radius 6 gap5 (FrameIcon 11 + 11/500 tone-04);
+  summary 12.5/400 lh18 secondary, 2-line clamp. Selected: row bg `palette-tone-28` (no dark bar in
+  Figma) + "Expand" pill bg action-primary px10 py4 radius 999 gap5 (Expand icon 11 + 11.5/500 on-dark).
+  Hop's own brief uses the Agent character at 18px.
+- Page pill labels: Customers, Inventory, Chat (Analytics briefs), Instagram.
+- Summaries (copy exactly): 2:40 "Chioma is waiting on order #1042. It shipped this morning, and Hop
+  drafted an apology with the tracking number." · 2:33 "The Adire shirt dress sold out on Monday and
+  isn’t on the restock order. 14 people have asked about it." · 2:14 "$2,480 so far, 12% ahead of last
+  Thursday. 3 late replies, and the Sand set is running low." · Zee 1:40 "3.1× usual reach: a strong
+  opening, the 7:30 PM slot and 62 price questions in the comments." · Ife 8:40 "42 pieces for $1,470.
+  Amara changed the Sand set to 25 at 2:20 PM." · Hop 8:00 "Yesterday closed at $3,120, your best
+  Wednesday this month. 3 things need attention today." · Yesterday Dayo 5:10 "4 drafts written. Dayo
+  sent 3 and edited 1."
+- Left side: px28, note bar at y24 (776×32): bg surface-subtle, px12 py8, radius 8, gap 8, icon 14
+  (TimeIcon for Analytics, ScreenshotIcon otherwise) + 12.5/500 strong-secondary text:
+  "Analytics as it was at 2:14 PM, Thu 24 Sep — when Amara asked" /
+  "Screenshot of Instagram — taken at 1:40 PM, Thu 24 Sep, when Zee asked" /
+  "Screenshot of Inventory — taken at 2:33 PM when Amara tagged “Adire shirt dress”".
+  Analytics kind: the Analytics page itself below the note (read-only). Screenshot kind: card at y70,
+  776×732, white, radius 12, overflow clip, shadow token `screenshot-card`; page drawn at 0.83 scale
+  (top bar 46 = 56×0.83). Tagged kind: same card + selection outline around the Adire row.
+  Instagram card image: public/history/instagram-1-40pm.png (765×732, 1× — the export tool won't upscale).
+
+## Collapsed sidebars + new highlight (frames "example 1" 1909:462, "example 2" 1913:334, "example 3" 1917:786; read 2026-09-28)
+
+The "fresh" section is now a single section (id 1816:4657, x 1694); the old duplicate is gone.
+
+- **Sidebar, collapsed** ("example 1" > Sidebar, 56 wide): px 4, py 6, gap 2, items centred.
+  - Store switcher → only `icon/panel` 16, px 8 py 6 (the expand toggle). No store logo/name.
+  - Nav stack pt 16 gap 2; each item icon-only, px 10 py 7, radius 8. Active item = the same pill
+    (white, 0.5px `surface/border-tint`, `shadow-nav-active`). Inventory/Customers stack the badge
+    under the icon (flex-col, gap 2 / 4), badge px 7 py 1 radius 10, 11/600 (warning / danger soft).
+  - Recent with Hop: pt 16 gap 2; header = `icon/history` 13px only (px 10 pb 6); items px 10 py 6,
+    radius 6, 16px avatar only.
+  - Spacer; Settings icon only (py 7); Current user px 10 py 8, 28px avatar only.
+  - Workspace then starts at x 72 (8 + 56 + 8) and is 1360 wide.
+- **Sidebar, expanded** ("example 3" > Store switcher): unchanged, `icon/panel` on the right is the
+  collapse toggle.
+- **Hop header** ("example 1" > Agent header): px 16, border-b `surface/faint`; right side is two
+  18px icons, gap 14: `ChatCentered` (new chat) then `BoundingBox` (highlight mode). Icons
+  `design/icons/chat-centered.svg`, `bounding-box.svg`. Highlight-on state isn't drawn.
+- **Hop panel, collapsed** ("example 2" > Hop - Agent panel): 63 wide (62 + 1px left border
+  `surface/divider-tint`), header 56 with border-b `surface/faint`, only the 30px mascot at px 16.
+  Nothing else visible. Main grows to fill (1297 in the frame).
+- **Highlight** ("example 3" > Selection outline 1917:1023): 1.5px `status/info`, **square corners**.
+  On a card row it spans the card's full width — its left/right edges sit exactly on the card's own
+  1px border (card x 28…406 = outline x 28…406) — and 4px above/below the row (row 36 tall → 44).
+  Handles: 7×7 white, 1.2px `status/info`, at −4.5px on each corner.
+- Chart in "example 2" stretches with the wider page: same 150 height, days spread evenly across
+  the full width (x axis labels justify-between).

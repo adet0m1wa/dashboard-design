@@ -1,13 +1,14 @@
 'use client';
 
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { chartTitle } from '@/data/analytics';
 import { DAY_LABELS, KPIS, SERIES, TODAY_INDEX } from '@/data/kpis';
 import type { KpiDef } from '@/data/types';
-import { areaPath, CHART, linePath, xAt, yAt } from '@/lib/chart';
+import { CHART, chartGeometry, yAt, type ChartGeometry } from '@/lib/chart';
 import { changeLabel, formatNumber } from '@/lib/format';
 import { duration, easeIn, easeOut, enter, leave, timing } from '@/lib/motion';
+import { useElementWidth } from '@/lib/useElementWidth';
 import { useTweenedArray } from '@/lib/useTween';
 import { useHop } from '@/lib/store';
 import { HopFrame } from '@/components/select/HopFrame';
@@ -16,7 +17,10 @@ import { WeekToggle } from './WeekToggle';
 
 // The chart section of the Quick stats box (Figma "Revenue chart"; brief B7.1).
 // Custom SVG + d3-shape — no chart library, so every motion is ours:
-//   • KPI change: y-values and y-max tween together (data) and the path is rebuilt each frame
+//   • KPI change: each day's height (value ÷ chart max) tweens (data) and the path is rebuilt
+//     each frame. Tweening the raw values and the max separately made the line sit still and
+//     then snap at the end when the scales were far apart (revenue → orders).
+//   • the plot fills its box and re-lays itself out while the box resizes (sidebars collapsing)
 //   • DMs: line/area/dots tint green → red (base, CSS colour transition)
 //   • week toggle: the partial line fades out (fast), the full week draws in (450ms)
 //   • hover: snaps to the nearest past day; guide, grown dot, dark tooltip (80ms follow)
@@ -36,6 +40,8 @@ export function TrendChart() {
   const reduce = useReducedMotion();
   const [hover, setHover] = useState<number | null>(null);
   const dayButtons = useRef<(HTMLButtonElement | null)[]>([]);
+  const [box, width] = useElementWidth<HTMLDivElement>(CHART.width);
+  const g = useMemo(() => chartGeometry(width), [width]);
 
   const def = KPIS[view.kpi];
   const lastWeek = view.range === 'lastWeek';
@@ -62,8 +68,7 @@ export function TrendChart() {
   useEffect(() => setHover((h) => (h !== null && h >= hoverable ? null : h)), [hoverable]);
 
   const onPointer = (e: React.PointerEvent<SVGRectElement>) => {
-    const box = e.currentTarget.getBoundingClientRect();
-    const i = Math.round((e.clientX - box.left - CHART.x0) / CHART.step);
+    const i = g.dayAt(e.clientX - e.currentTarget.getBoundingClientRect().left);
     setHover(Math.max(0, Math.min(hoverable - 1, i)));
   };
 
@@ -78,7 +83,7 @@ export function TrendChart() {
   };
 
   return (
-    <HopFrame id="analytics.chart" label={title} page="analytics" jumpTarget="sales" radius={10} className="flex flex-col gap-12 pb-10 pl-14 pr-18 pt-14">
+    <HopFrame id="analytics.chart" label={title} page="analytics" jumpTarget="sales" radius={10} className="flex flex-col gap-12 pb-10 pl-14 pr-20 pt-14">
       <div className="flex items-center justify-between">
         <div className="grid">
           <AnimatePresence initial={false}>
@@ -96,12 +101,12 @@ export function TrendChart() {
         <WeekToggle tone={def.tone} />
       </div>
 
-      <div className="relative" style={{ width: CHART.width, height: CHART.height }}>
+      <div ref={box} className="relative w-full" style={{ height: CHART.height }}>
         <svg
           id="kpi-chart"
-          width={CHART.width}
+          width={width}
           height={CHART.height}
-          viewBox={`0 0 ${CHART.width} ${CHART.height}`}
+          viewBox={`0 0 ${width} ${CHART.height}`}
           className="overflow-visible"
           role="img"
           aria-label={`${title}: ${values.map((v, i) => `${DAY_LABELS[i]} ${formatNumber(v, def.format)}`).join(', ')}`}
@@ -110,6 +115,7 @@ export function TrendChart() {
           <AnimatePresence>
             <SeriesLayer
               key={view.range}
+              g={g}
               def={def}
               lastWeek={lastWeek}
               active={active}
@@ -120,17 +126,19 @@ export function TrendChart() {
             />
           </AnimatePresence>
 
-          {/* Hover guide: thin vertical line at the snapped day */}
+          {/* Hover guide: thin vertical line at the snapped day; glides with the tooltip */}
           <AnimatePresence>
             {hover !== null && (
-              <motion.path
+              <motion.line
                 key="guide"
-                d={`M${xAt(hover)} ${CHART.topY - 6}V${CHART.baseline}`}
+                y1={CHART.topY - 6}
+                y2={CHART.baseline}
                 className="stroke-chart-compare pointer-events-none"
                 strokeWidth={1}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1, transition: { duration: duration.fast, ease: easeOut } }}
+                initial={{ opacity: 0, x1: g.xAt(hover), x2: g.xAt(hover) }}
+                animate={{ opacity: 1, x1: g.xAt(hover), x2: g.xAt(hover) }}
                 exit={{ opacity: 0, transition: { duration: duration.fast, ease: easeIn } }}
+                transition={{ opacity: { duration: duration.fast, ease: easeOut }, default: { duration: timing.tooltipFollow, ease: easeOut } }}
               />
             )}
           </AnimatePresence>
@@ -139,7 +147,7 @@ export function TrendChart() {
           <rect
             x={0}
             y={0}
-            width={CHART.width}
+            width={width}
             height={CHART.height}
             fill="transparent"
             data-interactive
@@ -151,10 +159,10 @@ export function TrendChart() {
           />
         </svg>
 
-        <Tooltip def={def} lastWeek={lastWeek} hover={hover} kpi={view.kpi} />
+        <Tooltip g={g} def={def} lastWeek={lastWeek} hover={hover} kpi={view.kpi} />
       </div>
 
-      <div className="relative h-[15px]" style={{ width: CHART.width }} role="group" aria-label="Days">
+      <div className="relative h-[15px] w-full" role="group" aria-label="Days">
         {DAY_LABELS.map((d, i) => {
           const label = !lastWeek && i === TODAY_INDEX ? 'Today' : d;
           const isActive = i === active;
@@ -169,7 +177,7 @@ export function TrendChart() {
               }}
               type="button"
               className={`${cls} rounded-4`}
-              style={{ left: xAt(i) }}
+              style={{ left: g.xAt(i) }}
               aria-pressed={isActive}
               aria-label={i === TODAY_INDEX ? 'Today' : `${d}, show that day`}
               tabIndex={isActive ? 0 : -1}
@@ -182,7 +190,7 @@ export function TrendChart() {
               {label}
             </button>
           ) : (
-            <span key={d} className={cls} style={{ left: xAt(i) }}>
+            <span key={d} className={cls} style={{ left: g.xAt(i) }}>
               {label}
             </span>
           );
@@ -194,6 +202,7 @@ export function TrendChart() {
 
 /** One week's drawing. Keyed by range, so the week toggle swaps whole layers. */
 function SeriesLayer({
+  g,
   def,
   lastWeek,
   active,
@@ -202,6 +211,7 @@ function SeriesLayer({
   draw: drawProp,
   intro,
 }: {
+  g: ChartGeometry;
   def: KpiDef;
   lastWeek: boolean;
   active: number;
@@ -216,11 +226,13 @@ function SeriesLayer({
   const series = SERIES[def.id];
   const raw = lastWeek ? series.lastWeek : series.thisWeek;
 
-  // Values and max tween together; the comparison line follows the same max.
-  const tw = useTweenedArray([...raw, def.chartMax]);
-  const values = tw.slice(0, -1);
-  const max = tw[tw.length - 1];
-  const cmp = useTweenedArray(lastWeek ? [] : series.lastWeek);
+  // Heights (value ÷ chart max) tween together, the comparison line with them. The layer is
+  // keyed by week, so the array's length never changes under a running tween.
+  const share = (v: number) => v / def.chartMax;
+  const tw = useTweenedArray([...raw.map(share), ...(lastWeek ? [] : series.lastWeek.map(share))]);
+  const values = tw.slice(0, raw.length);
+  const cmp = tw.slice(raw.length);
+  const split = g.xAt(TODAY_INDEX);
 
   const drawIn = draw ? { pathLength: 0 } : false;
   const fadeIn = draw ? { opacity: 0 } : false;
@@ -230,18 +242,18 @@ function SeriesLayer({
   return (
     <motion.g exit={{ opacity: 0, transition: { duration: duration.fast, ease: easeIn } }}>
       {lastWeek ? (
-        <path d={`M0 ${CHART.baseline}H${xAt(6)}`} className="stroke-surface-border-tint" strokeWidth={1} />
+        <path d={`M0 ${CHART.baseline}H${g.xAt(6)}`} className="stroke-surface-border-tint" strokeWidth={1} />
       ) : (
         <>
-          <path d={`M0 ${CHART.baseline}H${CHART.split}`} className="stroke-surface-border-tint" strokeWidth={1} />
-          <path d={`M${CHART.split} ${CHART.baseline}H${CHART.width}`} className="stroke-surface-border-tint" strokeWidth={1} strokeDasharray="3 4" />
+          <path d={`M0 ${CHART.baseline}H${split}`} className="stroke-surface-border-tint" strokeWidth={1} />
+          <path d={`M${split} ${CHART.baseline}H${g.width}`} className="stroke-surface-border-tint" strokeWidth={1} strokeDasharray="3 4" />
         </>
       )}
 
-      <motion.path d={areaPath(values, max)} className={`${tone.area} ${COLOR_TWEEN}`} initial={fadeIn} animate={{ opacity: 1 }} transition={drawT} />
+      <motion.path d={g.areaPath(values)} className={`${tone.area} ${COLOR_TWEEN}`} initial={fadeIn} animate={{ opacity: 1 }} transition={drawT} />
       {!lastWeek && (
         <motion.path
-          d={linePath(cmp, max)}
+          d={g.linePath(cmp)}
           className="stroke-chart-compare"
           strokeWidth={1.5}
           fill="none"
@@ -251,7 +263,7 @@ function SeriesLayer({
         />
       )}
       <motion.path
-        d={linePath(values, max)}
+        d={g.linePath(values)}
         className={`${tone.line} ${COLOR_TWEEN}`}
         strokeWidth={2}
         fill="none"
@@ -263,7 +275,7 @@ function SeriesLayer({
       {selectedDay !== null && (
         <motion.path
           key={`day-${selectedDay}`}
-          d={`M${xAt(selectedDay)} ${yAt(values[selectedDay], max) + 8}V${CHART.baseline}`}
+          d={`M${g.xAt(selectedDay)} ${yAt(values[selectedDay]) + 8}V${CHART.baseline}`}
           className={`${tone.line} ${COLOR_TWEEN}`}
           strokeWidth={1}
           strokeDasharray="2 3"
@@ -280,8 +292,8 @@ function SeriesLayer({
         return (
           <motion.circle
             key={i}
-            cx={xAt(i)}
-            cy={yAt(v, max)}
+            cx={g.xAt(i)}
+            cy={yAt(v)}
             className={`${isActive ? `${tone.dotFill} stroke-surface-default` : `fill-surface-default ${tone.line}`} ${COLOR_TWEEN}`}
             strokeWidth={isActive ? 2 : 1.5}
             style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
@@ -301,12 +313,12 @@ function SeriesLayer({
 const DAY_NAMES = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
 /** Dark tooltip: value + change vs the same day last week. Follows the snapped day over 80ms. */
-function Tooltip({ def, lastWeek, hover, kpi }: { def: KpiDef; lastWeek: boolean; hover: number | null; kpi: KpiDef['id'] }) {
+function Tooltip({ g, def, lastWeek, hover, kpi }: { g: ChartGeometry; def: KpiDef; lastWeek: boolean; hover: number | null; kpi: KpiDef['id'] }) {
   const series = SERIES[kpi];
   const values = lastWeek ? series.lastWeek : series.thisWeek;
   const v = hover !== null ? values[hover] : null;
-  const x = hover !== null ? xAt(hover) : 0;
-  const y = v !== null ? yAt(v, def.chartMax) : 0;
+  const x = hover !== null ? g.xAt(hover) : 0;
+  const y = v !== null ? yAt(v / def.chartMax) : 0;
 
   return (
     <AnimatePresence>

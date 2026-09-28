@@ -22,7 +22,7 @@ export interface HopFrameRef {
 export type Message =
   | { id: string; kind: 'user'; author: PersonId; time: string; text: string; tag?: HopFrameRef; page: Page }
   | { id: string; kind: 'hop'; time: string; reads: Page[]; blocks: Block[]; status: 'thinking' | 'streaming' | 'done' }
-  | { id: string; kind: 'marker'; text: string; time: string };
+  | { id: string; kind: 'marker'; text: string; time: string; page: Page };
 
 /** A finished conversation, saved to History by New chat (brief B7.2). */
 export interface SavedThread {
@@ -69,6 +69,10 @@ export interface HopState {
   activeTagId: string | null; // the old message whose tag is showing the "active" style
   sync: 'idle' | 'syncing' | 'synced';
   toast: { id: number; text: string } | null;
+  sidebarCollapsed: boolean; // Figma "example 1"
+  panelCollapsed: boolean; // Figma "example 2": only the mascot shows
+  /** Highlight mode (the BoundingBox button in Hop's header): only then can frames be picked. */
+  highlightMode: boolean;
 
   navigate: (page: Page, source: NavSource) => void;
   finishAnalyticsIntro: () => void;
@@ -93,6 +97,9 @@ export interface HopState {
   setDay: (day: number | null) => void;
   /** Sidebar "Recent with Hop": open History with that brief selected. */
   openBrief: (briefId: string | null) => void;
+  toggleSidebar: () => void;
+  togglePanel: () => void;
+  setHighlightMode: (on: boolean) => void;
 }
 
 export { PAGE_IDS, isPage } from './pages';
@@ -118,13 +125,13 @@ export function createHopStore(initialPage: Page) {
     activeTagId: null,
     sync: 'idle',
     toast: null,
+    sidebarCollapsed: false,
+    panelCollapsed: false,
+    highlightMode: false,
 
     navigate: (page, source) => {
       const s = get();
       if (page === s.page) return;
-      // With a thread open, moving page drops a "Moved to …" marker into it (brief B7.2).
-      const marker = s.messages.length > 0;
-      const clock = marker ? s.clock + 1 : s.clock;
       // jumpOrigin (brief B3): set only by a jump chip; cleared by the sidebar, card links,
       // "Go to Analytics", or anything else that lands back where the jump started.
       let jumpOrigin = s.jumpOrigin;
@@ -138,10 +145,6 @@ export function createHopStore(initialPage: Page) {
         selection: null,
         hoverId: null,
         activeTagId: null,
-        clock,
-        messages: marker
-          ? [...s.messages, { id: nextId(), kind: 'marker', text: `Moved to ${PAGE_TITLES[page]}`, time: clockLabel(clock) }]
-          : s.messages,
       });
     },
 
@@ -151,7 +154,12 @@ export function createHopStore(initialPage: Page) {
       const tag = s.selection ?? undefined;
       const text = raw.trim() || (tag ? DEFAULT_TAGGED_QUESTION : '');
       if (!text) return;
-      const clock = s.clock + 1;
+      // A "Moved to …" marker goes in only when she tags something on a page other than the one
+      // the thread is on, right before that question (user feedback, 2026-09-28; replaces the
+      // brief B7.2 marker on every page change). It takes a minute of the clock like a question.
+      const moved = tag && s.messages.length > 0 && tag.page !== threadPage(s.messages) ? tag.page : null;
+      const markerClock = s.clock + 1;
+      const clock = moved ? s.clock + 2 : s.clock + 1;
       const time = clockLabel(clock);
       const answer = answerFor(tag?.id, text);
       const answerId = nextId();
@@ -160,8 +168,13 @@ export function createHopStore(initialPage: Page) {
         hopStatus: 'thinking',
         scanning: Boolean(tag),
         activeTagId: null,
+        // Asking about a frame ends that pick: highlight mode switches off.
+        ...(tag ? { highlightMode: false, hoverId: null } : {}),
         messages: [
           ...s.messages,
+          ...(moved
+            ? [{ id: nextId(), kind: 'marker' as const, text: `Moved to ${PAGE_TITLES[moved]}`, time: clockLabel(markerClock), page: moved }]
+            : []),
           { id: nextId(), kind: 'user', author: 'amara', time, text, tag, page: s.page },
           { id: answerId, kind: 'hop', time, reads: answer.reads, blocks: answer.blocks, status: 'thinking' },
         ],
@@ -200,7 +213,8 @@ export function createHopStore(initialPage: Page) {
     select: (ref) => {
       const s = get();
       if (s.scanning) return; // the frame being read stays put until the answer lands
-      set({ selection: ref, selectPulse: s.selectPulse + 1, activeTagId: null });
+      // The tag lands in the composer, so a collapsed Hop panel opens for it.
+      set({ selection: ref, selectPulse: s.selectPulse + 1, activeTagId: null, panelCollapsed: false });
     },
 
     deselect: () => {
@@ -264,11 +278,26 @@ export function createHopStore(initialPage: Page) {
       if (briefId) set((s) => ({ history: { ...s.history, selectedId: briefId, expanded: false } }));
       get().navigate('history', 'sidebar');
     },
+
+    toggleSidebar: () => set((s) => ({ sidebarCollapsed: !s.sidebarCollapsed })),
+    // Hiding the panel also leaves highlight mode: its switch goes out of reach with it.
+    togglePanel: () =>
+      set((s) => (s.panelCollapsed ? { panelCollapsed: false } : { panelCollapsed: true, highlightMode: false, hoverId: null })),
+    setHighlightMode: (on) => set(on ? { highlightMode: true } : { highlightMode: false, hoverId: null }),
   }));
 }
 
 let idCounter = 0;
 const nextId = () => `m${++idCounter}`;
+
+/** The page a thread is "on": its last page marker, or where its first question was asked. */
+function threadPage(messages: Message[]): Page | undefined {
+  for (let i = messages.length - 1; i >= 0; i--) {
+    const m = messages[i];
+    if (m.kind === 'marker') return m.page;
+  }
+  return messages.find((m) => m.kind === 'user')?.page;
+}
 
 const StoreContext = createContext<StoreApi<HopState> | null>(null);
 
