@@ -12,8 +12,8 @@ const BG: Record<AvatarColor, string> = {
   'palette-tone-17': 'bg-palette-tone-17',
 };
 
-// Figma sizes → initial type size: 16px avatar 8.5, 28px 12, 32px 11.
-const TEXT: Record<number, string> = { 16: 'text-8-5', 20: 'text-9', 24: 'text-11', 28: 'text-12', 32: 'text-11' };
+// Figma sizes → initial type size: 16px avatar 8.5, 18px 9 (History), 28px 12, 32px 11.
+const TEXT: Record<number, string> = { 16: 'text-8-5', 18: 'text-9', 20: 'text-9', 24: 'text-11', 28: 'text-12', 32: 'text-11' };
 
 export function PersonAvatar({ person, size }: { person: Person; size: number }) {
   if (person.color === 'hop') return <HopAvatar size={size} />;

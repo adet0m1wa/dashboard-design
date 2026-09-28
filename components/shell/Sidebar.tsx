@@ -133,7 +133,7 @@ function Full() {
             key={item.text}
             type="button"
             whileTap={press}
-            onClick={() => openBrief(item.briefId)}
+            onClick={() => openBrief(item)}
             className="flex w-full items-center gap-8 rounded-6 px-10 py-6 text-left transition-colors duration-(--dur-fast) ease-hop-out hover:bg-surface-faint"
           >
             <PersonAvatar person={TEAM[item.who]} size={16} />
@@ -209,7 +209,7 @@ function Rail() {
             key={item.text}
             type="button"
             whileTap={press}
-            onClick={() => openBrief(item.briefId)}
+            onClick={() => openBrief(item)}
             aria-label={item.text}
             title={item.text}
             className="flex rounded-6 px-10 py-6 transition-colors duration-(--dur-fast) ease-hop-out hover:bg-surface-faint"

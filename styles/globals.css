@@ -69,3 +69,10 @@
     cursor: pointer;
   }
 }
+
+/* History's dotted trail (brief B7.5): 1.5px wide, dashes 3 on / 3 off, palette tone-27.
+ * A gradient, because a CSS dashed border can't be told its dash length. */
+@utility hop-trail {
+  width: var(--stroke-1-5);
+  background-image: repeating-linear-gradient(to bottom, var(--color-trail) 0 var(--spacing-3), transparent var(--spacing-3) var(--spacing-6));
+}
