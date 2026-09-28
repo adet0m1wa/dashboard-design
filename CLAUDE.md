@@ -14,6 +14,7 @@ data, build order). Read it before changing anything. Values already read from F
 ```
 npm install
 npm run dev        # http://localhost:3000 → redirects to /analytics
+npm run preview    # production build + server: animations at real speed (dev mode drops frames)
 npm run check      # typecheck + token check
 ```
 
@@ -51,7 +52,11 @@ npm run check      # typecheck + token check
 
 - The in-app browser pane throttles `requestAnimationFrame` while it's hidden (1 frame per ~500ms),
   so animations crawl there. Use it for clicking and console checks only.
-- `bash scripts/test-all.sh [out-dir]` runs every phase flow in both motion modes (dev server must be up).
+- `bash scripts/test-all.sh [out-dir]` runs every flow in `scripts/flows/` in both motion modes
+  (dev server must be up; `HOP_URL=http://localhost:3001` points the flows at another server).
+- Dev mode is slow: navigating to History costs 100–250ms long tasks there, enough for Motion to
+  skip a slide (phase1's "pill slides" check can fail under dev + load). The production build has
+  no long tasks; judge motion on `npm run preview`.
 - Timing, layout and screenshots: `node scripts/flow.mjs scripts/flows/<flow>.mjs [--reduced]`
   drives headless Chrome (local install, puppeteer-core) and prints PASS/FAIL per check plus console
   errors. `scripts/shot.mjs` takes one screenshot; `scripts/compare.mjs figma.png app.png out.png
@@ -75,9 +80,9 @@ npm run check      # typecheck + token check
 | 6 Inventory + jump chips | done | Tiles, attention pill, stock table (hover fill, bars grow on first visit, Edit/Add/All stubs), jump → marker → chips flip → chips stay → Go to Analytics, sidebar/link clear the chips. `phase6.mjs` 19/19, reduced 18/18; matches the Inventory frame |
 | 7 History | done | Chain + dotted trail (per-brief segments, continuous under filters), sliding selection + Expand pop, three left sides (Analytics redrawn from its own store; Inventory/Customers drawn at 0.83 in a card; Instagram PNG), tag outline in snapshots, person/page/search filters with collapse, Expand/Back (slide, scroll to message, tag flash, focus), Recent with Hop, New-chat threads as briefs, Hop panel slides away on History. `phase7.mjs` 32/32, reduced 29/29; four History frames within 5–7% (the extra Zee chip row) |
 | Feedback 1 | done | Collapsible sidebar + Hop panel, highlight mode + stroke-snapping outline, markers only on tagged questions, composer focus border, chart height tween + responsive width. `feedback1.mjs` 14/14 both modes |
-| 8 Polish + QA | – | |
+| 8 Polish + QA | done | better-interface review (docs/INTERFACE_REVIEW.md): keyboard picking in highlight mode, skip link, min page width + sideways scroll + sidebar auto-rail, truncation tooltips, History h2 + Clear filters, 5s toasts, 24px hit areas, page titles, reduced-motion fixes. Contrast of two Figma text tokens reported, not changed. `phase8.mjs` 10/10 both modes |
 
-**Next step:** phase 8 (polish + QA) including the `better-interface` review (skills in `.claude/skills`), then the brief's final 10-flow test with screenshots in docs/screenshots/, then the final report ("Report"). `bash scripts/test-all.sh` runs every flow (both motion modes).
+**Next step:** the brief's final 10-flow test with screenshots in docs/screenshots/, a frame-by-frame Figma comparison, then the final report ("Report").
 
 ## Decisions (not in the brief)
 
@@ -181,3 +186,18 @@ npm run check      # typecheck + token check
 - A brief's text is its select button; Expand is its own button. Expand focuses Back; Back/Esc
   returns focus to Expand. The tag flash starts once the chat has slid in.
 - The Instagram screenshot is Figma's 1× export (the export tool wouldn't produce 2×).
+- Keyboard picking (phase 8 review): in highlight mode frames join the Tab order as labelled groups
+  ("frame"); focus shows the blue highlight instead of a ring; Enter/Space picks and moves focus to
+  the composer; Enter on a control inside a frame picks the frame; switching highlight on by
+  keyboard focuses the first frame. KPI-tab frames are reached through their tab (`viaControl`).
+- Narrow windows: the page area never goes below 720px (token `main-min`, not in Figma); the app
+  scrolls sideways instead. Below 1336px wide the sidebar starts as the rail and folds/unfolds
+  as the window crosses that width.
+- "Skip to page" link (first Tab stop); the page `<title>` follows the page.
+- Text cut off with an ellipsis shows its full value as a tooltip (only when actually cut).
+- Toasts stay 5s (was 2.4s; the accessibility floor for timed messages).
+- History filter empty state names the search and offers "Clear filters"; day headers are `h2`.
+- Small icon buttons get 24–26px hit areas via `::after`, look unchanged.
+- Contrast: `text/muted` #9C9A94 (2.5–2.8:1) and `status/success-text` #1F8A4C (4.0–4.4:1) fail
+  WCAG AA for their text sizes. Left as designed (Figma variables); proposed #706F6B and #1D8047
+  in docs/INTERFACE_REVIEW.md.

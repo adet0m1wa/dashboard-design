@@ -11,6 +11,7 @@ import { useHop } from '@/lib/store';
 import { ChevIcon, HistoryIcon, PanelIcon, SlidersIcon } from '@/components/icons/figma';
 import { PageIcon } from './PageIcon';
 import { PersonAvatar } from '@/components/ui/PersonAvatar';
+import { Truncate } from '@/components/ui/Truncate';
 
 // The sidebar, open (Figma "Analytics" > Sidebar, 224) or collapsed to an icon rail ("example 1",
 // 56). The panel icon toggles it. The width slides (slow, CSS so it can use the layout tokens) and
@@ -68,7 +69,7 @@ function Toggle({ collapsed, toggleRef }: { collapsed: boolean; toggleRef: React
       }}
       aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
       aria-expanded={!collapsed}
-      className="rounded-4 text-text-muted transition-colors duration-(--dur-fast) ease-hop-out hover:text-text-primary"
+      className="relative rounded-4 text-text-muted transition-colors duration-(--dur-fast) ease-hop-out after:absolute after:-inset-4 hover:text-text-primary"
     >
       <PanelIcon />
     </motion.button>
@@ -137,7 +138,7 @@ function Full() {
             className="flex w-full items-center gap-8 rounded-6 px-10 py-6 text-left transition-colors duration-(--dur-fast) ease-hop-out hover:bg-surface-faint"
           >
             <PersonAvatar person={TEAM[item.who]} size={16} />
-            <span className="min-w-0 flex-1 truncate text-12-5 text-text-tone-01">{item.text}</span>
+            <Truncate className="min-w-0 flex-1 text-12-5 text-text-tone-01">{item.text}</Truncate>
           </motion.button>
         ))}
       </section>

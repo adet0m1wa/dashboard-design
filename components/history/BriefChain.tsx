@@ -9,6 +9,8 @@ import { duration, easeIn, easeOut, layoutSpring, press } from '@/lib/motion';
 import { useHop } from '@/lib/store';
 import { Chev13Icon, ExpandIcon, Frame11Icon, SearchIcon } from '@/components/icons/figma';
 import { PersonAvatar } from '@/components/ui/PersonAvatar';
+import { SmallButton } from '@/components/ui/SmallButton';
+import { Truncate } from '@/components/ui/Truncate';
 
 // The brief chain (brief B7.5; Figma "Brief chain"): person chips, search and page filter, then
 // the briefs grouped by day with the dotted trail. Selecting slides the soft background to the
@@ -58,7 +60,7 @@ export function BriefChain({
                   animate={{ opacity: 1, transition: { duration: duration.base, ease: easeOut } }}
                   exit={{ opacity: 0, transition: { duration: duration.fast, ease: easeIn } }}
                 >
-                  <h3 className="px-16 pb-4 pt-14 text-11 font-500 text-text-muted">{day}</h3>
+                  <h2 className="px-16 pb-4 pt-14 text-11 font-500 text-text-muted">{day}</h2>
                   <ul>
                     <AnimatePresence initial={false}>
                       {items.map((b, i) => (
@@ -71,8 +73,20 @@ export function BriefChain({
             })}
           </AnimatePresence>
         </LayoutGroup>
-        {visible.length === 0 && <p className="px-16 pt-24 text-center text-12-5 text-text-muted">No briefs match these filters.</p>}
+        {visible.length === 0 && <NoMatches />}
       </div>
+    </div>
+  );
+}
+
+/** Filters that match nothing: say so, name the search, and offer the way back. */
+function NoMatches() {
+  const query = useHop((s) => s.history.query.trim());
+  const setFilter = useHop((s) => s.setHistoryFilter);
+  return (
+    <div className="flex flex-col items-center gap-12 px-16 pt-24 text-center">
+      <p className="text-12-5 text-text-secondary">{query ? `No briefs match “${query}”.` : 'No briefs match these filters.'}</p>
+      <SmallButton onClick={() => setFilter({ person: 'all', pageFilter: 'all', query: '' })}>Clear filters</SmallButton>
     </div>
   );
 }
@@ -175,30 +189,31 @@ function BriefItem({ brief, first, last, expandRef }: { brief: Brief; first: boo
           <span className={`flex-1 ${last ? '' : 'hop-trail'}`} />
         </div>
         <div className="flex min-w-0 flex-1 flex-col gap-5 py-14">
+          {/* The whole row picks the brief (its ::after covers the row); Expand sits above it. */}
           <button
             type="button"
             onClick={() => selectBrief(brief.id)}
             aria-current={selected}
             aria-describedby={summaryId}
-            className="flex min-w-0 flex-col gap-5 rounded-4 text-left"
+            className="flex min-w-0 flex-col gap-5 rounded-4 text-left after:absolute after:inset-0"
           >
             <span className="flex items-center gap-8">
-              <span className="min-w-0 flex-1 truncate text-11-5 font-500 text-text-muted">
+              <Truncate className="min-w-0 flex-1 text-11-5 font-500 text-text-muted">
                 {person.name} · {brief.time}
-              </span>
+              </Truncate>
               <span className="shrink-0 rounded-6 bg-surface-subtle px-7 py-1 text-11 font-500 text-text-secondary">{brief.pageLabel}</span>
             </span>
-            <span className="truncate text-13-5 font-600 text-text-primary">{brief.question}</span>
+            <Truncate className="text-13-5 font-600 text-text-primary">{brief.question}</Truncate>
             {brief.tag && (
               <span className="flex max-w-full items-center gap-5 self-start rounded-6 border border-tag-border bg-tag-bg px-7 py-2 text-11 font-500 text-tag-text">
                 <Frame11Icon className="shrink-0 text-selection" />
-                <span className="truncate">{brief.tag.label}</span>
+                <Truncate>{brief.tag.label}</Truncate>
               </span>
             )}
             {brief.summary && (
-              <span id={summaryId} className="line-clamp-2 text-12-5 leading-18 text-text-secondary">
+              <Truncate lines={2} id={summaryId} className="text-12-5 leading-18 text-text-secondary">
                 {brief.summary}
-              </span>
+              </Truncate>
             )}
           </button>
           <AnimatePresence initial={false}>
@@ -210,7 +225,7 @@ function BriefItem({ brief, first, last, expandRef }: { brief: Brief; first: boo
                 onClick={() => setExpanded(true)}
                 whileTap={press}
                 aria-label={`Expand: open the chat for “${brief.question}”`}
-                className="flex items-center gap-5 self-start rounded-999 bg-action-primary px-10 py-4 text-11-5 font-500 text-text-on-dark transition-colors duration-(--dur-fast) ease-hop-out hover:bg-palette-tone-25"
+                className="relative z-10 flex items-center gap-5 self-start rounded-999 bg-action-primary px-10 py-4 text-11-5 font-500 text-text-on-dark transition-colors duration-(--dur-fast) ease-hop-out hover:bg-palette-tone-25"
                 initial={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1, transition: { duration: duration.base, ease: easeOut } }}
                 exit={{ opacity: 0, transition: { duration: duration.fast, ease: easeIn } }}

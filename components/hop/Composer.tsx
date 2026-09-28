@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { duration, easeIn, easeOut, enter, leave, press } from '@/lib/motion';
 import { useHop } from '@/lib/store';
 import { FrameIcon, UpIcon, XIcon } from '@/components/icons/figma';
+import { Truncate } from '@/components/ui/Truncate';
 
 // The composer (brief B7.2, B6; Figma "Composer"). Grows with the text up to 4 lines (CSS
 // field-sizing), Enter sends, Shift+Enter adds a line. Sending needs text or a tag.
@@ -48,12 +49,12 @@ export function Composer() {
                 style={{ transformOrigin: 'left center' }}
               >
                 <FrameIcon className="shrink-0 text-selection" />
-                <span className="truncate">{tag.label}</span>
+                <Truncate>{tag.label}</Truncate>
                 <button
                   type="button"
                   onClick={deselect}
                   aria-label={`Remove ${tag.label}`}
-                  className="-my-2 -mr-2 flex shrink-0 items-center rounded-4 text-selection transition-colors duration-(--dur-fast) ease-hop-out hover:bg-tag-border"
+                  className="relative -my-2 -mr-2 flex shrink-0 items-center rounded-4 text-selection transition-colors duration-(--dur-fast) ease-hop-out after:absolute after:-inset-6 hover:bg-tag-border"
                 >
                   <XIcon />
                 </button>

@@ -12,7 +12,8 @@
     "typecheck": "tsc --noEmit",
     "check:tokens": "node scripts/check-tokens.mjs",
     "check": "npm run typecheck && npm run check:tokens",
-    "screenshots": "node scripts/screenshots.mjs"
+    "screenshots": "node scripts/screenshots.mjs",
+    "preview": "next build && next start"
   },
   "dependencies": {
     "d3-shape": "^3.2.0",

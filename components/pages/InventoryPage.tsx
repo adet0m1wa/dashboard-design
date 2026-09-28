@@ -8,6 +8,7 @@ import { useHop, useHopApi } from '@/lib/store';
 import { HopFrame } from '@/components/select/HopFrame';
 import { SmallButton } from '@/components/ui/SmallButton';
 import { Tag } from '@/components/ui/Tag';
+import { Truncate } from '@/components/ui/Truncate';
 
 // Inventory (brief B7.4; Figma "Inventory — nothing selected, jump chips stay").
 const TILE_TONE = { default: 'text-text-primary', warning: 'text-status-warning-text', danger: 'text-status-danger-text' } as const;
@@ -92,8 +93,8 @@ function StockLine({ row, index, grow }: { row: StockRow; index: number; grow: b
       <span role="cell" className="flex min-w-0 flex-1 items-center gap-10">
         <span className="size-[32px] shrink-0 rounded-6" style={{ background: `var(--gradient-${row.swatch})` }} />
         <span className="flex min-w-0 flex-col gap-1">
-          <span className="truncate text-13 font-500 text-text-primary">{row.name}</span>
-          <span className="truncate text-11-5 text-text-muted">{row.variant}</span>
+          <Truncate className="text-13 font-500 text-text-primary">{row.name}</Truncate>
+          <Truncate className="text-11-5 text-text-muted">{row.variant}</Truncate>
         </span>
       </span>
       <span role="cell" className="flex w-[130px] items-center gap-10">

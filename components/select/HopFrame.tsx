@@ -20,22 +20,35 @@ export interface HopFrameProps {
   /** Corner radius for the outline when the frame has none of its own and no box to sit on. */
   radius?: 8 | 10 | 14;
   role?: string;
+  /** The frame is a wrapper around one focusable control (a KPI tab): keyboard users reach it
+   *  through that control — Enter on it picks the frame in highlight mode — so the wrapper
+   *  itself never joins the Tab order or takes a role (it would break the tablist). */
+  viaControl?: boolean;
   children: ReactNode;
 }
 
-export function HopFrame({ id, label, page, jumpTarget, as: Tag = 'div', className, radius = 8, role, children }: HopFrameProps) {
+export function HopFrame({ id, label, page, jumpTarget, as: Tag = 'div', className, radius = 8, role, viaControl = false, children }: HopFrameProps) {
   // A state ref, not useRef: a frame that mounts already selected (a tag re-highlighting it on
   // another page) must re-measure once its element exists.
   const [el, setEl] = useState<HTMLElement | null>(null);
+  // Highlight mode makes frames reachable by keyboard: Tab to one, Enter/Space picks it
+  // (useSelection). The blue highlight is its focus indicator, so no second ring is drawn.
+  const picking = useHop((s) => s.highlightMode) && !viaControl;
+  const selected = useHop((s) => s.selection?.id === id);
   return (
     <Tag
       ref={setEl}
-      role={role}
+      // A labelled group, not a button: many frames hold buttons of their own.
+      role={role ?? (picking ? 'group' : undefined)}
+      tabIndex={picking ? 0 : undefined}
+      aria-roledescription={picking && !role ? 'frame' : undefined}
+      aria-label={picking && !role ? label : undefined}
+      aria-current={picking && selected ? true : undefined}
       data-hop-frame={id}
       data-hop-label={label}
       data-hop-page={page}
       data-hop-jump={jumpTarget}
-      className={`relative ${className ?? ''}`}
+      className={`relative ${picking ? 'focus-visible:outline-none' : ''} ${className ?? ''}`}
     >
       {children}
       <FrameOverlay id={id} frame={el} radius={radius} />

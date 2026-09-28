@@ -46,5 +46,5 @@ export const timing = {
   tagFlash: 0.4, // History expand: tag flashes once
   reducedFade: 0.1, // reduced motion: page slides become 100ms fades
   stockBarStagger: 0.03, // inventory stock bars
-  toast: 2.4, // how long a toast stays up
+  toast: 5, // how long a toast stays up (5s: the accessibility floor for a timed message)
 } as const;

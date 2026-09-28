@@ -13,6 +13,9 @@ import { frameRefFrom } from './HopFrame';
 //   • mode off: the page behaves normally; nothing highlights on hover or gets picked by clicking
 //     (a click on plain page space still puts away a highlight that's showing).
 //   • Esc: drops the selection first, then (a second Esc) leaves highlight mode.
+//   • keyboard, in highlight mode: frames join the Tab order; focus shows the highlight, Enter or
+//     Space picks the frame (a control inside one picks its frame too), then focus moves on to
+//     the composer so she can type her question.
 const CONTROLS = 'button, a, input, textarea, select, label, [role=tab], [role=radio], [role=button], [data-interactive]';
 
 export function useSelection(container: RefObject<HTMLElement | null>) {
@@ -27,6 +30,8 @@ export function useSelection(container: RefObject<HTMLElement | null>) {
       const frame = (target as Element | null)?.closest?.('[data-hop-frame]');
       return frame && root.contains(frame) ? frame : null;
     };
+
+    const toComposer = () => document.querySelector<HTMLTextAreaElement>('textarea[aria-label="Message Hop"]')?.focus();
 
     const onMove = (e: PointerEvent) => {
       const s = api.getState();
@@ -55,9 +60,25 @@ export function useSelection(container: RefObject<HTMLElement | null>) {
         e.preventDefault();
         e.stopPropagation();
         s.select(frameRefFrom(frame));
+        if (e.detail === 0) toComposer(); // Enter/Space on a control, not a mouse click
       } else {
         s.deselect();
       }
+    };
+    const onKeyPick = (e: KeyboardEvent) => {
+      const s = api.getState();
+      const target = e.target as HTMLElement;
+      if (!s.highlightMode || (e.key !== 'Enter' && e.key !== ' ') || !target.hasAttribute('data-hop-frame')) return;
+      e.preventDefault();
+      s.select(frameRefFrom(target));
+      toComposer();
+    };
+    const onFocusIn = (e: FocusEvent) => {
+      const s = api.getState();
+      if (s.highlightMode) s.setHover((frameAt(e.target) as HTMLElement | null)?.dataset.hopFrame ?? null);
+    };
+    const onFocusOut = (e: FocusEvent) => {
+      if (!root.contains(e.relatedTarget as Node | null)) api.getState().setHover(null);
     };
     const onEsc = (e: KeyboardEvent) => {
       if (e.key !== 'Escape') return;
@@ -75,12 +96,18 @@ export function useSelection(container: RefObject<HTMLElement | null>) {
     root.addEventListener('pointerleave', onLeave);
     root.addEventListener('pointerdown', onDown, true);
     root.addEventListener('click', onClick, true);
+    root.addEventListener('keydown', onKeyPick);
+    root.addEventListener('focusin', onFocusIn);
+    root.addEventListener('focusout', onFocusOut);
     window.addEventListener('keydown', onEsc, true);
     return () => {
       root.removeEventListener('pointermove', onMove);
       root.removeEventListener('pointerleave', onLeave);
       root.removeEventListener('pointerdown', onDown, true);
       root.removeEventListener('click', onClick, true);
+      root.removeEventListener('keydown', onKeyPick);
+      root.removeEventListener('focusin', onFocusIn);
+      root.removeEventListener('focusout', onFocusOut);
       window.removeEventListener('keydown', onEsc, true);
     };
   }, [api, container]);

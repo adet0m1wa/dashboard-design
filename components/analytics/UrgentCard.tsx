@@ -5,6 +5,7 @@ import { BoxUrgentIcon, MsgIcon, UsersUrgentIcon } from '@/components/icons/figm
 import { HopFrame } from '@/components/select/HopFrame';
 import { SmallButton } from '@/components/ui/SmallButton';
 import { SwapRow, SwapRows } from './swap';
+import { Truncate } from '@/components/ui/Truncate';
 
 // Urgent (Figma "Card/Needs you"). Live rows have an action button; past periods show the
 // items as done, with a quiet status pill instead (brief B7.1). Rows swap as a group when
@@ -50,8 +51,8 @@ function UrgentRow({ item, onAction }: { item: UrgentItem; onAction?: (item: Urg
           <Icon />
         </span>
         <div className="flex min-w-0 flex-1 flex-col gap-2">
-          <span className="truncate text-13 font-500 text-text-primary">{item.title}</span>
-          <span className="truncate text-12 text-text-secondary">{item.sub}</span>
+          <Truncate className="text-13 font-500 text-text-primary">{item.title}</Truncate>
+          <Truncate className="text-12 text-text-secondary">{item.sub}</Truncate>
         </div>
         {item.action ? (
           <SmallButton variant={item.action.style} onClick={() => onAction?.(item)}>

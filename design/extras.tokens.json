@@ -112,6 +112,10 @@
     "snapshot": {
       "value": 732,
       "source": "History — asked on another page > Content > Screenshot card height"
+    },
+    "main-min": {
+      "value": 720,
+      "source": "Not in Figma: the narrowest page area before the Analytics KPI tabs overlap (phase 8 zoom check; Figma draws it at 824). Below this the workspace scrolls sideways instead of squashing."
     }
   },
   "color": {
