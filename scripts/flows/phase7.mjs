@@ -117,13 +117,10 @@ export default async function (t) {
   await t.check(`${m}search box border turns blue while typing`, () => t.eval(() => getComputedStyle(document.querySelector('[data-page=history] input[type=search]').closest('label')).borderTopColor === 'rgb(37, 99, 235)'));
   await t.page.keyboard.type('zzz');
   await t.wait(400);
-  await t.check(`${m}search with no match: empty message`, () => t.eval(() => document.body.innerText.includes('No briefs match these filters.')));
-  await t.eval(() => {
-    const input = document.querySelector('[data-page=history] input[type=search]');
-    Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(input, '');
-    input.dispatchEvent(new Event('input', { bubbles: true }));
-  });
+  await t.check(`${m}search with no match: names the search, offers Clear filters`, () => t.eval(() => document.body.innerText.includes('No briefs match “adirezzz”.')));
+  await t.click('text=Clear filters');
   await t.wait(500);
+  await t.check(`${m}Clear filters brings every brief back`, async () => (await t.eval(items)).length === 8 && (await t.eval(() => document.querySelector('[data-page=history] input[type=search]').value)) === '');
 
   // Expand the 2:33 brief
   await t.eval(pick, 'What am I seeing?');

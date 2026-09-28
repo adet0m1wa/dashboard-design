@@ -2,7 +2,7 @@
 
 import { motion, useReducedMotion } from 'motion/react';
 import { useId } from 'react';
-import { timing } from '@/lib/motion';
+import { duration, timing } from '@/lib/motion';
 
 export type HopAvatarState = 'idle' | 'thinking' | 'scanning' | 'done';
 
@@ -43,7 +43,7 @@ export function HopAvatar({ state = 'idle', size = 30 }: { state?: HopAvatarStat
         className="fill-status-live"
         style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
         animate={pulse ? { opacity: [1, 0.35, 1], scale: [1, 1.25, 1] } : { opacity: 1, scale: 1 }}
-        transition={pulse ? loop : { duration: 0.12 }}
+        transition={pulse ? loop : { duration: duration.fast }}
       />
       <rect y="7" width="40" height="33" rx="13" fill={`url(#${id}-head)`} />
       <rect x="5.5" y="14.5" width="29" height="18" rx="7.5" className="fill-hop-screen stroke-hop-bezel" />
@@ -58,7 +58,7 @@ export function HopAvatar({ state = 'idle', size = 30 }: { state?: HopAvatarStat
           className="fill-hop-eye"
           style={{ filter: 'drop-shadow(0 0 2px var(--color-hop-glow))', transformBox: 'fill-box', transformOrigin: 'center' }}
           animate={blink ? { scaleY: [1, 1, 0.2, 1, 1] } : { scaleY: 1 }}
-          transition={blink ? loop : { duration: 0.12 }}
+          transition={blink ? loop : { duration: duration.fast }}
         />
       ))}
     </svg>

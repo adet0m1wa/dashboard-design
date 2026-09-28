@@ -65,16 +65,30 @@ export function HopPanel() {
             <span className={`text-14 font-600 text-text-primary ${hidden}`}>Hop</span>
           </div>
           <div className={`flex items-center gap-14 ${hidden}`} inert={collapsed}>
-            <motion.button type="button" whileTap={press} onClick={newChat} aria-label="New chat" className="rounded-4 text-text-black">
+            <motion.button type="button" whileTap={press} onClick={newChat} aria-label="New chat" className="relative rounded-4 text-text-black after:absolute after:-inset-4">
               <ChatCenteredIcon />
             </motion.button>
             {/* Highlight mode: only while it's on can frames on the page be hovered and picked. */}
             <motion.button
               type="button"
               whileTap={press}
-              onClick={() => setHighlightMode(!highlightMode)}
+              onClick={(e) => {
+                setHighlightMode(!highlightMode);
+                // From the keyboard (detail 0), turning it on jumps to the page's first frame:
+                // the frames sit before this button in the Tab order.
+                if (e.detail === 0 && !highlightMode) {
+                  requestAnimationFrame(() => {
+                    // The first frame, or — for a frame reached through its own control, like a
+                    // KPI tab — that control.
+                    const frame = document.querySelector<HTMLElement>('main [data-hop-frame]:not([inert] *)');
+                    const target = frame?.getAttribute('tabindex') === '0' ? frame : frame?.querySelector<HTMLElement>('button:not([tabindex="-1"])');
+                    target?.focus();
+                  });
+                }
+              }}
               aria-label="Highlight a frame"
               aria-pressed={highlightMode}
+              aria-describedby="highlight-help"
               className={`-m-4 rounded-6 p-4 transition-colors duration-(--dur-fast) ease-hop-out ${
                 highlightMode ? 'bg-tag-bg text-selection' : 'text-text-black hover:bg-surface-subtle'
               }`}
@@ -116,6 +130,9 @@ export function HopPanel() {
           <Composer />
         </div>
       </div>
+      <p id="highlight-help" className="sr-only">
+        Then point at a part of the page, or Tab to it, and click or press Enter to ask Hop about it.
+      </p>
       <div className="sr-only" aria-live="polite">
         {announce}
       </div>

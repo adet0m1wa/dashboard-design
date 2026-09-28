@@ -3,6 +3,7 @@
 import { motion } from 'motion/react';
 import { press } from '@/lib/motion';
 import { FrameIcon, XIcon } from '@/components/icons/figma';
+import { Truncate } from '@/components/ui/Truncate';
 
 // The blue chip that names a tagged frame (Figma "Selected frame chip"): bg tone-20, 1px tone-21,
 // radius 6, px 8 py 3, frame icon + name 11.5/500 text-tone-04.
@@ -21,7 +22,7 @@ export function TagChip({
   const body = (
     <>
       <FrameIcon className={active ? 'text-text-on-dark' : 'text-selection'} />
-      <span className="truncate">{label}</span>
+      <Truncate>{label}</Truncate>
     </>
   );
   const look = `flex max-w-full items-center gap-6 rounded-6 border px-8 py-3 text-11-5 font-500 transition-[background-color,color,border-color,box-shadow] duration-(--dur-fast) ease-hop-out ${

@@ -11,6 +11,7 @@ import { HopFrame } from '@/components/select/HopFrame';
 import { InitialsAvatar } from '@/components/ui/PersonAvatar';
 import { Tag } from '@/components/ui/Tag';
 import { Crossfade, SwapRow, SwapRows } from './swap';
+import { Truncate } from '@/components/ui/Truncate';
 
 // The card beside Urgent, one variant per KPI (brief A7, B7.1). Card: p 16, gap 12, radius 12,
 // 1px border; a spacer keeps the footer pinned to the bottom when the row stretches.
@@ -106,10 +107,10 @@ function RowFrame({ id, label, jump, children }: { id: string; label: string; ju
 }
 
 const Name = ({ children }: { children: React.ReactNode }) => (
-  <span className="truncate text-13-5 font-500 text-text-primary">{children}</span>
+  <Truncate className="text-13-5 font-500 text-text-primary">{children}</Truncate>
 );
 const Sub = ({ children }: { children: React.ReactNode }) => (
-  <span className="truncate text-12 text-text-secondary">{children}</span>
+  <Truncate className="text-12 text-text-secondary">{children}</Truncate>
 );
 const Amount = ({ children }: { children: React.ReactNode }) => (
   <span className="shrink-0 whitespace-nowrap text-13-5 font-600 text-text-primary tabular-nums">{children}</span>
