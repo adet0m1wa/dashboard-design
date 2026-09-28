@@ -5,15 +5,15 @@ import { useEffect, type RefObject } from 'react';
 import { useHopApi } from '@/lib/store';
 import { frameRefFrom } from './HopFrame';
 
-// Page-wide selection behaviour (brief B6), attached once to the page area:
-//   • plain click on a non-interactive surface → selects the deepest <HopFrame> under it
-//   • buttons, links, tabs keep their normal action
-//   • Alt/Option + click → tags whatever frame is under it, even an interactive one
-//     (the brief's open question — chosen for this build, listed in the report)
-//   • click on empty space → deselect; Esc → deselect (before anything else handles Esc)
-//   • hover → faint outline on the deepest frame, but not over a button/tab unless Alt is held,
-//     because a plain click there wouldn't select
-const INTERACTIVE = 'button, a, input, textarea, select, label, [role=tab], [role=radio], [role=button], [data-interactive]';
+// Page-wide selection behaviour (brief B6), attached once to the page area. Picking frames only
+// works in highlight mode (the BoundingBox button in Hop's header — user feedback 2026-09-28):
+//   • mode on: hovering shows a blue highlight on the deepest frame under the pointer — any
+//     frame, buttons and tabs included — and a click picks it instead of doing its normal action.
+//     A click on empty page space drops the selection.
+//   • mode off: the page behaves normally; nothing highlights on hover or gets picked by clicking
+//     (a click on plain page space still puts away a highlight that's showing).
+//   • Esc: drops the selection first, then (a second Esc) leaves highlight mode.
+const CONTROLS = 'button, a, input, textarea, select, label, [role=tab], [role=radio], [role=button], [data-interactive]';
 
 export function useSelection(container: RefObject<HTMLElement | null>) {
   const api = useHopApi();
@@ -22,46 +22,42 @@ export function useSelection(container: RefObject<HTMLElement | null>) {
   useEffect(() => {
     const root = container.current;
     if (!root) return;
-    let alt = false;
-    let last: Element | null = null;
 
-    const hoverFor = (target: Element | null) => {
-      const frame = target?.closest('[data-hop-frame]');
-      if (!frame || !root.contains(frame)) return null;
-      const control = target?.closest(INTERACTIVE);
-      if (!alt && control && frame.contains(control)) return null;
-      return (frame as HTMLElement).dataset.hopFrame ?? null;
+    const frameAt = (target: EventTarget | null) => {
+      const frame = (target as Element | null)?.closest?.('[data-hop-frame]');
+      return frame && root.contains(frame) ? frame : null;
     };
 
     const onMove = (e: PointerEvent) => {
-      last = e.target as Element;
-      api.getState().setHover(hoverFor(last));
+      const s = api.getState();
+      if (!s.highlightMode) return;
+      s.setHover((frameAt(e.target) as HTMLElement | null)?.dataset.hopFrame ?? null);
     };
-    const onLeave = () => {
-      last = null;
-      api.getState().setHover(null);
-    };
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Alt' && alt !== (e.type === 'keydown')) {
-        alt = e.type === 'keydown';
-        if (last) api.getState().setHover(hoverFor(last));
+    const onLeave = () => api.getState().setHover(null);
+    // In highlight mode a press on a frame belongs to the picker: stop it reaching buttons
+    // (their press animation, focus) before it starts.
+    const onDown = (e: PointerEvent) => {
+      if (api.getState().highlightMode && frameAt(e.target)) {
+        e.preventDefault();
+        e.stopPropagation();
       }
     };
     const onClick = (e: MouseEvent) => {
-      const target = e.target as Element;
-      const frame = target.closest('[data-hop-frame]');
       const s = api.getState();
-      if (e.altKey && frame) {
-        // Tag it; don't also run the button's own action.
+      if (!s.highlightMode) {
+        // Outside the mode a highlight can still be up (a tag clicked in the chat, an Urgent
+        // action): a click on the page that isn't on a control puts it away.
+        if (!(e.target as Element).closest?.(CONTROLS)) s.deselect();
+        return;
+      }
+      const frame = frameAt(e.target);
+      if (frame) {
         e.preventDefault();
         e.stopPropagation();
         s.select(frameRefFrom(frame));
-        return;
+      } else {
+        s.deselect();
       }
-      const control = target.closest(INTERACTIVE);
-      if (control && root.contains(control)) return; // normal action
-      if (frame) s.select(frameRefFrom(frame));
-      else s.deselect();
     };
     const onEsc = (e: KeyboardEvent) => {
       if (e.key !== 'Escape') return;
@@ -69,21 +65,22 @@ export function useSelection(container: RefObject<HTMLElement | null>) {
       if (s.selection && !s.scanning) {
         s.deselect();
         e.preventDefault(); // tells later Esc handlers (day select) it's been used
+      } else if (s.highlightMode) {
+        s.setHighlightMode(false);
+        e.preventDefault();
       }
     };
 
     root.addEventListener('pointermove', onMove);
     root.addEventListener('pointerleave', onLeave);
+    root.addEventListener('pointerdown', onDown, true);
     root.addEventListener('click', onClick, true);
-    window.addEventListener('keydown', onKey);
-    window.addEventListener('keyup', onKey);
     window.addEventListener('keydown', onEsc, true);
     return () => {
       root.removeEventListener('pointermove', onMove);
       root.removeEventListener('pointerleave', onLeave);
+      root.removeEventListener('pointerdown', onDown, true);
       root.removeEventListener('click', onClick, true);
-      window.removeEventListener('keydown', onKey);
-      window.removeEventListener('keyup', onKey);
       window.removeEventListener('keydown', onEsc, true);
     };
   }, [api, container]);

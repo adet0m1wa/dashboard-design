@@ -1,9 +1,12 @@
 // Phase 6: Inventory, jump chips, page markers, sidebar clearing the chips.
+// Page markers (feedback 2026-09-28): "Moved to X" goes in only right before a tagged question
+// asked on a page other than the thread's, never on navigation alone.
 const SAND = '[data-hop-frame="analytics.card.linen-sand"]';
 const ADIRE = '[data-hop-frame="inventory.row.adire-blue"]';
 const chips = () => [...document.querySelectorAll('aside[aria-label=Hop] button')].filter((b) => b.textContent.startsWith('Go to')).map((b) => `${b.textContent.trim()}${b.getAttribute('aria-disabled') === 'true' ? '(off)' : '(on)'}`).join(' | ');
 const log = () => document.querySelector('[role=log]')?.innerText ?? '';
 const selected = (sel) => document.querySelector(`${sel} > span[aria-hidden] .border-selection`) !== null;
+const HIGHLIGHT = 'button[aria-label="Highlight a frame"]';
 
 export default async function (t) {
   await t.goto('/analytics');
@@ -12,6 +15,7 @@ export default async function (t) {
   await t.wait(900);
 
   // Ask about the Sand row on Analytics (2:31), then bring the highlight back from the tag
+  await t.click(HIGHLIGHT);
   await t.click(`${SAND} span.truncate`);
   await t.wait(250);
   await t.click('textarea[aria-label="Message Hop"]');
@@ -28,7 +32,7 @@ export default async function (t) {
   const mid = await t.eval(() => getComputedStyle([...document.querySelectorAll('aside[aria-label=Hop] button')].find((b) => b.textContent.startsWith('Go to Inventory'))).backgroundColor);
   await t.wait(700);
   await t.check(`${m}jump: now on /inventory`, () => t.eval(() => location.pathname === '/inventory' && document.querySelector('[data-page]').dataset.page === 'inventory'));
-  await t.check(`${m}jump: marker "Moved to Inventory · 2:32 PM"`, async () => (await t.eval(log)).includes('Moved to Inventory · 2:32 PM'));
+  await t.check(`${m}jump: no marker for the move alone`, async () => !(await t.eval(log)).includes('Moved to'));
   await t.check(`${m}jump: chips flip (${await t.eval(chips)})`, async () => (await t.eval(chips)) === 'Go to Inventory(off) | Go to Analytics(on)');
   if (!reduced) await t.check(`jump: chip fill crossfades (${before} → ${mid} mid-way)`, mid !== before && mid !== 'rgb(240, 240, 238)');
   await t.check(`${m}Inventory: tiles, pill and 8 stock rows`, () =>
@@ -36,7 +40,8 @@ export default async function (t) {
   );
 
   // First visit: the stock bars grew from 0 (checked by sampling a fresh visit below)
-  // Select the Adire row and ask (2:33)
+  // Select the Adire row and ask: marker (2:32) first, then the question (2:33)
+  await t.click(HIGHLIGHT);
   await t.click(`${ADIRE} span.truncate`);
   await t.wait(300);
   await t.check(`${m}Inventory: selecting a row keeps the chips (${await t.eval(chips)})`, async () => (await t.eval(chips)) === 'Go to Inventory(off) | Go to Analytics(on)');
@@ -48,6 +53,11 @@ export default async function (t) {
     const l = await t.eval(log);
     return l.includes('Amara · 2:33 PM') && l.includes('Adire shirt dress') && l.includes('What am I seeing?');
   });
+  await t.check(`${m}Adire: "Moved to Inventory · 2:32 PM" sits right before the question`, async () => {
+    const l = await t.eval(log);
+    const marker = l.indexOf('Moved to Inventory · 2:32 PM');
+    return marker > l.indexOf('Tell me more about this') && marker < l.indexOf('What am I seeing?');
+  });
   await t.check(`${m}Adire: answer with Add to restock / Notify me when back`, async () => {
     const l = await t.eval(log);
     return l.includes('This is the Adire shirt dress in Blue') && l.includes('Add to restock') && l.includes('Notify me when back') && l.includes('read Inventory, Customers');
@@ -57,16 +67,28 @@ export default async function (t) {
   await t.wait(300);
   await t.shot(`phase6-${reduced ? 'reduced-' : ''}inventory-chips-stay`);
 
-  // Hover a row: faint fill + outline
+  // Hover a row (highlight mode): faint fill + outline on the table's strokes
+  await t.click(HIGHLIGHT);
   const row = await (await t.page.$('[data-hop-frame="inventory.row.slip-emerald"]')).boundingBox();
   await t.page.mouse.move(row.x + 150, row.y + row.height / 2);
   await t.wait(250);
   await t.check(`${m}row hover: faint fill + outline`, () =>
     t.eval(() => {
       const r = document.querySelector('[data-hop-frame="inventory.row.slip-emerald"]');
-      return getComputedStyle(r).backgroundColor === 'rgb(250, 250, 248)' && !!r.querySelector(':scope > span[aria-hidden][class*="border-selection/35"]');
+      return getComputedStyle(r).backgroundColor === 'rgb(250, 250, 248)' && !!r.querySelector(':scope > span[aria-hidden].border-selection');
     }),
   );
+  await t.check(`${m}row hover: outline sides on the table border, top/bottom on the dividers`, () =>
+    t.eval(() => {
+      const r = document.querySelector('[data-hop-frame="inventory.row.slip-emerald"]');
+      const o = r.querySelector(':scope > span[aria-hidden].border-selection').getBoundingClientRect();
+      const table = document.querySelector('[role=table]').getBoundingClientRect();
+      const rr = r.getBoundingClientRect();
+      const prev = r.previousElementSibling.getBoundingClientRect();
+      return Math.abs(o.left - table.left) < 0.6 && Math.abs(o.right - table.right) < 0.6 && Math.abs(o.bottom - rr.bottom) < 0.6 && Math.abs(o.top - (prev.bottom - 1)) < 0.6;
+    }),
+  );
+  await t.click(HIGHLIGHT); // back to normal clicks
   await t.click('button[aria-label="Edit Satin slip dress, Emerald"]');
   await t.wait(250);
   await t.check(`${m}Edit is a stub toast`, () => t.eval(() => document.body.innerText.includes('Product page coming soon')));
@@ -75,14 +97,16 @@ export default async function (t) {
   await t.click('text=Go to Analytics');
   await t.wait(700);
   await t.check(`${m}Go to Analytics: back on /analytics, chips gone`, async () => (await t.eval(() => location.pathname)) === '/analytics' && (await t.eval(chips)) === '');
-  await t.check(`${m}Go to Analytics: marker "Moved to Analytics · 2:34 PM"`, async () => (await t.eval(log)).includes('Moved to Analytics · 2:34 PM'));
+  await t.check(`${m}Go to Analytics: no marker without a tagged question`, async () => !(await t.eval(log)).includes('Moved to Analytics'));
 
   // Sidebar navigation clears jumpOrigin
+  await t.click(HIGHLIGHT);
   await t.click(`${SAND} span.truncate`);
   await t.wait(250);
   await t.click('text=Go to Inventory');
   await t.wait(600);
   await t.check(`${m}jump again: chips on Inventory`, async () => (await t.eval(chips)) !== '');
+  await t.click(HIGHLIGHT); // done picking
   await t.eval(() => [...document.querySelectorAll('nav[aria-label=Pages] button')].find((b) => b.textContent.includes('Sales')).click());
   await t.wait(600);
   await t.check(`${m}sidebar navigation clears the chips`, async () => (await t.eval(chips)) === '');

@@ -96,6 +96,14 @@
     "bar": {
       "value": 56,
       "source": "brief A6 / Top bar + Agent header"
+    },
+    "sidebar-rail": {
+      "value": 56,
+      "source": "example 1 (1909:462) > Sidebar, collapsed"
+    },
+    "panel-rail": {
+      "value": 63,
+      "source": "example 2 (1913:334) > Hop - Agent panel, collapsed (62 + 1px border)"
     }
   },
   "color": {

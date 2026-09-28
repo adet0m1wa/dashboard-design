@@ -253,4 +253,6 @@
   --spacing-sidebar: 224px;
   --spacing-panel: 368px;
   --spacing-bar: 56px;
+  --spacing-sidebar-rail: 56px;
+  --spacing-panel-rail: 63px;
 }

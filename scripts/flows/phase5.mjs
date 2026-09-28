@@ -1,9 +1,11 @@
-// Phase 5: the selection system — hover, select, tag chip, jump chips, scan, clear on answer,
-// re-highlight from a tag, Alt+click, Esc, Urgent actions.
+// Phase 5: the selection system — highlight mode, hover, select, tag chip, jump chips, scan,
+// clear on answer, re-highlight from a tag, picking a tab, Esc, Urgent actions.
 const SAND = '[data-hop-frame="analytics.card.linen-sand"]';
 const selectedOverlay = (sel) => document.querySelector(`${sel} > span[aria-hidden] .border-selection`) !== null;
 const handles = (sel) => document.querySelectorAll(`${sel} > span[aria-hidden] > span.bg-surface-default`).length;
-const hoverOutline = (sel) => !!document.querySelector(`${sel} > span[aria-hidden][class*="border-selection/35"]`);
+const hoverOutline = (sel) => !!document.querySelector(`${sel} > span[aria-hidden].border-selection`);
+const HIGHLIGHT = 'button[aria-label="Highlight a frame"]';
+const modeOn = () => document.querySelector('button[aria-label="Highlight a frame"]').getAttribute('aria-pressed') === 'true';
 const composerChip = () => document.querySelector('aside[aria-label=Hop] .shadow-composer [aria-live] span.text-tag-text')?.textContent.trim() ?? null;
 const chips = () => [...document.querySelectorAll('aside[aria-label=Hop] button')].filter((b) => b.textContent.startsWith('Go to')).map((b) => `${b.textContent.trim()}${b.getAttribute('aria-disabled') === 'true' ? '(off)' : '(on)'}`).join(' | ');
 const cues = () => [...document.querySelectorAll('aside[aria-label=Hop] button')].some((b) => b.textContent === 'Any flags?');
@@ -17,19 +19,30 @@ export default async function (t) {
   const m = reduced ? '[reduced] ' : '';
   await t.wait(900);
 
-  // Hover
+  // Hover: nothing until highlight mode is on
   const row = await (await t.page.$(SAND)).boundingBox();
   await t.page.mouse.move(row.x + 120, row.y + 10);
   await t.wait(200);
-  await t.check(`${m}hover: faint outline on the Sand row`, () => t.eval(hoverOutline, SAND));
+  await t.check(`${m}mode off: no outline on hover`, async () => !(await t.eval(hoverOutline, SAND)));
+  await t.page.mouse.click(row.x + 120, row.y + 10);
+  await t.wait(200);
+  await t.check(`${m}mode off: a click doesn't pick the row`, async () => (await t.eval(composerChip)) === null);
+  await t.click(HIGHLIGHT);
+  await t.check(`${m}highlight button pressed`, () => t.eval(modeOn));
+  await t.page.mouse.move(row.x + 120, row.y + 12);
+  await t.wait(200);
+  await t.check(`${m}hover: blue outline on the Sand row`, () => t.eval(hoverOutline, SAND));
+  await t.check(`${m}hover: outline sits on the card's side strokes`, () =>
+    t.eval((s) => {
+      const o = document.querySelector(`${s} > span[aria-hidden].border-selection`).getBoundingClientRect();
+      const card = document.querySelector('[data-hop-frame="analytics.card"]').getBoundingClientRect();
+      return Math.abs(o.left - card.left) < 0.6 && Math.abs(o.right - card.right) < 0.6;
+    }, SAND),
+  );
   const tab = await (await t.page.$('#kpi-tab-orders')).boundingBox();
   await t.page.mouse.move(tab.x + 30, tab.y + 20);
   await t.wait(200);
-  await t.check(`${m}hover: no outline over a tab without Alt`, async () => !(await t.eval(hoverOutline, '[data-hop-frame="analytics.kpi.orders"]')));
-  await t.page.keyboard.down('Alt');
-  await t.wait(200);
-  await t.check(`${m}hover: Alt shows the outline over a tab`, () => t.eval(hoverOutline, '[data-hop-frame="analytics.kpi.orders"]'));
-  await t.page.keyboard.up('Alt');
+  await t.check(`${m}hover: outline over a tab too`, () => t.eval(hoverOutline, '[data-hop-frame="analytics.kpi.orders"]'));
 
   // Select the Sand row
   await t.page.mouse.click(row.x + 120, row.y + 10);
@@ -46,10 +59,11 @@ export default async function (t) {
   await t.wait(200);
   await t.shot(`phase5-${reduced ? 'reduced-' : ''}selected`);
 
-  // Esc deselects, cues return
+  // Esc deselects, cues return; highlight mode stays on
   await t.page.keyboard.press('Escape');
   await t.wait(500);
   await t.check(`${m}Esc: deselects, cues come back`, async () => !(await t.eval(selectedOverlay, SAND)) && (await t.eval(cues)) && (await t.eval(composerChip)) === null);
+  await t.check(`${m}Esc: highlight mode still on`, () => t.eval(modeOn));
 
   // Select again and send with no text
   await t.page.mouse.click(row.x + 120, row.y + 10);
@@ -63,6 +77,7 @@ export default async function (t) {
     return l.includes('Linen two-piece (Sand)') && l.includes('Tell me more about this') && l.includes('Amara · 2:31 PM');
   });
   await t.check(`${m}send: composer chip leaves`, async () => (await t.eval(composerChip)) === null);
+  await t.check(`${m}send: highlight mode switches off`, async () => !(await t.eval(modeOn)));
   await t.check(`${m}scan: avatar goes to scanning`, () => t.eval(() => document.querySelector('aside[aria-label=Hop] header svg[data-state]')?.dataset.state === 'scanning'));
   if (reduced) await t.check('[reduced] scan: static outline + "Hop is reading…"', () => t.eval(() => document.body.innerText.includes('Hop is reading…')));
   else await t.check('scan: band sweeping across the frame', () => t.eval((s) => !!document.querySelector(`${s} [class*="via-selection"]`), SAND));
@@ -101,16 +116,17 @@ export default async function (t) {
   await t.wait(400);
   await t.check(`${m}click on empty space deselects`, async () => !(await t.eval(selectedOverlay, SAND)));
 
-  // Alt+click a KPI tab tags it without switching KPI
-  await t.page.keyboard.down('Alt');
+  // In highlight mode a click on a KPI tab tags it without switching KPI
+  await t.click(HIGHLIGHT);
   await t.page.mouse.click(tab.x + 30, tab.y + 20);
-  await t.page.keyboard.up('Alt');
   await t.wait(400);
-  await t.check(`${m}Alt+click tags the Orders tab`, async () => (await t.eval(composerChip)) === 'Orders');
-  await t.check(`${m}Alt+click doesn't switch the KPI`, () => t.eval(() => document.querySelector('#kpi-tab-revenue').getAttribute('aria-selected') === 'true'));
+  await t.check(`${m}highlight mode: clicking the Orders tab tags it`, async () => (await t.eval(composerChip)) === 'Orders');
+  await t.check(`${m}highlight mode: the click doesn't switch the KPI`, () => t.eval(() => document.querySelector('#kpi-tab-revenue').getAttribute('aria-selected') === 'true'));
   await t.check(`${m}Orders tag jumps to Sales`, async () => (await t.eval(chips)).startsWith('Go to Sales(on)'));
   await t.page.keyboard.press('Escape');
+  await t.page.keyboard.press('Escape');
   await t.wait(400);
+  await t.check(`${m}second Esc leaves highlight mode`, async () => !(await t.eval(modeOn)));
 
   // Urgent: Draft replies → tagged message, scan, answer with buttons, toast
   await t.click('text=Draft replies');

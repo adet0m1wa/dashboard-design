@@ -38,7 +38,7 @@ export function KpiTabs() {
         const selected = id === kpi;
         const reading = snapshot.kpis[id];
         return (
-          <HopFrame key={id} id={`analytics.kpi.${id}`} label={KPIS[id].todayLabel} page="analytics" jumpTarget={KPIS[id].jumpTarget} radius={10} className="min-w-0 flex-1">
+          <HopFrame key={id} id={`analytics.kpi.${id}`} label={KPIS[id].todayLabel} page="analytics" jumpTarget={KPIS[id].jumpTarget} radius={8} className="min-w-0 flex-1">
             <button
               ref={(el) => {
                 tabs.current[index] = el;

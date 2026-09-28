@@ -34,7 +34,8 @@ export function Composer() {
 
   return (
     <div className="shrink-0 px-12 pb-12 pt-4">
-      <div className="flex flex-col gap-14 rounded-14 border border-composer-border bg-surface-default pb-10 pl-14 pr-12 pt-12 shadow-composer focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-selection">
+      {/* Typing turns the box's own border blue (no second ring around it). */}
+      <div className="flex flex-col gap-14 rounded-14 border border-composer-border bg-surface-default pb-10 pl-14 pr-12 pt-12 shadow-composer transition-colors duration-(--dur-fast) ease-hop-out has-[textarea:focus]:border-selection">
         <div className="grid" aria-live="polite">
           <AnimatePresence initial={false} mode="popLayout">
             {tag ? (

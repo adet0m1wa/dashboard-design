@@ -148,3 +148,31 @@ Token names are the generated CSS names (`--color-surface-default` = Figma `colo
   776×732, white, radius 12, overflow clip, shadow token `screenshot-card`; page drawn at 0.83 scale
   (top bar 46 = 56×0.83). Tagged kind: same card + selection outline around the Adire row.
   Instagram card image: public/history/instagram-1-40pm.png (765×732, 1× — the export tool won't upscale).
+
+## Collapsed sidebars + new highlight (frames "example 1" 1909:462, "example 2" 1913:334, "example 3" 1917:786; read 2026-09-28)
+
+The "fresh" section is now a single section (id 1816:4657, x 1694); the old duplicate is gone.
+
+- **Sidebar, collapsed** ("example 1" > Sidebar, 56 wide): px 4, py 6, gap 2, items centred.
+  - Store switcher → only `icon/panel` 16, px 8 py 6 (the expand toggle). No store logo/name.
+  - Nav stack pt 16 gap 2; each item icon-only, px 10 py 7, radius 8. Active item = the same pill
+    (white, 0.5px `surface/border-tint`, `shadow-nav-active`). Inventory/Customers stack the badge
+    under the icon (flex-col, gap 2 / 4), badge px 7 py 1 radius 10, 11/600 (warning / danger soft).
+  - Recent with Hop: pt 16 gap 2; header = `icon/history` 13px only (px 10 pb 6); items px 10 py 6,
+    radius 6, 16px avatar only.
+  - Spacer; Settings icon only (py 7); Current user px 10 py 8, 28px avatar only.
+  - Workspace then starts at x 72 (8 + 56 + 8) and is 1360 wide.
+- **Sidebar, expanded** ("example 3" > Store switcher): unchanged, `icon/panel` on the right is the
+  collapse toggle.
+- **Hop header** ("example 1" > Agent header): px 16, border-b `surface/faint`; right side is two
+  18px icons, gap 14: `ChatCentered` (new chat) then `BoundingBox` (highlight mode). Icons
+  `design/icons/chat-centered.svg`, `bounding-box.svg`. Highlight-on state isn't drawn.
+- **Hop panel, collapsed** ("example 2" > Hop - Agent panel): 63 wide (62 + 1px left border
+  `surface/divider-tint`), header 56 with border-b `surface/faint`, only the 30px mascot at px 16.
+  Nothing else visible. Main grows to fill (1297 in the frame).
+- **Highlight** ("example 3" > Selection outline 1917:1023): 1.5px `status/info`, **square corners**.
+  On a card row it spans the card's full width — its left/right edges sit exactly on the card's own
+  1px border (card x 28…406 = outline x 28…406) — and 4px above/below the row (row 36 tall → 44).
+  Handles: 7×7 white, 1.2px `status/info`, at −4.5px on each corner.
+- Chart in "example 2" stretches with the wider page: same 150 height, days spread evenly across
+  the full width (x axis labels justify-between).

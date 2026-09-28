@@ -43,10 +43,11 @@ export default async function (t) {
   await t.check('unknown question gets the polite fallback', async () => (await t.eval(panelText)).includes('I can answer that once this page is connected.'));
   await t.check('composer clears after sending', () => t.eval(() => document.querySelector('textarea').value === ''));
 
-  // 3. Page marker
+  // 3. Page marker: moving page alone adds none (feedback 2026-09-28 — only a tagged question
+  // asked on another page does; see phase6)
   await t.click('text=Sales');
   await t.wait(500);
-  await t.check('moving page adds "Moved to Sales · 2:33 PM"', async () => (await t.eval(panelText)).includes('Moved to Sales · 2:33 PM'));
+  await t.check('moving page adds no "Moved to" marker', async () => !(await t.eval(panelText)).includes('Moved to'));
   await t.check('no prompt cues on Sales', async () => !(await t.eval(cuesVisible)));
   await t.shot('phase4-marker');
   await t.click('text=Analytics');
