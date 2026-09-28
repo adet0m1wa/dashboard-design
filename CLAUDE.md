@@ -81,8 +81,11 @@ npm run check      # typecheck + token check
 | 7 History | done | Chain + dotted trail (per-brief segments, continuous under filters), sliding selection + Expand pop, three left sides (Analytics redrawn from its own store; Inventory/Customers drawn at 0.83 in a card; Instagram PNG), tag outline in snapshots, person/page/search filters with collapse, Expand/Back (slide, scroll to message, tag flash, focus), Recent with Hop, New-chat threads as briefs, Hop panel slides away on History. `phase7.mjs` 32/32, reduced 29/29; four History frames within 5–7% (the extra Zee chip row) |
 | Feedback 1 | done | Collapsible sidebar + Hop panel, highlight mode + stroke-snapping outline, markers only on tagged questions, composer focus border, chart height tween + responsive width. `feedback1.mjs` 14/14 both modes |
 | 8 Polish + QA | done | better-interface review (docs/INTERFACE_REVIEW.md): keyboard picking in highlight mode, skip link, min page width + sideways scroll + sidebar auto-rail, truncation tooltips, History h2 + Clear filters, 5s toasts, 24px hit areas, page titles, reduced-motion fixes. Contrast of two Figma text tokens reported, not changed. `phase8.mjs` 10/10 both modes |
+| Final test | done | `scripts/flows/final.mjs` — the brief's 10 flows as one journey + feedback features: 38/38 in both motion modes on the production build, no console errors; screenshots in `docs/screenshots/`. `frames.mjs` recreates all 19 Figma frames: 2.0–7.4% pixel difference each (`docs/screenshots/compare/`). Full suite (`HOP_URL=http://localhost:3001 bash scripts/test-all.sh`): 22/22 runs green |
 
-**Next step:** the brief's final 10-flow test with screenshots in docs/screenshots/, a frame-by-frame Figma comparison, then the final report ("Report").
+
+**Status (2026-09-28):** all phases, feedback round 1 and the final test are done. Open item for the
+designer: the two text-token contrast values in docs/INTERFACE_REVIEW.md.
 
 ## Decisions (not in the brief)
 
