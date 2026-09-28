@@ -109,7 +109,7 @@ Token names are the generated CSS names (`--color-surface-default` = Figma `colo
 - Jump chips: "Jump to" + [Go to Inventory →] active first, then [Go to Analytics] inactive
   (this older frame still says "Go to Chat" — brief says Analytics).
 
-## History (frames "History — …"; read 2026-09-26, not built yet)
+## History (frames "History — …"; read 2026-09-26)
 
 - Layout: NO Hop panel on History. Top bar spans the whole workspace (1192). Below it: left
   "Content" 832 + right "Brief chain" 360 (border-l divider-tint). "Chat expanded" swaps the chain
@@ -148,6 +148,11 @@ Token names are the generated CSS names (`--color-surface-default` = Figma `colo
   776×732, white, radius 12, overflow clip, shadow token `screenshot-card`; page drawn at 0.83 scale
   (top bar 46 = 56×0.83). Tagged kind: same card + selection outline around the Adire row.
   Instagram card image: public/history/instagram-1-40pm.png (765×732, 1× — the export tool won't upscale).
+- Chat expanded (frame 1869:68830, read 2026-09-28): Split under the top bar = Content 824 + a
+  Hop-panel-style column 368 (border-l `surface/divider-tint`). Header h56, px16, border-b
+  `surface/faint`: `CaretLeft` 16 + "Back" 14/600 `text/black`, gap 4, items-end. Conversation
+  px16 py14 gap16, the normal message styles; no composer. The snapshot card keeps the page at
+  0.83 scale, so it narrows to 682 in the 824 content (no stretch).
 
 ## Collapsed sidebars + new highlight (frames "example 1" 1909:462, "example 2" 1913:334, "example 3" 1917:786; read 2026-09-28)
 

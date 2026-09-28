@@ -104,6 +104,14 @@
     "panel-rail": {
       "value": 63,
       "source": "example 2 (1913:334) > Hop - Agent panel, collapsed (62 + 1px border)"
+    },
+    "chain": {
+      "value": 360,
+      "source": "History — asked on Analytics > Split > Brief chain (360 wide)"
+    },
+    "snapshot": {
+      "value": 732,
+      "source": "History — asked on another page > Content > Screenshot card height"
     }
   },
   "color": {

@@ -16,6 +16,7 @@ import { HopMessage, Marker, UserMessage } from './Message';
 // The mascot opens and closes the panel ("example 2": a 63px strip with only the mascot). The
 // width slides (slow) and everything but the mascot fades; the conversation stays mounted, so an
 // answer that is streaming keeps going while the panel is shut.
+// History has no Hop panel (Figma "History — …"): there it slides away entirely, still mounted.
 export function HopPanel() {
   const page = useHop((s) => s.page);
   const selection = useHop((s) => s.selection);
@@ -41,10 +42,11 @@ export function HopPanel() {
 
   return (
     <aside
-      className={`shrink-0 overflow-hidden border-l border-surface-divider-tint bg-surface-default transition-[width] duration-(--dur-slow) ease-hop-out motion-reduce:transition-none ${
-        collapsed ? 'w-panel-rail' : 'w-panel'
+      className={`shrink-0 overflow-hidden border-surface-divider-tint bg-surface-default transition-[width] duration-(--dur-slow) ease-hop-out motion-reduce:transition-none ${
+        page === 'history' ? 'w-0' : collapsed ? 'w-panel-rail border-l' : 'w-panel border-l'
       }`}
       aria-label="Hop"
+      inert={page === 'history'}
     >
       {/* Fixed width inside, so closing clips the panel instead of squashing it. */}
       <div className="flex h-full w-panel flex-col">

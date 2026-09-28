@@ -40,7 +40,9 @@ for (const file of files) {
     if (/^\s*(\/\/|\*|\/\*)/.test(text)) return; // comments
     for (const m of text.matchAll(/#[0-9a-fA-F]{3,8}\b/g)) {
       // allow things like `#1` in prose and id selectors; flag real colours only
-      if (/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/.test(m[0])) report(file, n, `raw colour ${m[0]}`);
+      if (!/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/.test(m[0])) continue;
+      if (/\border $/i.test(text.slice(0, m.index))) continue; // copy like "order #1042"
+      report(file, n, `raw colour ${m[0]}`);
     }
     if (/\b(rgba?|hsla?)\(/.test(text)) report(file, n, 'raw rgb()/hsl() colour');
     if (isCss) return;

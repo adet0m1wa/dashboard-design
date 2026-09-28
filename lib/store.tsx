@@ -20,7 +20,17 @@ export interface HopFrameRef {
 }
 
 export type Message =
-  | { id: string; kind: 'user'; author: PersonId; time: string; text: string; tag?: HopFrameRef; page: Page }
+  | {
+      id: string;
+      kind: 'user';
+      author: PersonId;
+      time: string;
+      text: string;
+      tag?: HopFrameRef;
+      page: Page;
+      /** What Analytics was showing when she asked there — History redraws it (brief B7.5). */
+      view?: AnalyticsState;
+    }
   | { id: string; kind: 'hop'; time: string; reads: Page[]; blocks: Block[]; status: 'thinking' | 'streaming' | 'done' }
   | { id: string; kind: 'marker'; text: string; time: string; page: Page };
 
@@ -43,7 +53,7 @@ export interface AnalyticsState {
 export interface HistoryState {
   selectedId: string;
   expanded: boolean;
-  person: string | 'all';
+  person: PersonId | 'all';
   pageFilter: Page | 'all';
   query: string;
 }
@@ -95,8 +105,12 @@ export interface HopState {
   setRange: (range: AnalyticsState['range']) => void;
   /** Select a past day on the chart (0 = Mon). null or today's index = back to today. */
   setDay: (day: number | null) => void;
-  /** Sidebar "Recent with Hop": open History with that brief selected. */
-  openBrief: (briefId: string | null) => void;
+  /** Sidebar "Recent with Hop": open History with that brief selected (or, for an item that
+   *  isn't in the chain, filtered to the person who asked). */
+  openBrief: (item: { briefId: string | null; who: PersonId }) => void;
+  selectBrief: (id: string) => void;
+  setExpanded: (expanded: boolean) => void;
+  setHistoryFilter: (filter: Partial<Pick<HistoryState, 'person' | 'pageFilter' | 'query'>>) => void;
   toggleSidebar: () => void;
   togglePanel: () => void;
   setHighlightMode: (on: boolean) => void;
@@ -104,7 +118,7 @@ export interface HopState {
 
 export { PAGE_IDS, isPage } from './pages';
 
-export function createHopStore(initialPage: Page) {
+export function createHopStore(initialPage: Page, init: Partial<HopState> = {}) {
   return createStore<HopState>()((set, get) => ({
     page: initialPage,
     analytics: { kpi: 'revenue', range: 'thisWeek', day: null },
@@ -145,6 +159,9 @@ export function createHopStore(initialPage: Page) {
         selection: null,
         hoverId: null,
         activeTagId: null,
+        // History has no Hop panel, so no highlight switch either; and it opens on the chain.
+        ...(page === 'history' ? { highlightMode: false } : {}),
+        ...(s.page === 'history' ? { history: { ...s.history, expanded: false } } : {}),
       });
     },
 
@@ -175,7 +192,7 @@ export function createHopStore(initialPage: Page) {
           ...(moved
             ? [{ id: nextId(), kind: 'marker' as const, text: `Moved to ${PAGE_TITLES[moved]}`, time: clockLabel(markerClock), page: moved }]
             : []),
-          { id: nextId(), kind: 'user', author: 'amara', time, text, tag, page: s.page },
+          { id: nextId(), kind: 'user', author: 'amara', time, text, tag, page: s.page, view: s.page === 'analytics' ? s.analytics : undefined },
           { id: answerId, kind: 'hop', time, reads: answer.reads, blocks: answer.blocks, status: 'thinking' },
         ],
       });
@@ -274,16 +291,24 @@ export function createHopStore(initialPage: Page) {
     setDay: (day) =>
       set((s) => ({ analytics: { ...s.analytics, range: 'thisWeek', day: day === TODAY_INDEX ? null : day } })),
 
-    openBrief: (briefId) => {
-      if (briefId) set((s) => ({ history: { ...s.history, selectedId: briefId, expanded: false } }));
+    openBrief: ({ briefId, who }) => {
+      set((s) => ({
+        history: briefId
+          ? { ...s.history, selectedId: briefId, expanded: false, person: 'all', pageFilter: 'all', query: '' }
+          : { ...s.history, expanded: false, person: who, pageFilter: 'all', query: '' },
+      }));
       get().navigate('history', 'sidebar');
     },
+    selectBrief: (id) => set((s) => ({ history: { ...s.history, selectedId: id } })),
+    setExpanded: (expanded) => set((s) => ({ history: { ...s.history, expanded } })),
+    setHistoryFilter: (filter) => set((s) => ({ history: { ...s.history, ...filter } })),
 
     toggleSidebar: () => set((s) => ({ sidebarCollapsed: !s.sidebarCollapsed })),
     // Hiding the panel also leaves highlight mode: its switch goes out of reach with it.
     togglePanel: () =>
       set((s) => (s.panelCollapsed ? { panelCollapsed: false } : { panelCollapsed: true, highlightMode: false, hoverId: null })),
     setHighlightMode: (on) => set(on ? { highlightMode: true } : { highlightMode: false, hoverId: null }),
+    ...init,
   }));
 }
 
@@ -301,8 +326,9 @@ function threadPage(messages: Message[]): Page | undefined {
 
 const StoreContext = createContext<StoreApi<HopState> | null>(null);
 
-export function HopStoreProvider({ initialPage, children }: { initialPage: Page; children: ReactNode }) {
-  const [store] = useState(() => createHopStore(initialPage));
+/** `init` seeds a store — History uses a separate one per snapshot to redraw a page as it was. */
+export function HopStoreProvider({ initialPage, init, children }: { initialPage: Page; init?: Partial<HopState>; children: ReactNode }) {
+  const [store] = useState(() => createHopStore(initialPage, init));
   return <StoreContext.Provider value={store}>{children}</StoreContext.Provider>;
 }
 

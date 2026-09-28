@@ -73,10 +73,11 @@ npm run check      # typecheck + token check
 | 4 Hop panel | done | Cues, send (Enter / Shift+Enter), typing dots, word streaming, blocks, markers, New chat (saves thread), fade mask, aria-live. `phase4.mjs` 20/20 both modes (Sizes block + answer buttons verified in phase 5 — they only come with tagged answers) |
 | 5 Selection system | done | HopFrame hover/select/scan overlay, page-level click + Alt+click + Esc, composer tag chip + placeholder crossfade, jump chips, clear on answer, re-highlight from tags (navigates + scrolls), Urgent Draft replies / Reorder → tagged scan. `phase5.mjs` 31/31, reduced 30/30. Panel matches the three selection frames (≤4% diff, 1px offset) |
 | 6 Inventory + jump chips | done | Tiles, attention pill, stock table (hover fill, bars grow on first visit, Edit/Add/All stubs), jump → marker → chips flip → chips stay → Go to Analytics, sidebar/link clear the chips. `phase6.mjs` 19/19, reduced 18/18; matches the Inventory frame |
-| 7 History | **in progress** | Branch `phase-7-history`. Done: History spec recorded (DESIGN_NOTES > History), icons (Search, Expand, Frame11, Time, Screenshot), card shadow token, Instagram screenshot image, Figma renders in docs/figma/history-*.png. Not started: data (summaries into data/history.ts), right-column swap in AppShell, BriefChain + trail, left snapshots, filters, Expand/Back, Recent-with-Hop links, New-chat threads as briefs, phase7 flow |
+| 7 History | done | Chain + dotted trail (per-brief segments, continuous under filters), sliding selection + Expand pop, three left sides (Analytics redrawn from its own store; Inventory/Customers drawn at 0.83 in a card; Instagram PNG), tag outline in snapshots, person/page/search filters with collapse, Expand/Back (slide, scroll to message, tag flash, focus), Recent with Hop, New-chat threads as briefs, Hop panel slides away on History. `phase7.mjs` 32/32, reduced 29/29; four History frames within 5–7% (the extra Zee chip row) |
+| Feedback 1 | done | Collapsible sidebar + Hop panel, highlight mode + stroke-snapping outline, markers only on tagged questions, composer focus border, chart height tween + responsive width. `feedback1.mjs` 14/14 both modes |
 | 8 Polish + QA | – | |
 
-**Next step (stopped here, usage limit):** continue phase 7 on branch `phase-7-history` from DESIGN_NOTES > History — no more Figma reads needed except, optionally, the expanded-chat frame's header. Then phase 8 (polish + QA), then the brief's final 10-flow test with screenshots in docs/screenshots/, then the final report. Run `bash scripts/test-all.sh` first to confirm phases 1–6 are still green.
+**Next step:** phase 8 (polish + QA) including the `better-interface` review (skills in `.claude/skills`), then the brief's final 10-flow test with screenshots in docs/screenshots/, then the final report ("Report"). `bash scripts/test-all.sh` runs every flow (both motion modes).
 
 ## Decisions (not in the brief)
 
@@ -156,3 +157,27 @@ npm run check      # typecheck + token check
 - Inventory stubs: Edit → "Product page coming soon"; All products / Add product → "… coming soon" toasts.
 - The conversation stays scrolled to the newest message; the Inventory frame shows it from the top.
 - The attention pill says "3 need attention" (brief + Figma text; the layer is named "4 need attention").
+- History has no Hop panel (Figma): the panel slides shut (width, slow) on the way in and back on
+  the way out, still mounted so a streaming answer carries on.
+- A saved thread becomes one brief named after its **last** question (as the 2:33 brief opens the
+  whole 2:31 → 2:33 thread); its summary is the first text of Hop's answer to it.
+- Briefs with no scripted conversation expand to a two-message thread: the question and the
+  summary as Hop's reply, in Hop's voice and without later events (Amara's 2:20 PM change, Dayo
+  sending the drafts). The morning brief is Hop's message alone.
+- Snapshots: the morning brief shows Analytics with Wednesday selected ("when Hop wrote the morning
+  brief"); Customers briefs show the Customers placeholder (not designed), so the Chioma tag has no
+  frame to outline; Ife's 8:40 AM Inventory uses today's stock numbers (there's one dataset).
+- Snapshot cards fill the content width (776; 768 while expanded — Figma's expanded card is 682).
+  The tag outline in a snapshot follows the new highlight rule (table side strokes), not the older
+  narrower outline in the History frame.
+- "Weekend content ideas" isn't in the chain: it opens History filtered to Zee's briefs.
+- Person chips include Zee (brief) and wrap to a second row (Figma shows four). An active person
+  chip takes the dark "Everyone" look; clicking it again goes back to Everyone.
+- "All pages" is a native select dressed as the Figma button ("Chat" = Analytics). Search matches
+  question, summary, tag, name and page. No matches: "No briefs match these filters." Its border
+  turns blue on focus, like the composer.
+- No dark left bar on the selected brief (brief B7.5 mentions one; Figma has only the background).
+- Default selected brief: 2:33 Adire. Expanded column is 368 (Figma), the chain 360; the width slides.
+- A brief's text is its select button; Expand is its own button. Expand focuses Back; Back/Esc
+  returns focus to Expand. The tag flash starts once the chat has slid in.
+- The Instagram screenshot is Figma's 1× export (the export tool wouldn't produce 2×).

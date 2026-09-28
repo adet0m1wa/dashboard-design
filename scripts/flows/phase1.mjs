@@ -28,8 +28,9 @@ export default async function (t) {
     const to = await pillY();
     const state = await t.eval(() => ({
       path: location.pathname,
-      titles: [...document.querySelectorAll('header h1')].map((h) => h.textContent.trim()),
-      pages: [...document.querySelectorAll('[data-page]')].map((p) => p.dataset.page),
+      // (History's snapshots draw other pages read-only inside [inert]; they don't count)
+      titles: [...document.querySelectorAll('header h1')].filter((h) => !h.closest('[inert]')).map((h) => h.textContent.trim()),
+      pages: [...document.querySelectorAll('[data-page]')].filter((p) => !p.closest('[inert]')).map((p) => p.dataset.page),
       active: document.querySelector('[aria-current=page]')?.textContent.trim(),
       pill: (() => {
         const b = document.querySelector('[aria-current=page] > span')?.getBoundingClientRect();

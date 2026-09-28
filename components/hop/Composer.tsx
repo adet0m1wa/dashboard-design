@@ -42,9 +42,9 @@ export function Composer() {
               <motion.span
                 key={`tag-${tag.id}`}
                 className="col-start-1 row-start-1 flex max-w-full items-center gap-6 justify-self-start rounded-6 border border-tag-border bg-tag-bg px-8 py-3 text-11-5 font-500 text-tag-text"
-                initial={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.92 }}
+                initial={reduce ? false : { opacity: 0, scale: 0.92 }}
                 animate={{ opacity: 1, scale: 1, transition: { duration: duration.base, ease: easeOut } }}
-                exit={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.92, transition: { duration: duration.fast, ease: easeIn } }}
+                exit={reduce ? { opacity: 0, transition: { duration: 0 } } : { opacity: 0, scale: 0.92, transition: { duration: duration.fast, ease: easeIn } }}
                 style={{ transformOrigin: 'left center' }}
               >
                 <FrameIcon className="shrink-0 text-selection" />

@@ -7,6 +7,7 @@ import { duration, easeIn, easeOut, timing } from '@/lib/motion';
 import { useHop } from '@/lib/store';
 import { AnalyticsPage } from '@/components/pages/AnalyticsPage';
 import { InventoryPage } from '@/components/pages/InventoryPage';
+import { HistoryPage } from '@/components/history/HistoryPage';
 import { useSelection } from '@/components/select/useSelection';
 import { PlaceholderPage } from '@/components/pages/PlaceholderPage';
 
@@ -57,12 +58,14 @@ export function PageArea() {
   );
 }
 
-function PageContent({ page }: { page: Page }) {
+export function PageContent({ page }: { page: Page }) {
   switch (page) {
     case 'analytics':
       return <AnalyticsPage />;
     case 'inventory':
       return <InventoryPage />;
+    case 'history':
+      return <HistoryPage />;
     default:
       return <PlaceholderPage page={page} />;
   }
