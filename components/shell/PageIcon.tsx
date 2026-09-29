@@ -1,13 +1,13 @@
 import type { SVGProps } from 'react';
 import type { Page } from '@/data/types';
-import { BoxIcon, CameraIcon, ClockCounterClockwiseIcon, SalesIcon, UsersIcon } from '@/components/icons/figma';
+import { BoxIcon, ClockCounterClockwiseIcon, InstagramIcon, SalesIcon, UsersIcon } from '@/components/icons/figma';
 import { HopHeadIcon } from '@/components/icons/HopHeadIcon';
 
 const ICONS: Record<Page, (props: SVGProps<SVGSVGElement>) => React.ReactElement> = {
   analytics: HopHeadIcon,
   history: ClockCounterClockwiseIcon,
   sales: SalesIcon,
-  instagram: CameraIcon,
+  instagram: InstagramIcon, // the current Instagram glyph (user feedback 2026-09-29), at the camera's size and stroke
   inventory: BoxIcon,
   customers: UsersIcon,
 };

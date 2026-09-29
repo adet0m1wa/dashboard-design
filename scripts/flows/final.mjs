@@ -137,8 +137,8 @@ export default async function (t) {
   );
   await shot('05b-scanning');
   await t.wait(3500);
-  await t.check(`${m}5 answer: Sand answer + Sizes left; highlight and chips cleared; cues back`, async () =>
-    (await t.eval(log)).includes('Sizes left') && !(await t.eval(selected, SAND)) && (await t.eval(chips)) === '' && (await t.eval(cues)),
+  await t.check(`${m}5 answer: Sand answer + Sizes left; highlight and chips cleared (no cues: the chat has started)`, async () =>
+    (await t.eval(log)).includes('Sizes left') && !(await t.eval(selected, SAND)) && (await t.eval(chips)) === '' && !(await t.eval(cues)),
   );
   await t.page.mouse.move(700, 880);
   await shot('05c-answered');
@@ -156,7 +156,8 @@ export default async function (t) {
 
   // ---- 7. Inventory: jump, chips flip, marker only with a tagged question, chips stay --------
   await t.click('text=Go to Inventory');
-  await t.wait(900);
+  await t.wait(100);
+  await t.settle();
   await t.check(`${m}7 jump: on Inventory, chips flipped (${await t.eval(chips)}), no marker for the move alone`, async () =>
     (await t.eval(() => location.pathname)) === '/inventory' && (await t.eval(chips)) === 'Go to Inventory(off) | Go to Analytics(on)' && !(await t.eval(log)).includes('Moved to'),
   );
@@ -177,7 +178,8 @@ export default async function (t) {
   await t.page.mouse.move(700, 880);
   await shot('07-inventory-marker-chips-stay');
   await t.click('text=Go to Analytics');
-  await t.wait(900);
+  await t.wait(100);
+  await t.settle();
   await t.check(`${m}7 Go to Analytics: back, chips gone`, async () => (await t.eval(() => location.pathname)) === '/analytics' && (await t.eval(chips)) === '');
   await t.click('button[aria-label="New chat"]'); // saves this thread to History (flow 9)
   await t.wait(600);
@@ -188,7 +190,7 @@ export default async function (t) {
     await t.eval(nav, i);
     await t.wait(40);
     const mid = await t.eval(() => document.querySelector('[aria-current=page] > span')?.getBoundingClientRect().y);
-    await t.wait(900);
+    await t.settle();
     const to = await t.eval(() => document.querySelector('[aria-current=page] > span')?.getBoundingClientRect().y);
     const slid = reduced ? true : Math.abs(mid - to) > 0.5 || Math.abs(from - to) < 1;
     await t.check(`${m}8 sidebar → ${path}: page, title and pill (${from?.toFixed(0)} → ${mid?.toFixed(0)} → ${to?.toFixed(0)})`, async () =>
@@ -212,12 +214,12 @@ export default async function (t) {
 
   // ---- 9. History: the three kinds, filters, trail, Expand → chat → Back ---------------------
   await t.eval(nav, 2);
-  await t.wait(1400);
-  const items = () => [...document.querySelectorAll('[data-page=history] button[aria-current]')].map((b) => b.querySelector('.text-13-5')?.textContent);
+  await t.settle(400);
+  const items = () => [...document.querySelectorAll('[data-history-panel] li')].map((li) => li.querySelector('.text-13-5')?.textContent);
   const note = () => document.querySelector('[data-page=history] p.bg-surface-subtle')?.textContent ?? '';
-  const pick = (q) => [...document.querySelectorAll('[data-page=history] button[aria-current]')].find((b) => b.textContent.includes(q)).click();
-  await t.check(`${m}9 History: no Hop panel; saved threads on top (${(await t.eval(items)).slice(0, 2).join(' / ')})`, async () =>
-    (await t.eval(() => document.querySelector('aside[aria-label=Hop]').offsetWidth)) === 0 && (await t.eval(items))[0] === 'What am I seeing?' && (await t.eval(items)).length === 9,
+  const pick = (q) => [...document.querySelectorAll('[data-history-panel] li')].find((li) => li.textContent.includes(q)).querySelector('button[aria-current]').click();
+  await t.check(`${m}9 History: the list sits in the side panel under Hop; saved threads on top (${(await t.eval(items)).slice(0, 2).join(' / ')})`, async () =>
+    (await t.eval(() => document.querySelector('aside[aria-label^=Hop]').offsetWidth)) === 368 && (await t.eval(items))[0] === 'What am I seeing?' && (await t.eval(items)).length === 9,
   );
   await t.check(`${m}9 tagged kind: Inventory card with the Adire outline`, async () =>
     (await t.eval(note)).startsWith('Screenshot of Inventory — taken at 2:33 PM') && (await t.eval(() => !!document.querySelector('[data-page=history] .shadow-screenshot-card [data-hop-frame="inventory.row.adire-blue"] .border-selection'))),
@@ -230,24 +232,24 @@ export default async function (t) {
   await shot('09b-history-analytics');
   await t.eval(pick, 'Why is the Sand reel');
   await t.wait(900);
-  await t.check(`${m}9 screenshot kind: Instagram card`, async () => (await t.eval(note)).startsWith('Screenshot of Instagram') && (await t.eval(() => document.querySelector('[data-page=history] img')?.naturalWidth === 765)));
+  await t.check(`${m}9 screenshot kind: Instagram card`, async () => (await t.eval(note)).startsWith('Screenshot of Instagram') && (await t.eval(() => document.querySelector('[data-page=history] img')?.naturalWidth === 1530)));
   await shot('09c-history-screenshot');
   await t.click('button[aria-pressed][class*=rounded-999]:nth-of-type(3)'); // Ife
   await t.wait(700);
   await t.check(`${m}9 filter Ife: one brief, trail ends hidden`, async () =>
     (await t.eval(items)).join('|') === 'Draft a restock plan for the linen sets' &&
-    (await t.eval(() => [...document.querySelectorAll('[data-page=history] li [aria-hidden=true] > .hop-trail')].length)) === 0,
+    (await t.eval(() => [...document.querySelectorAll('[data-history-panel] li [aria-hidden=true] > .hop-trail')].length)) === 0,
   );
   await t.click('button[aria-pressed][class*=rounded-999]:nth-of-type(1)');
   await t.wait(700);
-  await t.check(`${m}9 Everyone: the dotted trail runs between briefs`, () => t.eval(() => document.querySelectorAll('[data-page=history] .hop-trail').length > 8));
+  await t.check(`${m}9 Everyone: the dotted trail runs between briefs`, () => t.eval(() => document.querySelectorAll('[data-history-panel] .hop-trail').length > 8));
   await t.eval(pick, 'Amara · 2:33 PM');
   await t.wait(600);
-  await t.click('button[aria-label^="Expand"]');
+  await t.click('button[aria-label^="Open the chat"]');
   await t.wait(1300);
   await t.check(`${m}9 Expand: the whole thread with Back; the question in view`, () =>
     t.eval(() => {
-      const logEl = [...document.querySelectorAll('[role=log]')].find((l) => l.closest('[data-page=history]'));
+      const logEl = document.querySelector('[data-history-panel] [role=log]');
       return !!logEl && logEl.innerText.includes('Moved to Inventory · 2:32 PM') && document.activeElement?.textContent.trim() === 'Back';
     }),
   );
@@ -255,7 +257,7 @@ export default async function (t) {
   await t.click('button[aria-label="Back to the brief list"]');
   await t.wait(900);
   await t.check(`${m}9 Back: the chain again, same brief selected`, async () =>
-    (await t.eval(() => document.querySelector('[data-page=history] button[aria-current="true"]')?.textContent.includes('2:33 PM'))) === true,
+    (await t.eval(() => document.querySelector('[data-history-panel] button[aria-current="true"]')?.closest('li').textContent.includes('2:33 PM'))) === true,
   );
 
   // ---- 10. Reduced motion = the --reduced run of this file; keyboard-only = phase8.mjs;

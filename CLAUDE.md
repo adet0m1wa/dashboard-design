@@ -28,7 +28,9 @@ npm run check      # typecheck + token check
 - User feedback overrides the brief where they disagree (feedback round 1, 2026-09-28: collapsible
   sidebars, highlight mode, markers only on tagged questions, composer focus border, chart).
 - Tokens only. `design/Default.tokens.json` (never edit) + `design/extras.tokens.json` (Figma styles
-  that aren't variables) → `npm run tokens` → `styles/tokens.css` (a Tailwind `@theme`). Tailwind's
+  that aren't variables, plus `override`: Figma variables changed since the last export) →
+  `npm run tokens` → `styles/tokens.css` (a Tailwind `@theme`). When the JSON is re-exported from
+  Figma, delete the matching `override` entries. Tailwind's
   default palette, radii and type scale are cleared, so only tokens exist as utilities:
   `bg-surface-default`, `text-text-secondary`, `p-16`, `rounded-12`, `text-13`, `font-600`.
   Readable aliases for the non-semantic tones are in `styles/globals.css` (`bg-selection`, `bg-tag-bg` …).
@@ -82,10 +84,11 @@ npm run check      # typecheck + token check
 | Feedback 1 | done | Collapsible sidebar + Hop panel, highlight mode + stroke-snapping outline, markers only on tagged questions, composer focus border, chart height tween + responsive width. `feedback1.mjs` 14/14 both modes |
 | 8 Polish + QA | done | better-interface review (docs/INTERFACE_REVIEW.md): keyboard picking in highlight mode, skip link, min page width + sideways scroll + sidebar auto-rail, truncation tooltips, History h2 + Clear filters, 5s toasts, 24px hit areas, page titles, reduced-motion fixes. Contrast of two Figma text tokens reported, not changed. `phase8.mjs` 10/10 both modes |
 | Final test | done | `scripts/flows/final.mjs` — the brief's 10 flows as one journey + feedback features: 38/38 in both motion modes on the production build, no console errors; screenshots in `docs/screenshots/`. `frames.mjs` recreates all 19 Figma frames: 2.0–7.4% pixel difference each (`docs/screenshots/compare/`). Full suite (`HOP_URL=http://localhost:3001 bash scripts/test-all.sh`): 22/22 runs green |
+| Feedback 2 | done | Highlight-off clears the pick, scroll-driven chat fade, wipe page transition (distance-timed), custom "All pages" menu, resizable side panel (History lives in it), expand icon, 2× Instagram image, thin scrollbars, Instagram glyph, cues only on an empty chat, 8 colour variables fixed for AA (Figma updated). `feedback2.mjs` 28/28, reduced 25/25; every flow green on the production build |
 
 
-**Status (2026-09-28):** all phases, feedback round 1 and the final test are done. Open item for the
-designer: the two text-token contrast values in docs/INTERFACE_REVIEW.md.
+**Status (2026-09-29):** all phases, feedback rounds 1–2 and the final test are done. Waiting on:
+product/post images (names + prompts in the round-2 report).
 
 ## Decisions (not in the brief)
 
@@ -204,3 +207,28 @@ designer: the two text-token contrast values in docs/INTERFACE_REVIEW.md.
 - Contrast: `text/muted` #9C9A94 (2.5–2.8:1) and `status/success-text` #1F8A4C (4.0–4.4:1) fail
   WCAG AA for their text sizes. Left as designed (Figma variables); proposed #706F6B and #1D8047
   in docs/INTERFACE_REVIEW.md.
+- ~~Contrast left as designed~~ → fixed (feedback 2): 8 colour variables darkened, same hues, to the
+  smallest values that reach 4.5:1 on every background they sit on: text/muted, text/tone-02,
+  status/success-text and the avatar tones 01, 02, 03, 15, 17. Updated in Figma (use_figma, on the
+  user's request) and applied here through `extras.override` (Default.tokens.json stays untouched).
+- Highlight switched off (button, closing the panel) also drops a frame it picked, unless Hop is
+  reading it.
+- Chat fade (feedback 2): none while the last message is in view; 20px per 1% of the scrollable
+  height back up, 100px max; it applies whatever sits below (cues, jump chips, composer).
+- Prompt cues only on an empty chat on Analytics (feedback 2; brief B6 had them return after answers).
+- Page transitions (feedback 2, replaces the brief's slide): the whole workspace — top bar, page and
+  side panel — wipes out through a 30% soft edge, stays white, then wipes in. Down the sidebar:
+  top → bottom; up: bottom → top. Time = 0.6s for one step + 0.12s per extra step, split 2 : 1 : 2
+  (Customers → Analytics ≈ 1.08s). The pill and URL move at once; content swaps while blank.
+  Reduced motion: 100ms fade out and in. The top bar no longer crossfades its title.
+- "All pages" menu (feedback 2, Figma "All pages"/"transition"): chevron travels to the pick, then
+  the list rolls up into the closed box; each move takes 0.16s + 0.04s per extra row. It's a
+  listbox (↑/↓, Home/End, Enter, Esc). The option reads "Chats" (Figma) while brief pills say "Chat".
+- Side panel: one width for every page, 300–368px (368 default), dragged by its left edge or with
+  ←/→ (Shift = 32px), Home/End on the focused edge; it animates for keys, follows the pointer
+  when dragged; kept when the panel is closed and reopened. On History it can't be closed.
+- History moved into the side panel (feedback 2): header = mascot + "Hop" (or "‹ Back" in the
+  chat); the brief row is one button — it picks the brief, and on the picked one opens the chat;
+  an 18px expand icon beside the page pill does the same. The big Expand pill is gone.
+- The Instagram screenshot is now Figma's 2× export (download_assets, scale 2), cropped to the card.
+- Scrollbars: 6px, thumb `surface/border-tint` (hover tone-27), no track.

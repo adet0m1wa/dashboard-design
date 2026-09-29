@@ -91,7 +91,7 @@
     },
     "panel": {
       "value": 368,
-      "source": "brief A6 / Analytics > Hop — Agent panel"
+      "source": "brief A6 / Analytics > Hop — Agent panel. Also the side panel's maximum (and default) width — it can be dragged narrower (user feedback 2026-09-29)"
     },
     "bar": {
       "value": 56,
@@ -116,12 +116,59 @@
     "main-min": {
       "value": 720,
       "source": "Not in Figma: the narrowest page area before the Analytics KPI tabs overlap (phase 8 zoom check; Figma draws it at 824). Below this the workspace scrolls sideways instead of squashing."
+    },
+    "panel-min": {
+      "value": 300,
+      "source": "Not in Figma: the narrowest the side panel can be dragged (user left the minimum to us, 2026-09-29) — keeps the jump chips on one line and the History chain readable"
     }
   },
   "color": {
     "hop-glow": {
       "value": "rgba(43, 178, 89, 0.7)",
       "source": "Agent character > Eye left/right drop shadow (blur 4, #2BB35A at 70%)"
+    }
+  },
+  "override": {
+    "$description": "Figma variables changed after the last JSON export. gen-tokens applies these over design/Default.tokens.json (which is never edited by hand).",
+    "color/text/muted": {
+      "value": "#716F6B",
+      "was": "#9C9A94",
+      "source": "Figma variable updated 2026-09-29 for WCAG AA contrast (user request); design/Default.tokens.json predates it — re-export to fold this in, then delete this override"
+    },
+    "color/text/tone-02": {
+      "value": "#577764",
+      "was": "#8FC5A5",
+      "source": "Figma variable updated 2026-09-29 for WCAG AA contrast (user request); design/Default.tokens.json predates it — re-export to fold this in, then delete this override"
+    },
+    "color/status/success-text": {
+      "value": "#1C7E46",
+      "was": "#1F8A4C",
+      "source": "Figma variable updated 2026-09-29 for WCAG AA contrast (user request); design/Default.tokens.json predates it — re-export to fold this in, then delete this override"
+    },
+    "color/palette/tone-01": {
+      "value": "#7A5BF6",
+      "was": "#7C5CFA",
+      "source": "Figma variable updated 2026-09-29 for WCAG AA contrast (user request); design/Default.tokens.json predates it — re-export to fold this in, then delete this override"
+    },
+    "color/palette/tone-02": {
+      "value": "#B56025",
+      "was": "#E0772E",
+      "source": "Figma variable updated 2026-09-29 for WCAG AA contrast (user request); design/Default.tokens.json predates it — re-export to fold this in, then delete this override"
+    },
+    "color/palette/tone-03": {
+      "value": "#CE4275",
+      "was": "#D6457A",
+      "source": "Figma variable updated 2026-09-29 for WCAG AA contrast (user request); design/Default.tokens.json predates it — re-export to fold this in, then delete this override"
+    },
+    "color/palette/tone-15": {
+      "value": "#52840B",
+      "was": "#65A30D",
+      "source": "Figma variable updated 2026-09-29 for WCAG AA contrast (user request); design/Default.tokens.json predates it — re-export to fold this in, then delete this override"
+    },
+    "color/palette/tone-17": {
+      "value": "#0C875E",
+      "was": "#0E9F6E",
+      "source": "Figma variable updated 2026-09-29 for WCAG AA contrast (user request); design/Default.tokens.json predates it — re-export to fold this in, then delete this override"
     }
   }
 }

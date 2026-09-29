@@ -14,7 +14,8 @@ const stop = () => {
   const frame = el.hasAttribute('data-hop-frame') && !!el.querySelector(':scope > span.border-selection');
   const composer = el.tagName === 'TEXTAREA' && getComputedStyle(el.closest('.shadow-composer')).borderTopColor === 'rgb(37, 99, 235)';
   const search = el.type === 'search' && getComputedStyle(el.closest('label')).borderTopColor === 'rgb(37, 99, 235)';
-  return { name, visible: r.width > 1 && r.height > 1, indicator: ring || frame || composer || search };
+  const edge = el.getAttribute('role') === 'separator' && getComputedStyle(el.firstElementChild).backgroundColor === 'rgb(37, 99, 235)';
+  return { name, visible: r.width > 1 && r.height > 1, indicator: ring || frame || composer || search || edge };
 };
 export default async (t) => {
   await t.goto('/analytics');

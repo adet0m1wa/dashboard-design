@@ -36,9 +36,11 @@ export default async function (t) {
 
   // Entrance is first-load only: leave and come back.
   await t.click('text=History');
-  await t.wait(500);
+  await t.wait(100);
+  await t.settle();
   await t.click('text=Analytics');
-  await t.wait(150);
+  // right after the page swaps in (mid-reveal), the number is already final
+  await t.page.waitForFunction(() => document.querySelector('[data-page=analytics] #kpi-tab-revenue'), { polling: 'raf' });
   await t.check(`${mode}entrance does not replay on return (${await t.eval(revenue)})`, (await t.eval(revenue)) === '$2,480');
   await t.wait(400);
 

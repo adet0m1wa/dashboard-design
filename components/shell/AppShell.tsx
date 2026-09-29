@@ -10,6 +10,7 @@ import { HopStoreProvider, isPage, useHop, useHopApi } from '@/lib/store';
 import { HopPanel } from '@/components/hop/HopPanel';
 import { Toast } from '@/components/ui/Toast';
 import { PageArea } from './PageArea';
+import { PageStage } from './PageStage';
 import { Sidebar } from './Sidebar';
 import { TopBar } from './TopBar';
 
@@ -33,12 +34,14 @@ export function AppShell({ initialPage }: { initialPage: Page }) {
         <div className="flex h-screen gap-8 overflow-x-auto overflow-y-hidden bg-background-app p-8">
           <Sidebar />
           <div className="flex min-w-min flex-1 overflow-hidden rounded-12 bg-surface-default">
-            <main id="main" className="relative flex min-w-main-min flex-1 flex-col">
-              <TopBar />
-              <PageArea />
-              <Toast />
-            </main>
-            <HopPanel />
+            <PageStage>
+              <main id="main" className="relative flex min-w-main-min flex-1 flex-col">
+                <TopBar />
+                <PageArea />
+                <Toast />
+              </main>
+              <HopPanel />
+            </PageStage>
           </div>
         </div>
       </MotionConfig>

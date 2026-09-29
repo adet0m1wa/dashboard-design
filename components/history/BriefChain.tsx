@@ -2,14 +2,15 @@
 
 import { AnimatePresence, LayoutGroup, motion, useReducedMotion } from 'motion/react';
 import { useEffect, useRef } from 'react';
-import { HISTORY_PAGES, HISTORY_PEOPLE, type Brief } from '@/data/history';
+import { HISTORY_PEOPLE, type Brief } from '@/data/history';
 import { TEAM } from '@/data/team';
 import { matches } from '@/lib/briefs';
 import { duration, easeIn, easeOut, layoutSpring, press } from '@/lib/motion';
 import { useHop } from '@/lib/store';
-import { Chev13Icon, ExpandIcon, Frame11Icon, SearchIcon } from '@/components/icons/figma';
+import { ArrowsOutIcon, Chev13Icon, Frame11Icon, SearchIcon } from '@/components/icons/figma';
 import { PersonAvatar } from '@/components/ui/PersonAvatar';
 import { SmallButton } from '@/components/ui/SmallButton';
+import { PageMenu } from './PageMenu';
 import { Truncate } from '@/components/ui/Truncate';
 
 // The brief chain (brief B7.5; Figma "Brief chain"): person chips, search and page filter, then
@@ -93,7 +94,6 @@ function NoMatches() {
 
 function Filters() {
   const person = useHop((s) => s.history.person);
-  const pageFilter = useHop((s) => s.history.pageFilter);
   const query = useHop((s) => s.history.query);
   const setFilter = useHop((s) => s.setHistoryFilter);
   const box = 'rounded-8 border border-surface-border-tint bg-surface-default transition-colors duration-(--dur-fast) ease-hop-out';
@@ -125,23 +125,7 @@ function Filters() {
             className="min-w-0 flex-1 bg-transparent text-12-5 text-text-primary outline-none placeholder:text-text-muted"
           />
         </label>
-        {/* The "All pages" menu: a native select dressed as the Figma button. */}
-        <label className="relative flex items-center">
-          <span className="sr-only">Page</span>
-          <select
-            value={pageFilter}
-            onChange={(e) => setFilter({ pageFilter: e.target.value as typeof pageFilter })}
-            className={`appearance-none py-7 pl-10 pr-28 text-12-5 font-500 text-text-strong-secondary hover:bg-surface-subtle ${box}`}
-          >
-            <option value="all">All pages</option>
-            {HISTORY_PAGES.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.label}
-              </option>
-            ))}
-          </select>
-          <Chev13Icon className="pointer-events-none absolute right-10 text-text-secondary" />
-        </label>
+        <PageMenu />
       </div>
     </div>
   );
@@ -170,6 +154,7 @@ function BriefItem({ brief, first, last, expandRef }: { brief: Brief; first: boo
   const reduce = useReducedMotion();
   const person = TEAM[brief.who];
   const summaryId = `${brief.id}-summary`;
+  const open = `Open the chat for “${brief.question}”`;
 
   return (
     <motion.li
@@ -181,7 +166,18 @@ function BriefItem({ brief, first, last, expandRef }: { brief: Brief; first: boo
       transition={layoutSpring}
     >
       {selected && <motion.span layoutId="brief-selected" transition={layoutSpring} className="absolute inset-0 bg-palette-tone-28" />}
-      <div className="relative flex gap-12 px-16">
+      {/* The whole row is one button: it picks the brief, and on the picked brief it opens the chat
+          (user feedback 2026-09-29). The expand icon sits above it. */}
+      <button
+        type="button"
+        onClick={() => (selected ? setExpanded(true) : selectBrief(brief.id))}
+        aria-current={selected}
+        aria-label={selected ? open : `${person.name} · ${brief.time}: ${brief.question}`}
+        aria-describedby={brief.summary ? summaryId : undefined}
+        title={brief.summary || undefined} // the summary is clamped to 2 lines; hovering shows all of it
+        className="absolute inset-0 z-0 rounded-4"
+      />
+      <div className="pointer-events-none relative flex gap-12 px-16">
         {/* Trail: a segment above the avatar and one below, hidden at the ends of a day. */}
         <div className="flex w-[18px] shrink-0 flex-col items-center self-stretch" aria-hidden="true">
           <span className={`h-[14px] ${first ? '' : 'hop-trail'}`} />
@@ -189,53 +185,42 @@ function BriefItem({ brief, first, last, expandRef }: { brief: Brief; first: boo
           <span className={`flex-1 ${last ? '' : 'hop-trail'}`} />
         </div>
         <div className="flex min-w-0 flex-1 flex-col gap-5 py-14">
-          {/* The whole row picks the brief (its ::after covers the row); Expand sits above it. */}
-          <button
-            type="button"
-            onClick={() => selectBrief(brief.id)}
-            aria-current={selected}
-            aria-describedby={summaryId}
-            className="flex min-w-0 flex-col gap-5 rounded-4 text-left after:absolute after:inset-0"
-          >
-            <span className="flex items-center gap-8">
-              <Truncate className="min-w-0 flex-1 text-11-5 font-500 text-text-muted">
-                {person.name} · {brief.time}
-              </Truncate>
-              <span className="shrink-0 rounded-6 bg-surface-subtle px-7 py-1 text-11 font-500 text-text-secondary">{brief.pageLabel}</span>
+          <span className="flex items-center gap-8">
+            <Truncate className="min-w-0 flex-1 text-11-5 font-500 text-text-muted">
+              {person.name} · {brief.time}
+            </Truncate>
+            <span className="shrink-0 rounded-6 bg-surface-subtle px-7 py-1 text-11 font-500 text-text-secondary">{brief.pageLabel}</span>
+            <AnimatePresence initial={false}>
+              {selected && (
+                <motion.button
+                  key="expand"
+                  ref={expandRef}
+                  type="button"
+                  onClick={() => setExpanded(true)}
+                  whileTap={press}
+                  aria-label={open}
+                  className="pointer-events-auto relative -my-2 shrink-0 rounded-4 text-text-black after:absolute after:-inset-4"
+                  initial={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1, transition: { duration: duration.base, ease: easeOut } }}
+                  exit={{ opacity: 0, transition: { duration: duration.fast, ease: easeIn } }}
+                >
+                  <ArrowsOutIcon />
+                </motion.button>
+              )}
+            </AnimatePresence>
+          </span>
+          <Truncate className="text-13-5 font-600 text-text-primary">{brief.question}</Truncate>
+          {brief.tag && (
+            <span className="flex max-w-full items-center gap-5 self-start rounded-6 border border-tag-border bg-tag-bg px-7 py-2 text-11 font-500 text-tag-text">
+              <Frame11Icon className="shrink-0 text-selection" />
+              <Truncate>{brief.tag.label}</Truncate>
             </span>
-            <Truncate className="text-13-5 font-600 text-text-primary">{brief.question}</Truncate>
-            {brief.tag && (
-              <span className="flex max-w-full items-center gap-5 self-start rounded-6 border border-tag-border bg-tag-bg px-7 py-2 text-11 font-500 text-tag-text">
-                <Frame11Icon className="shrink-0 text-selection" />
-                <Truncate>{brief.tag.label}</Truncate>
-              </span>
-            )}
-            {brief.summary && (
-              <Truncate lines={2} id={summaryId} className="text-12-5 leading-18 text-text-secondary">
-                {brief.summary}
-              </Truncate>
-            )}
-          </button>
-          <AnimatePresence initial={false}>
-            {selected && (
-              <motion.button
-                key="expand"
-                ref={expandRef}
-                type="button"
-                onClick={() => setExpanded(true)}
-                whileTap={press}
-                aria-label={`Expand: open the chat for “${brief.question}”`}
-                className="relative z-10 flex items-center gap-5 self-start rounded-999 bg-action-primary px-10 py-4 text-11-5 font-500 text-text-on-dark transition-colors duration-(--dur-fast) ease-hop-out hover:bg-palette-tone-25"
-                initial={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1, transition: { duration: duration.base, ease: easeOut } }}
-                exit={{ opacity: 0, transition: { duration: duration.fast, ease: easeIn } }}
-                style={{ transformOrigin: 'left center' }}
-              >
-                <ExpandIcon />
-                Expand
-              </motion.button>
-            )}
-          </AnimatePresence>
+          )}
+          {brief.summary && (
+            <Truncate lines={2} id={summaryId} className="text-12-5 leading-18 text-text-secondary">
+              {brief.summary}
+            </Truncate>
+          )}
         </div>
       </div>
     </motion.li>
