@@ -1,4 +1,5 @@
 // Phase 4: Hop panel — cues, send, typing dots, streaming, New chat, markers, fade mask.
+// (Cues and the fade follow feedback round 2: cues only on an empty chat; fade by scroll position.)
 const panelText = () => document.querySelector('[role=log]')?.innerText ?? '';
 const cuesVisible = () => [...document.querySelectorAll('aside[aria-label=Hop] button')].some((b) => b.textContent === 'Any flags?');
 
@@ -22,9 +23,11 @@ export default async function (t) {
   await t.check(`answer streams word by word (${partial.split(' ').length} words mid-way)`, partial.length > 0 && partial.length < full.length);
   await t.check('answer text is the scripted one', full.startsWith('A good day so far. $2,480 from 34 orders'));
   await t.check('meta shows "Hop · 2:31 PM · read Sales, Instagram, Customers"', async () => (await t.eval(panelText)).includes('Hop · 2:31 PM · read Sales, Instagram, Customers'));
-  await t.check('cues return after the answer', () => t.eval(cuesVisible));
+  // Cues are only for starting a chat (feedback 2026-09-29): once she has asked, they stay away.
+  await t.check('no cues once the chat has started', async () => !(await t.eval(cuesVisible)));
   await t.check('answer announced politely', () => t.eval(() => document.querySelector('aside[aria-label=Hop] .sr-only[aria-live=polite]')?.textContent.startsWith('A good day so far')));
-  await t.check('fade mask on the conversation above the cues', () => t.eval(() => getComputedStyle(document.querySelector('[role=log]')).maskImage.includes('gradient')));
+  // The bottom fade only shows while there's more below (feedback 2026-09-29): at the end, none.
+  await t.check('no fade over the newest message at the end of the chat', () => t.eval(() => getComputedStyle(document.querySelector('[role=log]')).maskImage === 'none'));
   await t.shot('phase4-answered');
 
   // 2. Typed question: Shift+Enter adds a line, Enter sends, unknown → polite fallback
@@ -46,12 +49,14 @@ export default async function (t) {
   // 3. Page marker: moving page alone adds none (feedback 2026-09-28 — only a tagged question
   // asked on another page does; see phase6)
   await t.click('text=Sales');
-  await t.wait(500);
+  await t.wait(100);
+  await t.settle();
   await t.check('moving page adds no "Moved to" marker', async () => !(await t.eval(panelText)).includes('Moved to'));
   await t.check('no prompt cues on Sales', async () => !(await t.eval(cuesVisible)));
   await t.shot('phase4-marker');
   await t.click('text=Analytics');
-  await t.wait(500);
+  await t.wait(100);
+  await t.settle();
 
   // 4. New chat
   await t.click('button[aria-label="New chat"]');

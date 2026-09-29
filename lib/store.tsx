@@ -7,6 +7,7 @@ import { TODAY_INDEX } from '@/data/kpis';
 import { PAGE_TITLES } from '@/data/nav';
 import type { Kpi, Page, PersonId } from '@/data/types';
 import { clockLabel, START_MINUTES } from '@/lib/clock';
+import { PANEL_MAX, PANEL_MIN } from '@/lib/layout';
 import { timing } from '@/lib/motion';
 
 // App state, shaped like brief B3. One store per AppShell (created in a provider so SSR
@@ -60,6 +61,9 @@ export interface HistoryState {
 
 export interface HopState {
   page: Page;
+  /** The page actually on screen. It trails `page` while the page transition wipes the old
+   *  one out and reveals the new one (the swap happens in the blank middle). */
+  shownPage: Page;
   analytics: AnalyticsState;
   selection: HopFrameRef | null;
   jumpOrigin: Page | null;
@@ -81,6 +85,9 @@ export interface HopState {
   toast: { id: number; text: string } | null;
   sidebarCollapsed: boolean; // Figma "example 1"
   panelCollapsed: boolean; // Figma "example 2": only the mascot shows
+  /** The side panel's width, shared by every page (Hop chat, History chain). Dragged between
+   *  PANEL_MIN and PANEL_MAX; kept when the panel is closed and reopened. */
+  panelWidth: number;
   /** Highlight mode (the BoundingBox button in Hop's header): only then can frames be picked. */
   highlightMode: boolean;
 
@@ -113,6 +120,8 @@ export interface HopState {
   setHistoryFilter: (filter: Partial<Pick<HistoryState, 'person' | 'pageFilter' | 'query'>>) => void;
   toggleSidebar: () => void;
   togglePanel: () => void;
+  setPanelWidth: (width: number) => void;
+  showPage: (page: Page) => void;
   setHighlightMode: (on: boolean) => void;
 }
 
@@ -121,6 +130,7 @@ export { PAGE_IDS, isPage } from './pages';
 export function createHopStore(initialPage: Page, init: Partial<HopState> = {}) {
   return createStore<HopState>()((set, get) => ({
     page: initialPage,
+    shownPage: initialPage,
     analytics: { kpi: 'revenue', range: 'thisWeek', day: null },
     selection: null,
     jumpOrigin: null,
@@ -141,6 +151,7 @@ export function createHopStore(initialPage: Page, init: Partial<HopState> = {}) 
     toast: null,
     sidebarCollapsed: false,
     panelCollapsed: false,
+    panelWidth: PANEL_MAX,
     highlightMode: false,
 
     navigate: (page, source) => {
@@ -305,9 +316,20 @@ export function createHopStore(initialPage: Page, init: Partial<HopState> = {}) 
 
     toggleSidebar: () => set((s) => ({ sidebarCollapsed: !s.sidebarCollapsed })),
     // Hiding the panel also leaves highlight mode: its switch goes out of reach with it.
-    togglePanel: () =>
-      set((s) => (s.panelCollapsed ? { panelCollapsed: false } : { panelCollapsed: true, highlightMode: false, hoverId: null })),
-    setHighlightMode: (on) => set(on ? { highlightMode: true } : { highlightMode: false, hoverId: null }),
+    togglePanel: () => {
+      const s = get();
+      if (s.panelCollapsed) return set({ panelCollapsed: false });
+      set({ panelCollapsed: true });
+      s.setHighlightMode(false);
+    },
+    // Switching highlight off also puts away a frame it picked (unless Hop is reading it).
+    setHighlightMode: (on) => {
+      if (on) return set({ highlightMode: true });
+      const s = get();
+      set({ highlightMode: false, hoverId: null, ...(s.selection && !s.scanning ? { selection: null, activeTagId: null } : {}) });
+    },
+    setPanelWidth: (width) => set({ panelWidth: Math.round(Math.min(PANEL_MAX, Math.max(PANEL_MIN, width))) }),
+    showPage: (shownPage) => set({ shownPage }),
     ...init,
   }));
 }

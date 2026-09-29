@@ -48,7 +48,8 @@ export default async function (t) {
   await t.wait(700);
   await snap('tag-clicked');
   await t.click('text=Go to Inventory');
-  await t.wait(900);
+  await t.wait(100);
+  await t.settle();
   await t.click(HIGHLIGHT);
   await t.click('[data-hop-frame="inventory.row.adire-blue"] span.truncate');
   await t.wait(300);
@@ -60,7 +61,7 @@ export default async function (t) {
   await snap('inventory-chips-stay');
 
   // History
-  const pick = (q) => [...document.querySelectorAll('[data-page=history] button[aria-current]')].find((b) => b.textContent.includes(q)).click();
+  const pick = (q) => [...document.querySelectorAll('[data-history-panel] li')].find((li) => li.textContent.includes(q)).querySelector('button[aria-current]').click();
   await fresh('/history');
   await snap('history-tagged');
   await t.eval(pick, '2:14 PM');
@@ -71,7 +72,7 @@ export default async function (t) {
   await snap('history-screenshot');
   await t.eval(pick, '2:33 PM');
   await t.wait(600);
-  await t.click('button[aria-label^="Expand"]');
+  await t.click('button[aria-label^="Open the chat"]');
   await t.wait(1300);
   await snap('history-expanded');
 

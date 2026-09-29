@@ -95,7 +95,7 @@ export default async function (t) {
     t.eval(() => [...document.querySelectorAll('[role=log] .bg-status-danger-soft')].map((c) => c.textContent).join(',') === 'Size 80,Size 160'),
   );
   await t.check(`${m}answer: highlight cleared`, async () => !(await t.eval(selectedOverlay, SAND)));
-  await t.check(`${m}answer: jump chips gone, cues back`, async () => (await t.eval(chips)) === '' && (await t.eval(cues)));
+  await t.check(`${m}answer: jump chips gone, no cues (the chat has started)`, async () => (await t.eval(chips)) === '' && !(await t.eval(cues)));
   await t.check(`${m}answer: composer back to "Select any frame"`, () => t.eval(() => document.querySelector('aside[aria-label=Hop] .shadow-composer')?.textContent.includes('Select any frame')));
   await t.page.mouse.move(700, 880);
   await t.wait(200);

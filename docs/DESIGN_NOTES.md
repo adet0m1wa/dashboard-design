@@ -147,7 +147,7 @@ Token names are the generated CSS names (`--color-surface-default` = Figma `colo
   Analytics kind: the Analytics page itself below the note (read-only). Screenshot kind: card at y70,
   776×732, white, radius 12, overflow clip, shadow token `screenshot-card`; page drawn at 0.83 scale
   (top bar 46 = 56×0.83). Tagged kind: same card + selection outline around the Adire row.
-  Instagram card image: public/history/instagram-1-40pm.png (765×732, 1× — the export tool won't upscale).
+  Instagram card image: public/history/instagram-1-40pm.png — 2× (1530×1464), from `download_assets` on node 1839:3721 at scale 2, cropped to the card (the export adds the shadow margin: 40px left/right, 28 top, 52 bottom at 2×).
 - Chat expanded (frame 1869:68830, read 2026-09-28): Split under the top bar = Content 824 + a
   Hop-panel-style column 368 (border-l `surface/divider-tint`). Header h56, px16, border-b
   `surface/faint`: `CaretLeft` 16 + "Back" 14/600 `text/black`, gap 4, items-end. Conversation
@@ -181,3 +181,24 @@ The "fresh" section is now a single section (id 1816:4657, x 1694); the old dupl
   Handles: 7×7 white, 1.2px `status/info`, at −4.5px on each corner.
 - Chart in "example 2" stretches with the wider page: same 150 height, days spread evenly across
   the full width (x axis labels justify-between).
+
+## Feedback round 2 (read 2026-09-29)
+
+- **"All pages" menu** (frames "All pages" 1934:1925, "transition" 1935:1993): box 97 wide, 1px
+  `surface/border-tint`, radius 8, px 10 py 7, white. Rows 12.5/500 `text/strong-secondary`, 16 tall,
+  gap 6 (pitch 22): All pages, Chats, Sales, Instagram, Inventory, Customers. Closed = 32 tall
+  showing the chosen row; open = 142. `icon/chev` 13px beside the chosen row, rotated 180° (⌃)
+  while open; the content row is 75 wide, label and chevron justify-between. The "transition"
+  frame: mid-close the box is 90 tall with "All pages" pushed to −5 and "Chats" (with chevron) at
+  17; closed, "Chats" sits at 7 and "All pages" at −15 (clipped). I.e. the list rolls up inside the
+  box while it shrinks.
+- **Icons not from Figma** (hand-made to match the set): `design/icons/instagram.svg` — the
+  Instagram glyph at 16px, 1.333 stroke like `icon/camera`; `design/icons/arrows-out.svg` — the
+  Phosphor "ArrowsOutSimple" (regular) at 18px, filled, like BoundingBox/ChatCentered.
+- **Side panel width**: max = default = `layout/panel` 368; min `layout/panel-min` 300 (ours).
+- **History** now keeps the side panel (Hop header with the mascot; chain or chat below), so its
+  top bar spans only the page area like every other page — the History frames' full-width top bar
+  and 360 chain column are superseded.
+- **Colour variables changed in Figma** for WCAG AA (see CLAUDE.md > Decisions): text/muted
+  #716F6B, text/tone-02 #577764, status/success-text #1C7E46, palette/tone-01 #7A5BF6, tone-02
+  #B56025, tone-03 #CE4275, tone-15 #52840B, tone-17 #0C875E.

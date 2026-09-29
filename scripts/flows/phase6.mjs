@@ -30,7 +30,8 @@ export default async function (t) {
   await t.click('text=Go to Inventory');
   await t.wait(80);
   const mid = await t.eval(() => getComputedStyle([...document.querySelectorAll('aside[aria-label=Hop] button')].find((b) => b.textContent.startsWith('Go to Inventory'))).backgroundColor);
-  await t.wait(700);
+  await t.wait(100);
+  await t.settle();
   await t.check(`${m}jump: now on /inventory`, () => t.eval(() => location.pathname === '/inventory' && document.querySelector('[data-page]').dataset.page === 'inventory'));
   await t.check(`${m}jump: no marker for the move alone`, async () => !(await t.eval(log)).includes('Moved to'));
   await t.check(`${m}jump: chips flip (${await t.eval(chips)})`, async () => (await t.eval(chips)) === 'Go to Inventory(off) | Go to Analytics(on)');
@@ -95,7 +96,8 @@ export default async function (t) {
 
   // Go to Analytics: back, chips gone, marker
   await t.click('text=Go to Analytics');
-  await t.wait(700);
+  await t.wait(100);
+  await t.settle();
   await t.check(`${m}Go to Analytics: back on /analytics, chips gone`, async () => (await t.eval(() => location.pathname)) === '/analytics' && (await t.eval(chips)) === '');
   await t.check(`${m}Go to Analytics: no marker without a tagged question`, async () => !(await t.eval(log)).includes('Moved to Analytics'));
 
@@ -104,11 +106,13 @@ export default async function (t) {
   await t.click(`${SAND} span.truncate`);
   await t.wait(250);
   await t.click('text=Go to Inventory');
-  await t.wait(600);
+  await t.wait(100);
+  await t.settle();
   await t.check(`${m}jump again: chips on Inventory`, async () => (await t.eval(chips)) !== '');
   await t.click(HIGHLIGHT); // done picking
   await t.eval(() => [...document.querySelectorAll('nav[aria-label=Pages] button')].find((b) => b.textContent.includes('Sales')).click());
-  await t.wait(600);
+  await t.wait(100);
+  await t.settle();
   await t.check(`${m}sidebar navigation clears the chips`, async () => (await t.eval(chips)) === '');
 
   // Tag in an old message → navigates back to Analytics and re-highlights
@@ -120,7 +124,8 @@ export default async function (t) {
 
   // Card link: navigates without chips
   await t.click('text=Open Sales');
-  await t.wait(600);
+  await t.wait(100);
+  await t.settle();
   await t.check(`${m}card link "Open Sales" navigates without chips`, async () => (await t.eval(() => location.pathname)) === '/sales' && (await t.eval(chips)) === '');
 
   // Stock bars grow from 0 on the first visit (fresh load)

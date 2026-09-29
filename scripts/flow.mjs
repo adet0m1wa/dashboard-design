@@ -8,6 +8,7 @@
 //   t.goto(path)           load a page of the app and wait for it to settle
 //   t.click(selector)      click an element (CSS selector or text=Label)
 //   t.wait(ms)             sleep
+//   t.settle()             wait until the page transition has finished
 //   t.shot(name)           save <out>/<name>.png
 //   t.check(label, cond)   record PASS/FAIL (cond may be a value or a function returning one)
 //   t.eval(fn, ...args)    page.evaluate shortcut
@@ -26,7 +27,8 @@ mkdirSync(outDir, { recursive: true });
 const browser = await puppeteer.launch({
   executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
   headless: true,
-  args: ['--hide-scrollbars', '--font-render-hinting=none'],
+  // --scrollbars leaves them on (they're hidden by default so screenshots match Figma)
+  args: [...(opt('scrollbars') ? [] : ['--hide-scrollbars']), '--font-render-hinting=none'],
 });
 const page = await browser.newPage();
 await page.setViewport({ width: 1440, height: 900, deviceScaleFactor: 1 });
@@ -63,6 +65,11 @@ const t = {
       await page.waitForSelector(sel, { timeout: 3000 });
       await page.click(sel, opts);
     }
+  },
+  // Wait for the page transition (PageStage's wipe) to finish, then a beat.
+  async settle(extra = 80) {
+    await page.waitForFunction(() => document.querySelector('[data-transition]')?.dataset.transition === 'idle', { timeout: 5000, polling: 'raf' });
+    await sleep(extra);
   },
   async shot(name) {
     await page.screenshot({ path: `${outDir}/${name}.png` });

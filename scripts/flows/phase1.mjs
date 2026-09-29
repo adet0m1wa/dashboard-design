@@ -24,7 +24,7 @@ export default async function (t) {
     // Mid-transition the pill should be between its old and new rows (it slides, not jumps).
     await t.wait(60);
     const mid = await pillY();
-    await t.wait(500);
+    await t.settle();
     const to = await pillY();
     const state = await t.eval(() => ({
       path: location.pathname,
@@ -64,12 +64,14 @@ export default async function (t) {
   await t.eval(() => [...document.querySelectorAll('nav[aria-label=Pages] button')].find((b) => b.textContent.includes('Customers')).click());
   await t.wait(500);
   await t.page.goBack();
-  await t.wait(600);
+  await t.wait(100);
+  await t.settle();
   await t.check('Back button returns to Analytics', () =>
     t.eval(() => location.pathname === '/analytics' && document.querySelector('[aria-current=page]')?.textContent.trim() === 'Analytics'),
   );
   await t.page.goForward();
-  await t.wait(600);
+  await t.wait(100);
+  await t.settle();
   await t.check('Forward button returns to Customers', () =>
     t.eval(() => location.pathname === '/customers' && document.querySelector('[data-page]')?.dataset.page === 'customers'),
   );

@@ -23,7 +23,7 @@ checked but not built for.
 
 | Severity | Domain | Location | Before | After | Why | Status |
 | --- | --- | --- | --- | --- | --- | --- |
-| HIGH | Colors | `text/muted` #9C9A94 (meta rows, "Recent with Hop", day headers, variants, timestamps) · `status/success-text` #1F8A4C (KPI change %) | 2.53:1 on #F3F3F3, 2.81:1 on white; green 3.98:1 on #F5F4F1, 4.38:1 on white (11–12.5px text) | `text/muted` → **#706F6B** (4.53–5.03:1), `status/success-text` → **#1D8047** (4.51–4.96:1), same hues | Body/label text below WCAG AA 4.5:1 | **Not changed** — Figma variables; yours to decide |
+| HIGH | Colors | `text/muted`, `text/tone-02` (chart day labels), `status/success-text`, avatar tones 01/02/03/15/17 | 1.96–4.4:1 for 11–13px text | #716F6B, #577764, #1C7E46, #7A5BF6, #B56025, #CE4275, #52840B, #0C875E (same hues; ≥4.5:1 on every background each sits on) | Body/label text below WCAG AA 4.5:1 | **Fixed 2026-09-29** — Figma variables updated at the user's request; axe: 0 contrast failures |
 | HIGH | Accessibility | `components/select/useSelection.ts`, `HopFrame.tsx` | Picking a frame only worked with a pointer | Highlight mode puts frames in the Tab order; focus shows the highlight; Enter/Space picks and moves to the composer; Enter on a control inside a frame picks its frame; turning highlight on by keyboard jumps to the first frame | The core flow was pointer-only | Fixed |
 | HIGH | Layout | `components/shell/AppShell.tsx` | Below ~1300px (and at 200% zoom) the page squashed until KPI tabs, card rows and the top bar overlapped | Page area keeps ≥720px (token `main-min`), the app scrolls sideways instead; the sidebar folds to its rail below 1336px wide | Content overlapped and was unreadable | Fixed (sideways scroll remains at ≤1167px) |
 | HIGH | Typography | `components/ui/Truncate.tsx` used by cards, Urgent, Inventory, sidebar, tags, History | Ellipsised names and 2-line summaries had no way to see the full text | Full text as a tooltip whenever it's actually cut | Truncated content with no way to reach it | Fixed |
@@ -60,5 +60,5 @@ reflow (out of scope, brief B12).
 
 ## Verdict
 
-**Block**: one HIGH remains, the contrast of `text/muted` and `status/success-text`. It's a
-Figma-variable change, so it's yours to decide (values above). Everything else HIGH is fixed.
+**Approve** (updated 2026-09-29): the last HIGH, text contrast, is fixed. The MEDIUM/LOW items
+marked "Not changed" remain as work for the designer.

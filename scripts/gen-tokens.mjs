@@ -29,13 +29,17 @@ const color = (v) => {
   return v.hex.toUpperCase();
 };
 
+// Figma variables changed since the JSON export (extras.override): their new values win.
+const overrides = Object.fromEntries(Object.entries(extras.override ?? {}).filter(([k]) => !k.startsWith('$')));
+
 function emit(path, token) {
   const [group, ...rest] = path;
   const v = token.$value;
   const name = rest.join('-');
+  const override = overrides[path.join('/')];
   switch (group) {
     case 'color':
-      return lines.push(`  --color-${name}: ${color(v)};`);
+      return lines.push(`  --color-${name}: ${override ? override.value.toUpperCase() : color(v)};`);
     case 'spacing':
       return lines.push(`  --spacing-${name}: ${px(v)};`);
     case 'radius':

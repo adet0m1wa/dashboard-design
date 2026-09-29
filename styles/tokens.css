@@ -17,10 +17,10 @@
   --color-text-on-dark: #FFFFFF;
   --color-text-primary: #1A1A18;
   --color-text-secondary: #6B6A66;
-  --color-text-muted: #9C9A94;
+  --color-text-muted: #716F6B;
   --color-text-tone-01: #4A4945;
   --color-text-strong-secondary: #3D3C39;
-  --color-text-tone-02: #8FC5A5;
+  --color-text-tone-02: #577764;
   --color-text-tone-03: #B5B3AD;
   --color-text-tone-04: #1D4ED8;
   --color-text-black: #000000;
@@ -37,14 +37,14 @@
   --color-status-warning-text: #B45309;
   --color-status-danger-soft: #FDECE4;
   --color-status-danger-text: #C2410C;
-  --color-status-success-text: #1F8A4C;
+  --color-status-success-text: #1C7E46;
   --color-status-success: #1F8A4C;
   --color-status-info: #2563EB;
   --color-status-live: #2BB35A;
   --color-status-success-soft: #E7F5EC;
-  --color-palette-tone-01: #7C5CFA;
-  --color-palette-tone-02: #E0772E;
-  --color-palette-tone-03: #D6457A;
+  --color-palette-tone-01: #7A5BF6;
+  --color-palette-tone-02: #B56025;
+  --color-palette-tone-03: #CE4275;
   --color-palette-tone-04: #CDCDCD;
   --color-palette-tone-05: #EFF7F2;
   --color-palette-tone-06: #CFCFCF;
@@ -56,9 +56,9 @@
   --color-palette-tone-12: #34342F;
   --color-palette-tone-13: #E9FFF0;
   --color-palette-tone-14: #DDDAD3;
-  --color-palette-tone-15: #65A30D;
+  --color-palette-tone-15: #52840B;
   --color-palette-tone-16: #EEECE7;
-  --color-palette-tone-17: #0E9F6E;
+  --color-palette-tone-17: #0C875E;
   --color-palette-tone-18: #8FC5A5;
   --color-palette-tone-19: #F0F0EE;
   --color-palette-tone-20: #EEF3FE;
@@ -258,4 +258,5 @@
   --spacing-chain: 360px;
   --spacing-snapshot: 732px;
   --spacing-main-min: 720px;
+  --spacing-panel-min: 300px;
 }
