@@ -11,6 +11,7 @@ const PAGES = [
 export default async function (t) {
   await t.goto('/analytics');
   const reduced = await t.eval(() => matchMedia('(prefers-reduced-motion: reduce)').matches);
+  const m = reduced ? '[reduced] ' : '';
   await t.check('loads /analytics with Analytics active', () =>
     t.eval(() => document.querySelector('[aria-current=page]')?.textContent.trim() === 'Analytics'),
   );
@@ -21,7 +22,7 @@ export default async function (t) {
     await t.eval((l) => {
       [...document.querySelectorAll('nav[aria-label=Pages] button')].find((b) => b.textContent.includes(l)).click();
     }, label);
-    // Mid-transition the pill should be between its old and new rows (it slides, not jumps).
+    // 60ms after the click the pill should already be on the new row (no slide).
     await t.wait(60);
     const mid = await pillY();
     await t.settle();
@@ -44,12 +45,8 @@ export default async function (t) {
     await t.check(`${label}: one page in the page area`, state.pages.length === 1 && state.pages[0] === slug);
     await t.check(`${label}: sidebar active item`, state.active?.startsWith(label));
     await t.check(`${label}: pill settled on the active item`, state.pill);
-    if (reduced) await t.check(`[reduced] ${label}: pill moves without sliding`, Math.abs(mid - to) < 1);
-    else
-      await t.check(
-        `${label}: pill slides (at 60ms: ${mid?.toFixed(1)} between ${from?.toFixed(1)} → ${to?.toFixed(1)})`,
-        mid > Math.min(from, to) + 1 && mid < Math.max(from, to) - 1,
-      );
+    // Page changes are instant, the sidebar pill included (feedback 2026-09-29).
+    await t.check(`${m}${label}: the pill is already on it at 60ms (${from?.toFixed(0)} → ${mid?.toFixed(0)})`, Math.abs(mid - to) < 1);
     await t.shot(`phase1-${slug}`);
   }
 

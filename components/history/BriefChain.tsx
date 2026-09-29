@@ -138,7 +138,8 @@ function Chip({ active, onClick, children }: { active: boolean; onClick: () => v
       whileTap={press}
       onClick={onClick}
       aria-pressed={active}
-      className={`flex rounded-999 border text-12 font-500 transition-colors duration-(--dur-fast) ease-hop-out ${
+      // The on/off look switches at once (user feedback 2026-09-29).
+      className={`flex rounded-999 border text-12 font-500 ${
         active ? 'border-action-primary bg-action-primary text-text-on-dark' : 'border-surface-border-tint text-text-strong-secondary hover:bg-surface-subtle'
       }`}
     >

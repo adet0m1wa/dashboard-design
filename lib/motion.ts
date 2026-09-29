@@ -47,16 +47,15 @@ export const timing = {
   reducedFade: 0.1, // reduced motion: page slides become 100ms fades
   stockBarStagger: 0.03, // inventory stock bars
   toast: 5, // how long a toast stays up (5s: the accessibility floor for a timed message)
+  scrollbarLinger: 0.8, // a scrollbar stays visible this long after scrolling stops
 } as const;
 
 // Distance-based timing (user feedback 2026-09-29): moving further takes longer, but the speed
-// reads the same — a fixed start-up time plus a little per step, so five steps don't take five
+// reads the same — a fixed start-up time plus a little per step, so five rows don't take five
 // times as long as one.
 export const travel = {
-  page: { first: 0.6, perStep: 0.12 }, // page wipe, whole out → blank → in; one sidebar step = 0.6s
   menu: { first: 0.16, perStep: 0.04 }, // "All pages" menu: chevron move, drawer open/close; per row
 } as const;
 export const travelTime = (kind: keyof typeof travel, steps: number) =>
   travel[kind].first + Math.max(0, Math.abs(steps) - 1) * travel[kind].perStep;
-// The page wipe splits its time 2 : 1 : 2 — old page out, blank, new page in.
-export const WIPE_SPLIT = { out: 0.4, blank: 0.2, in: 0.4 } as const;
+

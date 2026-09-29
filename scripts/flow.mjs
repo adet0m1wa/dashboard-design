@@ -66,9 +66,11 @@ const t = {
       await page.click(sel, opts);
     }
   },
-  // Wait for the page transition (PageStage's wipe) to finish, then a beat.
+  // Let a page change land: pages switch instantly now (feedback 2026-09-29), so this is two
+  // frames and a beat (it also waits out any [data-transition] if one is ever reintroduced).
   async settle(extra = 80) {
-    await page.waitForFunction(() => document.querySelector('[data-transition]')?.dataset.transition === 'idle', { timeout: 5000, polling: 'raf' });
+    await page.waitForFunction(() => (document.querySelector('[data-transition]')?.dataset.transition ?? 'idle') === 'idle', { timeout: 5000, polling: 'raf' });
+    await page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))));
     await sleep(extra);
   },
   async shot(name) {

@@ -192,7 +192,7 @@ export default async function (t) {
     const mid = await t.eval(() => document.querySelector('[aria-current=page] > span')?.getBoundingClientRect().y);
     await t.settle();
     const to = await t.eval(() => document.querySelector('[aria-current=page] > span')?.getBoundingClientRect().y);
-    const slid = reduced ? true : Math.abs(mid - to) > 0.5 || Math.abs(from - to) < 1;
+    const slid = Math.abs(mid - to) < 1; // instant: the pill is already there 40ms after the click
     await t.check(`${m}8 sidebar → ${path}: page, title and pill (${from?.toFixed(0)} → ${mid?.toFixed(0)} → ${to?.toFixed(0)})`, async () =>
       slid && (await t.eval(() => location.pathname)) === path && (await t.eval(() => document.title.startsWith(document.querySelector('main header h1').textContent.trim()))),
     );

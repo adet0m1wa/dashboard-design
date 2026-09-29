@@ -61,9 +61,6 @@ export interface HistoryState {
 
 export interface HopState {
   page: Page;
-  /** The page actually on screen. It trails `page` while the page transition wipes the old
-   *  one out and reveals the new one (the swap happens in the blank middle). */
-  shownPage: Page;
   analytics: AnalyticsState;
   selection: HopFrameRef | null;
   jumpOrigin: Page | null;
@@ -121,7 +118,6 @@ export interface HopState {
   toggleSidebar: () => void;
   togglePanel: () => void;
   setPanelWidth: (width: number) => void;
-  showPage: (page: Page) => void;
   setHighlightMode: (on: boolean) => void;
 }
 
@@ -130,7 +126,6 @@ export { PAGE_IDS, isPage } from './pages';
 export function createHopStore(initialPage: Page, init: Partial<HopState> = {}) {
   return createStore<HopState>()((set, get) => ({
     page: initialPage,
-    shownPage: initialPage,
     analytics: { kpi: 'revenue', range: 'thisWeek', day: null },
     selection: null,
     jumpOrigin: null,
@@ -329,7 +324,6 @@ export function createHopStore(initialPage: Page, init: Partial<HopState> = {}) 
       set({ highlightMode: false, hoverId: null, ...(s.selection && !s.scanning ? { selection: null, activeTagId: null } : {}) });
     },
     setPanelWidth: (width) => set({ panelWidth: Math.round(Math.min(PANEL_MAX, Math.max(PANEL_MIN, width))) }),
-    showPage: (shownPage) => set({ shownPage }),
     ...init,
   }));
 }

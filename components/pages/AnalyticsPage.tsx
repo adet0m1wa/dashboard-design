@@ -98,9 +98,10 @@ export function AnalyticsPage() {
           <motion.div layout className="flex min-w-0" {...fadeUp(0)}>
             <KpiCard card={card} period={period} className="flex-1" />
           </motion.div>
-          <motion.div layout className="flex min-w-0" {...fadeUp(1)}>
+          {/* Urgent doesn't animate at all (user feedback 2026-09-29): no entrance, no resize. */}
+          <div className="flex min-w-0">
             <UrgentCard items={SNAPSHOTS[period].urgent} swapKey={period} onAction={onUrgentAction} className="flex-1" />
-          </motion.div>
+          </div>
         </motion.div>
       </div>
     </IntroContext.Provider>

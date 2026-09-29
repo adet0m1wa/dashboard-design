@@ -15,17 +15,17 @@ import { HistoryPanel, HistoryTitle } from '@/components/history/HistoryPanel';
 
 // The side panel, on every page (brief B7.2). Header (avatar + "Hop" + New chat + Highlight —
 // Figma "example 1"), the conversation, prompt cues / jump chips, and the composer.
-//   • The mascot opens and closes it ("example 2": a 63px strip with only the mascot). The width
-//     slides (slow) and everything but the mascot fades; the conversation stays mounted, so an
-//     answer that is streaming keeps going while the panel is shut.
-//   • Its left edge drags it narrower or wider, between PANEL_MIN and PANEL_MAX (the default).
-//     The width is one setting for every page and survives closing (user feedback 2026-09-29).
+//   • The mascot opens and closes it ("example 2": a 63px strip with only the mascot) — instantly
+//     (user feedback 2026-09-29). The conversation stays mounted, so an answer that is streaming
+//     keeps going while the panel is shut.
+//   • Its left edge drags it narrower or wider, between PANEL_MIN and PANEL_MAX (the default); the
+//     width follows the pointer with no easing. One setting for every page, kept while closed.
 //   • On History it shows the brief chain instead of the chat, keeps Hop's face and can't be
 //     closed (user feedback 2026-09-29). The chat stays mounted underneath.
 //   • Prompt cues only on an empty chat (starting a new one); the conversation fades out at the
 //     bottom only while there's more below (see MessageList).
 export function HopPanel() {
-  const page = useHop((s) => s.shownPage);
+  const page = useHop((s) => s.page);
   const selection = useHop((s) => s.selection);
   const hopStatus = useHop((s) => s.hopStatus);
   const jumpOrigin = useHop((s) => s.jumpOrigin);
@@ -40,8 +40,7 @@ export function HopPanel() {
   const width = useHop((s) => s.panelWidth);
   const onHistory = page === 'history';
   const collapsed = useHop((s) => s.panelCollapsed) && !onHistory;
-  const [dragging, setDragging] = useState(false);
-  const hidden = `transition-opacity duration-(--dur-base) ease-hop-out motion-reduce:transition-none ${collapsed ? 'opacity-0' : 'opacity-100'}`;
+  const hidden = collapsed ? 'opacity-0' : '';
 
   const avatar: HopAvatarState = scanning ? 'scanning' : hopStatus === 'thinking' ? 'thinking' : 'idle';
   // Jump chips (brief B3): Analytics with a selection that has a jump target, or any page
@@ -53,13 +52,11 @@ export function HopPanel() {
 
   return (
     <aside
-      className={`relative shrink-0 overflow-hidden border-l border-surface-divider-tint bg-surface-default motion-reduce:transition-none ${
-        dragging ? '' : 'transition-[width] duration-(--dur-slow) ease-hop-out'
-      }`}
+      className="relative shrink-0 overflow-hidden border-l border-surface-divider-tint bg-surface-default"
       style={{ width: collapsed ? 'var(--spacing-panel-rail)' : width }}
       aria-label={onHistory ? 'Hop: History' : 'Hop'}
     >
-      {!collapsed && <ResizeHandle width={width} onDragging={setDragging} />}
+      {!collapsed && <ResizeHandle width={width} />}
       {/* Its own width inside, so closing clips the panel instead of squashing it. */}
       <div className="flex h-full flex-col" style={{ width }}>
         <header className="flex h-bar shrink-0 items-center justify-between border-b border-surface-faint px-16">
@@ -165,7 +162,7 @@ export function HopPanel() {
  * The panel's left edge: drag it (or focus it and use ←/→, Shift for bigger steps, Home/End) to
  * set the panel's width. A 2px line shows on hover (grey) and while dragging or focused (blue).
  */
-function ResizeHandle({ width, onDragging }: { width: number; onDragging: (on: boolean) => void }) {
+function ResizeHandle({ width }: { width: number }) {
   const setWidth = useHop((s) => s.setPanelWidth);
   const drag = useRef<{ x: number; w: number } | null>(null);
   const [active, setActive] = useState(false);
@@ -176,7 +173,6 @@ function ResizeHandle({ width, onDragging }: { width: number; onDragging: (on: b
     e.currentTarget.releasePointerCapture(e.pointerId);
     document.documentElement.style.removeProperty('cursor');
     setActive(false);
-    onDragging(false);
   };
 
   return (
@@ -194,7 +190,6 @@ function ResizeHandle({ width, onDragging }: { width: number; onDragging: (on: b
         drag.current = { x: e.clientX, w: width };
         document.documentElement.style.cursor = 'col-resize';
         setActive(true);
-        onDragging(true);
       }}
       onPointerMove={(e) => drag.current && setWidth(drag.current.w + (drag.current.x - e.clientX))}
       onPointerUp={end}
@@ -211,7 +206,7 @@ function ResizeHandle({ width, onDragging }: { width: number; onDragging: (on: b
     >
       <span
         aria-hidden="true"
-        className={`absolute inset-y-0 left-0 w-2 transition-colors duration-(--dur-fast) ease-hop-out group-focus-visible:bg-selection ${
+        className={`absolute inset-y-0 left-0 w-2 group-focus-visible:bg-selection ${
           active ? 'bg-selection' : 'group-hover:bg-palette-tone-27'
         }`}
       />
@@ -291,20 +286,18 @@ function MessageList() {
   const pinned = useRef(true);
 
   // Keep the newest message in view while it streams, but only if she hasn't scrolled up
-  // (Hop never moves things while she's scrolling, brief A3). The bottom fade follows the scroll
-  // position: 0 at the end, +20px per 1% scrolled back up, 100px at most (CHAT_FADE).
+  // (Hop never moves things while she's scrolling, brief A3). The bottom fade shows only while
+  // there's more below (CHAT_FADE); at the end nothing covers the newest message.
   useEffect(() => {
     const el = scroller.current;
     const inner = content.current;
     if (!el || !inner) return;
     const fade = () => {
-      const range = el.scrollHeight - el.clientHeight;
-      const fromEnd = range > 1 ? 100 - (el.scrollTop / range) * 100 : 0;
-      const px = Math.min(CHAT_FADE.max, Math.max(0, fromEnd) * CHAT_FADE.perPercent);
-      const mask = px >= 1 ? `linear-gradient(to bottom, black calc(100% - ${px.toFixed(1)}px), transparent)` : '';
+      const more = el.scrollHeight - el.scrollTop - el.clientHeight > 1;
+      const mask = more ? `linear-gradient(to bottom, black calc(100% - ${CHAT_FADE}px), transparent)` : '';
       el.style.maskImage = mask;
       el.style.webkitMaskImage = mask;
-      el.dataset.fade = px.toFixed(0);
+      el.dataset.fade = more ? String(CHAT_FADE) : '0';
     };
     const onScroll = () => {
       pinned.current = el.scrollHeight - el.scrollTop - el.clientHeight < 32;
