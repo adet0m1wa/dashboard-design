@@ -11,14 +11,14 @@ export default async function (t) {
   const m = reduced ? '[reduced] ' : '';
   await t.wait(2600);
 
-  // Sidebar collapses to the 56px rail, sliding
+  // Sidebar collapses to the 56px rail — instantly (feedback 2026-09-29)
   await t.check(`${m}sidebar starts open at 224`, async () => (await t.eval(width, SIDEBAR)) === 224);
   await t.click('button[aria-label="Collapse sidebar"]');
-  await t.wait(120);
+  await t.wait(40);
   const sideMid = await t.eval(width, SIDEBAR);
-  await t.wait(500);
+  await t.wait(300);
   const sideEnd = await t.eval(width, SIDEBAR);
-  await t.check(`${m}sidebar collapses to 56 (${sideMid} mid-way → ${sideEnd})`, sideEnd === 56 && (reduced ? sideMid === 56 : sideMid > 56 && sideMid < 224));
+  await t.check(`${m}sidebar collapses to 56 at once (${sideMid} at 40ms → ${sideEnd})`, sideEnd === 56 && sideMid === 56);
   await t.check(`${m}rail: icon-only nav with accessible names`, () =>
     t.eval(() => {
       const names = [...document.querySelectorAll('aside[aria-label=Sidebar] nav button')].map((b) => b.getAttribute('aria-label'));
@@ -44,11 +44,11 @@ export default async function (t) {
   // Hop panel: the mascot closes and opens it
   const chartBefore = await t.eval(() => document.querySelector('#kpi-chart').getBoundingClientRect().width);
   await t.click('button[aria-label="Close Hop"]');
-  await t.wait(120);
+  await t.wait(40);
   const panelMid = await t.eval(width, PANEL);
-  await t.wait(500);
+  await t.wait(300);
   const panelEnd = await t.eval(width, PANEL);
-  await t.check(`${m}panel closes to 63 (${panelMid} mid-way → ${panelEnd})`, panelEnd === 63 && (reduced ? panelMid === 63 : panelMid > 63 && panelMid < 368));
+  await t.check(`${m}panel closes to 63 at once (${panelMid} at 40ms → ${panelEnd})`, panelEnd === 63 && panelMid === 63);
   await t.check(`${m}closed panel: only the mascot is reachable`, () =>
     t.eval(() => {
       const panel = document.querySelector('aside[aria-label=Hop]');

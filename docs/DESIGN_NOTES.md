@@ -202,3 +202,5 @@ The "fresh" section is now a single section (id 1816:4657, x 1694); the old dupl
 - **Colour variables changed in Figma** for WCAG AA (see CLAUDE.md > Decisions): text/muted
   #716F6B, text/tone-02 #577764, status/success-text #1C7E46, palette/tone-01 #7A5BF6, tone-02
   #B56025, tone-03 #CE4275, tone-15 #52840B, tone-17 #0C875E.
+- Round 3 (2026-09-29): motion pared back — see CLAUDE.md > Decisions (instant pages/sidebars,
+  standard 48px chat fade, auto-hiding scrollbars, no Analytics title icon, static Urgent).

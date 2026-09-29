@@ -70,9 +70,10 @@
   }
 }
 
-/* Scrollbars (user feedback 2026-09-29): thin and faint, between visible and invisible.
- * Chrome/Safari take the ::-webkit-scrollbar rules (they ignore them once scrollbar-width is
- * set, so that's only given to browsers without them, i.e. Firefox). */
+/* Scrollbars (user feedback 2026-09-29): thin and faint, and only there while scrolling — the
+ * thumb is see-through until the element gets [data-scrolling] (set by ScrollbarsWhileScrolling
+ * for a moment after each scroll). Chrome/Safari take the ::-webkit-scrollbar rules (they ignore
+ * them once scrollbar-width is set, so that's only given to browsers without them: Firefox). */
 ::-webkit-scrollbar {
   width: var(--spacing-6);
   height: var(--spacing-6);
@@ -82,9 +83,12 @@
 }
 ::-webkit-scrollbar-thumb {
   border-radius: var(--radius-999);
+  background: transparent;
+}
+[data-scrolling]::-webkit-scrollbar-thumb {
   background: var(--color-surface-border-tint);
 }
-::-webkit-scrollbar-thumb:hover {
+[data-scrolling]::-webkit-scrollbar-thumb:hover {
   background: var(--color-palette-tone-27);
 }
 ::-webkit-scrollbar-corner {
@@ -93,6 +97,9 @@
 @supports not selector(::-webkit-scrollbar) {
   * {
     scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+  }
+  [data-scrolling] {
     scrollbar-color: var(--color-surface-border-tint) transparent;
   }
 }

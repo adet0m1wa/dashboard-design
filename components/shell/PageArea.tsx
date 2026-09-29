@@ -9,10 +9,10 @@ import { HistoryPage } from '@/components/history/HistoryPage';
 import { useSelection } from '@/components/select/useSelection';
 import { PlaceholderPage } from '@/components/pages/PlaceholderPage';
 
-// Only the page area's content changes between pages; the sidebar stays put. It shows
-// `shownPage`, which PageStage switches in the middle of its wipe transition.
+// Only the page area's content changes between pages; the sidebar stays put. The switch is
+// instant (user feedback 2026-09-29: no slide, no wipe).
 export function PageArea() {
-  const page = useHop((s) => s.shownPage);
+  const page = useHop((s) => s.page);
   const area = useRef<HTMLDivElement>(null);
   useSelection(area);
 

@@ -10,7 +10,7 @@ import { ArrowIcon } from '@/components/icons/figma';
 import { HopFrame } from '@/components/select/HopFrame';
 import { InitialsAvatar } from '@/components/ui/PersonAvatar';
 import { Tag } from '@/components/ui/Tag';
-import { Crossfade, SwapRow, SwapRows } from './swap';
+import { SwapRow, SwapRows } from './swap';
 import { Truncate } from '@/components/ui/Truncate';
 
 // The card beside Urgent, one variant per KPI (brief A7, B7.1). Card: p 16, gap 12, radius 12,
@@ -28,10 +28,10 @@ export function KpiCard({ card, period, className = '' }: { card: Card; period: 
       className={`flex min-w-0 flex-col gap-12 rounded-12 border border-surface-border-tint bg-surface-default p-16 ${className}`}
     >
       <div className="flex items-center justify-between">
-        <Crossfade k={card.title}>
-          <h3 className="whitespace-nowrap text-13 font-600 text-text-primary">{card.title}</h3>
-        </Crossfade>
-        <Crossfade k={card.link.label} className="justify-items-end">
+        {/* Title, link and footer change at once with the data (user feedback 2026-09-29); only
+            the rows swap with motion. */}
+        <h3 className="whitespace-nowrap text-13 font-600 text-text-primary">{card.title}</h3>
+        <div className="grid justify-items-end">
           <motion.button
             type="button"
             whileTap={press}
@@ -41,7 +41,7 @@ export function KpiCard({ card, period, className = '' }: { card: Card; period: 
             {card.link.label}
             <ArrowIcon />
           </motion.button>
-        </Crossfade>
+        </div>
       </div>
 
       <SwapRows swapKey={`${card.kind}:${card.title}`} className="flex flex-col gap-12">
@@ -50,12 +50,10 @@ export function KpiCard({ card, period, className = '' }: { card: Card; period: 
 
       <div className="min-h-0 flex-1" />
       <div className="border-t border-surface-faint pt-10 text-12 tabular-nums">
-        <Crossfade k={card.footer.join('|')}>
-          <div className="flex justify-between">
-            <span className="text-text-secondary">{card.footer[0]}</span>
-            <span className="font-500 text-text-primary">{card.footer[1]}</span>
-          </div>
-        </Crossfade>
+        <div className="flex justify-between">
+          <span className="text-text-secondary">{card.footer[0]}</span>
+          <span className="font-500 text-text-primary">{card.footer[1]}</span>
+        </div>
       </div>
     </HopFrame>
   );

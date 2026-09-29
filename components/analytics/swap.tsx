@@ -2,7 +2,7 @@
 
 import { AnimatePresence, motion, useReducedMotion, type Variants } from 'motion/react';
 import type { ReactNode } from 'react';
-import { duration, easeIn, easeOut, enter, leave, timing } from '@/lib/motion';
+import { duration, easeIn, easeOut, timing } from '@/lib/motion';
 
 // Shared swap motion for the Analytics cards (brief B7.1):
 //   old rows exit: fade + y −4, fast, 20ms stagger → new rows enter: fade + y 6→0, base, 40ms stagger.
@@ -36,25 +36,5 @@ export function SwapRow({ children, className }: { children: ReactNode; classNam
     <motion.div className={className} variants={reduce ? INSTANT : SWAP_ROW}>
       {children}
     </motion.div>
-  );
-}
-
-/** Text that crossfades when it changes (card titles, links, footers). */
-export function Crossfade({ k, children, className = '' }: { k: string; children: ReactNode; className?: string }) {
-  const reduce = useReducedMotion();
-  return (
-    <div className={`grid ${className}`}>
-      <AnimatePresence initial={false}>
-        <motion.div
-          key={k}
-          className="col-start-1 row-start-1"
-          initial={reduce ? false : { opacity: 0 }}
-          animate={{ opacity: 1, transition: enter() }}
-          exit={{ opacity: 0, transition: reduce ? { duration: 0 } : leave() }}
-        >
-          {children}
-        </motion.div>
-      </AnimatePresence>
-    </div>
   );
 }

@@ -10,6 +10,6 @@ export const PANEL_MIN = extras.layout['panel-min'].value; // the narrowest it c
 // open it; it only changes again at the next crossing.
 export const NARROW_WINDOW = '(max-width: 1335px)';
 
-// The fade at the bottom of the chat (user feedback 2026-09-29): none while the last message is
-// in view; scrolling up grows it 20px for every 1% of the way back up, to at most 100px.
-export const CHAT_FADE = { perPercent: 20, max: 100 } as const;
+// The fade at the bottom of the chat: the standard scroll fade — a fixed 48px (brief B7.2, from the
+// Inventory frame) whenever there's more below, none once the last message is in view.
+export const CHAT_FADE = 48;
