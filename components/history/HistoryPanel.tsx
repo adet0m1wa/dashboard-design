@@ -3,7 +3,7 @@
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { allBriefs } from '@/lib/briefs';
-import { duration, easeIn, easeOut, press } from '@/lib/motion';
+import { duration, easeExit, easeOut, press } from '@/lib/motion';
 import { useHop, useHopApi } from '@/lib/store';
 import { CaretLeftIcon } from '@/components/icons/figma';
 import { BriefChain } from './BriefChain';
@@ -44,7 +44,7 @@ export function HistoryPanel() {
   const slide = {
     initial: reduce ? { opacity: 0 } : { opacity: 0, x: 16 },
     animate: { opacity: 1, x: 0, transition: { duration: reduce ? duration.fast : duration.slow, ease: easeOut } },
-    exit: reduce ? { opacity: 0, transition: { duration: 0 } } : { opacity: 0, x: 16, transition: { duration: duration.fast, ease: easeIn } },
+    exit: reduce ? { opacity: 0, transition: { duration: 0 } } : { opacity: 0, x: 16, transition: { duration: duration.fast, ease: easeExit } },
   };
 
   return (
@@ -77,7 +77,7 @@ export function HistoryTitle() {
           className="text-14 font-600 text-text-primary"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1, transition: { duration: duration.base, ease: easeOut } }}
-          exit={{ opacity: 0, transition: { duration: duration.fast, ease: easeIn } }}
+          exit={{ opacity: 0, transition: { duration: duration.fast, ease: easeExit } }}
         >
           Hop
         </motion.span>
@@ -102,7 +102,7 @@ function BackButton() {
       className="flex items-end gap-4 rounded-4 text-14 font-600 text-text-black"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1, transition: { duration: duration.base, ease: easeOut } }}
-      exit={{ opacity: 0, transition: { duration: duration.fast, ease: easeIn } }}
+      exit={{ opacity: 0, transition: { duration: duration.fast, ease: easeExit } }}
     >
       <CaretLeftIcon />
       Back

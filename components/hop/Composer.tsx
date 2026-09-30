@@ -2,14 +2,16 @@
 
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { useState } from 'react';
-import { duration, easeIn, easeOut, enter, leave, press } from '@/lib/motion';
+import { duration, easeExit, easeOut, enter, leave, press } from '@/lib/motion';
 import { useHop } from '@/lib/store';
-import { FrameIcon, UpIcon, XIcon } from '@/components/icons/figma';
+import { BoundingBoxIcon, FrameIcon, UpIcon, XIcon } from '@/components/icons/figma';
 import { Truncate } from '@/components/ui/Truncate';
 
 // The composer (brief B7.2, B6; Figma "Composer"). Grows with the text up to 4 lines (CSS
 // field-sizing), Enter sends, Shift+Enter adds a line. Sending needs text or a tag.
-// Idle: the "Select any frame" hint (a hint, not a button — B11 #6). With a frame selected:
+// Idle: a hint that picking starts at the highlight button, drawn with that button's icon (user
+// feedback 2026-09-30; a hint, not a button — B11 #6). With highlight on it says to click a
+// frame instead, since clicking the button again would turn it off. With a frame selected:
 // its tag chip pops in (scale 0.92 → 1, base), the placeholder crossfades to "Ask about this
 // frame…". Once sent, the chip leaves (scale 0.92, fast) while the frame on the page scans.
 const IDLE_PLACEHOLDER = 'Ask Hop about sales, posts, stock or customers…';
@@ -18,6 +20,7 @@ const TAG_PLACEHOLDER = 'Ask about this frame…';
 export function Composer() {
   const [text, setText] = useState('');
   const selection = useHop((s) => s.selection);
+  const highlightMode = useHop((s) => s.highlightMode);
   const scanning = useHop((s) => s.scanning);
   const busy = useHop((s) => s.hopStatus !== 'idle');
   const ask = useHop((s) => s.ask);
@@ -45,7 +48,7 @@ export function Composer() {
                 className="col-start-1 row-start-1 flex max-w-full items-center gap-6 justify-self-start rounded-6 border border-tag-border bg-tag-bg px-8 py-3 text-11-5 font-500 text-tag-text"
                 initial={reduce ? false : { opacity: 0, scale: 0.92 }}
                 animate={{ opacity: 1, scale: 1, transition: { duration: duration.base, ease: easeOut } }}
-                exit={reduce ? { opacity: 0, transition: { duration: 0 } } : { opacity: 0, scale: 0.92, transition: { duration: duration.fast, ease: easeIn } }}
+                exit={reduce ? { opacity: 0, transition: { duration: 0 } } : { opacity: 0, scale: 0.92, transition: { duration: duration.fast, ease: easeExit } }}
                 style={{ transformOrigin: 'left center' }}
               >
                 <FrameIcon className="shrink-0 text-selection" />
@@ -62,12 +65,21 @@ export function Composer() {
             ) : (
               <motion.span
                 key="hint"
-                className="col-start-1 row-start-1 justify-self-start rounded-6 bg-surface-subtle px-8 py-4 text-11-5 font-500 text-text-secondary"
+                className="col-start-1 row-start-1 flex items-center gap-4 justify-self-start rounded-6 bg-surface-subtle px-8 py-4 text-11-5 font-500 text-text-secondary"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1, transition: enter() }}
                 exit={{ opacity: 0, transition: leave(duration.fast) }}
               >
-                Select any frame
+                {highlightMode ? (
+                  'Click any frame to select it'
+                ) : (
+                  <>
+                    Click the
+                    <BoundingBoxIcon className="size-[12px] shrink-0 text-text-primary" />
+                    <span className="sr-only">{' highlight button '}</span>
+                    to select a frame
+                  </>
+                )}
               </motion.span>
             )}
           </AnimatePresence>

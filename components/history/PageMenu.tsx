@@ -9,11 +9,12 @@ import { useHop } from '@/lib/store';
 import { Chev13Icon } from '@/components/icons/figma';
 
 // History's page filter (Figma "All pages" 1934:1925 and "transition" 1935:1993). Closed, it's a
-// 97×32 box showing the chosen page. Open, the box grows down to list every page, with the
-// chevron beside the current one. Picking a page: the chevron travels to it, then the drawer
-// closes by scrolling — the picked row keeps pace with the chevron as the list rolls up into the
-// box, pushing "All pages" out of the top while the rows below follow it up. Every move takes
-// travel time by distance (lib/motion `travel.menu`), so a long move isn't a slow one.
+// 105×32 box showing the chosen page (Figma draws 97; widened by user feedback 2026-09-30).
+// Open, the box grows down to list every page, with the chevron beside the current one. Picking
+// a page: the chevron travels to it, then the drawer closes by scrolling — the picked row keeps
+// pace with the chevron as the list rolls up into the box, pushing "All pages" out of the top
+// while the rows below follow it up. Every move takes travel time by distance (lib/motion
+// `travel.menu`), so a long move isn't a slow one.
 const OPTIONS: { id: Page | 'all'; label: string }[] = [{ id: 'all', label: 'All pages' }, ...HISTORY_PAGES];
 const ROW = 22; // 16px line + 6px gap (Figma)
 const CLOSED = 32; // py 7 + 16 + border
@@ -107,7 +108,7 @@ export function PageMenu() {
   };
 
   return (
-    <div ref={wrap} className="relative h-[32px] w-[97px] shrink-0">
+    <div ref={wrap} className="relative h-[32px] w-[105px] shrink-0">
       <motion.div
         ref={listbox}
         role={open ? 'listbox' : undefined}
@@ -115,7 +116,7 @@ export function PageMenu() {
         aria-activedescendant={open ? `${id}-${active}` : undefined}
         tabIndex={open ? -1 : undefined}
         onKeyDown={open ? onKey : undefined}
-        className={`absolute left-0 top-0 w-[97px] overflow-hidden rounded-8 border border-surface-border-tint bg-surface-default outline-none ${open ? 'z-30' : ''}`}
+        className={`absolute left-0 top-0 w-[105px] overflow-hidden rounded-8 border border-surface-border-tint bg-surface-default outline-none ${open ? 'z-30' : ''}`}
         style={{ height }}
       >
         <motion.div className="relative flex flex-col gap-6 px-10 py-7" style={{ y: scroll }}>
@@ -127,7 +128,7 @@ export function PageMenu() {
               aria-selected={open ? i === selected : undefined}
               onClick={open ? () => !busy.current && close(i, true) : undefined}
               onPointerEnter={open ? () => setActive(i) : undefined}
-              className={`flex h-[16px] w-[75px] items-center whitespace-nowrap text-12-5 font-500 transition-colors duration-(--dur-fast) ease-hop-out ${
+              className={`flex h-[16px] w-[83px] items-center whitespace-nowrap text-12-5 font-500 transition-colors duration-(--dur-fast) ease-hop-out ${
                 open ? 'cursor-pointer' : ''
               } ${open && i === active ? 'text-text-primary' : 'text-text-strong-secondary'}`}
             >
@@ -135,7 +136,7 @@ export function PageMenu() {
             </div>
           ))}
           {/* The chevron marks the chosen row and rides with the list. */}
-          <motion.span className="pointer-events-none absolute left-[72px] top-[8.5px] flex" style={{ y: chevron }} aria-hidden="true">
+          <motion.span className="pointer-events-none absolute left-[80px] top-[8.5px] flex" style={{ y: chevron }} aria-hidden="true">
             <motion.span className="flex text-text-secondary" style={{ transform: rotate }}>
               <Chev13Icon />
             </motion.span>

@@ -149,6 +149,27 @@ export const ANSWERS_BY_FRAME: Record<string, Answer> = {
       },
     ],
   },
+  // The whole Urgent card, one per period (written for the prototype from each period's items)
+  'analytics.urgent': {
+    reads: ['customers', 'inventory', 'sales'],
+    blocks: [text('Three things need you today. 3 customers have waited over 2 hours for a reply, the oldest is Chioma’s from 6:12 AM. The Sand linen set sells out by Saturday. And 6 orders are still to pack, with Ife on packing. The replies are the most pressing, and I can draft them for you.')],
+  },
+  'analytics.urgent-mon': {
+    reads: ['customers', 'inventory'],
+    blocks: [text('Everything from Monday got done. The 5 weekend delivery questions were answered by 11:00 AM, a restock of the Wrap kimono in size 10 went in at 9:40 AM, and Dayo cleared the DM backlog by noon.')],
+  },
+  'analytics.urgent-tue': {
+    reads: ['customers', 'inventory', 'instagram'],
+    blocks: [text('All three from Tuesday were handled. The Sand set sizing questions were answered by 9:20 AM, the Emerald slip dress count came to 12 units, and Zee replied to 40 reel comments by 4:00 PM.')],
+  },
+  'analytics.urgent-wed': {
+    reads: ['customers', 'inventory'],
+    blocks: [text('All three from Wednesday were handled. Both incomplete delivery addresses were fixed by 10:30 AM, the Emerald dress in size 12 was restocked before noon, and Dayo answered the 4 priority DMs by 1:15 PM.')],
+  },
+  'analytics.urgent-lastWeek': {
+    reads: ['customers', 'inventory'],
+    blocks: [text('Nothing from last week is still open. All 7 weekend return requests were closed, the supplier confirmed 60 Mocha robes, and 18 customers got a post-sale follow-up.')],
+  },
   // KPI tabs
   'analytics.kpi.revenue': { reads: ['sales'], blocks: [text('Revenue today is $2,480, up 12% on last Thursday ($2,210). Wednesday was the peak of the week at $3,120.')] },
   'analytics.kpi.orders': { reads: ['sales'], blocks: [text('34 orders so far today, up 6% on last Thursday. 6 are still to pack.')] },

@@ -4,7 +4,7 @@ import { AnimatePresence, motion, useReducedMotion, type Variants } from 'motion
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { PROMPT_CUES } from '@/data/conversation';
 import { PAGE_TITLES } from '@/data/nav';
-import { duration, easeIn, easeOut, press, timing } from '@/lib/motion';
+import { duration, easeExit, easeOut, press, timing } from '@/lib/motion';
 import { CHAT_FADE, PANEL_MAX, PANEL_MIN } from '@/lib/layout';
 import { useHop, type Message } from '@/lib/store';
 import { ArrowRIcon, BoundingBoxIcon, ChatCenteredIcon } from '@/components/icons/figma';
@@ -126,7 +126,7 @@ export function HopPanel() {
                   className="flex shrink-0 flex-wrap gap-6"
                   initial={{ opacity: 0, y: 6 }}
                   animate={{ opacity: 1, y: 0, transition: { duration: duration.base, ease: easeOut } }}
-                  exit={{ opacity: 0, y: -4, transition: { duration: duration.fast, ease: easeIn } }}
+                  exit={{ opacity: 0, y: -4, transition: { duration: duration.fast, ease: easeExit } }}
                 >
                   {PROMPT_CUES.map((cue) => (
                     <motion.button
@@ -237,7 +237,7 @@ function JumpChips() {
       className="flex shrink-0 flex-col gap-8"
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0, transition: { duration: duration.base, ease: easeOut } }}
-      exit={{ opacity: 0, y: -4, transition: { duration: duration.fast, ease: easeIn } }}
+      exit={{ opacity: 0, y: -4, transition: { duration: duration.fast, ease: easeExit } }}
     >
       <span className="text-11 font-500 text-text-muted">Jump to</span>
       <div className="flex gap-6">
@@ -271,7 +271,7 @@ const ITEM: Variants = {
   leave: (c: ItemCustom) => ({
     opacity: 0,
     y: -8,
-    transition: { duration: duration.fast, ease: easeIn, delay: c.index * timing.rowExitStagger },
+    transition: { duration: duration.fast, ease: easeExit, delay: c.index * timing.rowExitStagger },
   }),
 };
 

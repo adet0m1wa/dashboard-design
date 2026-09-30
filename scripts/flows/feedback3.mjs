@@ -26,7 +26,7 @@ export default async function (t) {
     const titles = [...document.querySelectorAll('[data-hop-frame="analytics.card"] h3')].map((h) => h.textContent);
     return titles;
   });
-  await t.check(`${m}8 KPI switch: one card title, already the new one (${kpi.join(' | ')})`, kpi.length === 1 && kpi[0] !== 'Top revenue generators');
+  await t.check(`${m}8 KPI switch: one card title, already the new one (${kpi.join(' | ')})`, kpi.length === 1 && kpi[0] === 'Orders');
   const day = await t.eval(async () => {
     document.querySelector('#kpi-tab-revenue').click();
     await new Promise((r) => setTimeout(r, 50));

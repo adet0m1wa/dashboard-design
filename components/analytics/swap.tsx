@@ -2,7 +2,7 @@
 
 import { AnimatePresence, motion, useReducedMotion, type Variants } from 'motion/react';
 import type { ReactNode } from 'react';
-import { duration, easeIn, easeOut, timing } from '@/lib/motion';
+import { duration, easeExit, easeOut, timing } from '@/lib/motion';
 
 // Shared swap motion for the Analytics cards (brief B7.1):
 //   old rows exit: fade + y −4, fast, 20ms stagger → new rows enter: fade + y 6→0, base, 40ms stagger.
@@ -15,7 +15,7 @@ const GROUP: Variants = {
 export const SWAP_ROW: Variants = {
   hidden: { opacity: 0, y: 6 },
   shown: { opacity: 1, y: 0, transition: { duration: duration.base, ease: easeOut } },
-  gone: { opacity: 0, y: -4, transition: { duration: duration.fast, ease: easeIn } },
+  gone: { opacity: 0, y: -4, transition: { duration: duration.fast, ease: easeExit } },
 };
 const INSTANT: Variants = { hidden: { opacity: 1 }, shown: { opacity: 1 }, gone: { opacity: 0, transition: { duration: 0 } } };
 

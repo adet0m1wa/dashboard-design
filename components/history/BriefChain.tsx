@@ -5,7 +5,7 @@ import { useEffect, useRef } from 'react';
 import { HISTORY_PEOPLE, type Brief } from '@/data/history';
 import { TEAM } from '@/data/team';
 import { matches } from '@/lib/briefs';
-import { duration, easeIn, easeOut, layoutSpring, press } from '@/lib/motion';
+import { duration, easeExit, easeOut, layoutSpring, press } from '@/lib/motion';
 import { useHop } from '@/lib/store';
 import { ArrowsOutIcon, Chev13Icon, Frame11Icon, SearchIcon } from '@/components/icons/figma';
 import { PersonAvatar } from '@/components/ui/PersonAvatar';
@@ -32,6 +32,10 @@ export function BriefChain({
   const history = useHop((s) => s.history);
   const visible = briefs.filter((b) => matches(b, history));
   const list = useRef<HTMLDivElement>(null);
+  // Layout animations only run when the filters or the pick change. Anything else that moves the
+  // rows — dragging the panel narrower, text rewrapping — lands at once (user feedback 2026-09-30:
+  // the selected brief's background used to spring after the panel's edge).
+  const layoutKey = `${visible.map((b) => b.id).join()}|${history.selectedId}`;
 
   // A brief selected from elsewhere (Recent with Hop, Back from Expand) is brought into view.
   useEffect(() => {
@@ -46,7 +50,9 @@ export function BriefChain({
   return (
     <div className="flex h-full flex-col">
       <Filters />
-      <div ref={list} className="min-h-0 flex-1 overflow-y-auto pb-14">
+      {/* layoutScroll: Motion reads the list's scroll, so bringing a brief into view isn't taken
+          for the rows moving (they used to slide by the scrolled distance). */}
+      <motion.div ref={list} layoutScroll className="min-h-0 flex-1 overflow-y-auto pb-14">
         <LayoutGroup>
           <AnimatePresence initial={false}>
             {DAYS.map((day) => {
@@ -56,16 +62,17 @@ export function BriefChain({
                 <motion.section
                   key={day}
                   layout="position"
+                  layoutDependency={layoutKey}
                   aria-label={day}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1, transition: { duration: duration.base, ease: easeOut } }}
-                  exit={{ opacity: 0, transition: { duration: duration.fast, ease: easeIn } }}
+                  exit={{ opacity: 0, transition: { duration: duration.fast, ease: easeExit } }}
                 >
                   <h2 className="px-16 pb-4 pt-14 text-11 font-500 text-text-muted">{day}</h2>
                   <ul>
                     <AnimatePresence initial={false}>
                       {items.map((b, i) => (
-                        <BriefItem key={b.id} brief={b} first={i === 0} last={i === items.length - 1} expandRef={expandRef} />
+                        <BriefItem key={b.id} brief={b} first={i === 0} last={i === items.length - 1} expandRef={expandRef} layoutKey={layoutKey} />
                       ))}
                     </AnimatePresence>
                   </ul>
@@ -75,7 +82,7 @@ export function BriefChain({
           </AnimatePresence>
         </LayoutGroup>
         {visible.length === 0 && <NoMatches />}
-      </div>
+      </motion.div>
     </div>
   );
 }
@@ -113,7 +120,9 @@ function Filters() {
           </Chip>
         ))}
       </div>
-      <div className="flex gap-8 px-16 pb-12">
+      {/* The search takes whatever the page menu (105) leaves: at the panel's full width it's
+          8px narrower than before the menu widened (user feedback 2026-09-30). */}
+      <div className="flex justify-between gap-8 px-16 pb-12">
         <label className={`flex min-w-0 flex-1 items-center gap-8 px-10 py-7 has-[input:focus]:border-selection ${box}`}>
           <SearchIcon className="shrink-0 text-text-muted" />
           <input
@@ -148,7 +157,19 @@ function Chip({ active, onClick, children }: { active: boolean; onClick: () => v
   );
 }
 
-function BriefItem({ brief, first, last, expandRef }: { brief: Brief; first: boolean; last: boolean; expandRef: React.RefObject<HTMLButtonElement | null> }) {
+function BriefItem({
+  brief,
+  first,
+  last,
+  expandRef,
+  layoutKey,
+}: {
+  brief: Brief;
+  first: boolean;
+  last: boolean;
+  expandRef: React.RefObject<HTMLButtonElement | null>;
+  layoutKey: string;
+}) {
   const selected = useHop((s) => s.history.selectedId === brief.id);
   const selectBrief = useHop((s) => s.selectBrief);
   const setExpanded = useHop((s) => s.setExpanded);
@@ -160,13 +181,14 @@ function BriefItem({ brief, first, last, expandRef }: { brief: Brief; first: boo
   return (
     <motion.li
       layout="position"
+      layoutDependency={layoutKey}
       className="relative overflow-hidden"
       initial={reduce ? false : { opacity: 0, height: 0 }}
       animate={{ opacity: 1, height: 'auto', transition: { duration: duration.base, ease: easeOut } }}
-      exit={reduce ? { opacity: 0, transition: { duration: 0 } } : { opacity: 0, height: 0, transition: { duration: duration.base, ease: easeIn } }}
+      exit={reduce ? { opacity: 0, transition: { duration: 0 } } : { opacity: 0, height: 0, transition: { duration: duration.base, ease: easeExit } }}
       transition={layoutSpring}
     >
-      {selected && <motion.span layoutId="brief-selected" transition={layoutSpring} className="absolute inset-0 bg-palette-tone-28" />}
+      {selected && <motion.span layoutId="brief-selected" layoutDependency={layoutKey} transition={layoutSpring} className="absolute inset-0 bg-palette-tone-28" />}
       {/* The whole row is one button: it picks the brief, and on the picked brief it opens the chat
           (user feedback 2026-09-29). The expand icon sits above it. */}
       <button
@@ -203,7 +225,7 @@ function BriefItem({ brief, first, last, expandRef }: { brief: Brief; first: boo
                   className="pointer-events-auto relative -my-2 shrink-0 rounded-4 text-text-black after:absolute after:-inset-4"
                   initial={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1, transition: { duration: duration.base, ease: easeOut } }}
-                  exit={{ opacity: 0, transition: { duration: duration.fast, ease: easeIn } }}
+                  exit={{ opacity: 0, transition: { duration: duration.fast, ease: easeExit } }}
                 >
                   <ArrowsOutIcon />
                 </motion.button>

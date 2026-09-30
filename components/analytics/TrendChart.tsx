@@ -7,7 +7,7 @@ import { DAY_LABELS, KPIS, SERIES, TODAY_INDEX } from '@/data/kpis';
 import type { KpiDef } from '@/data/types';
 import { CHART, chartGeometry, yAt, type ChartGeometry } from '@/lib/chart';
 import { changeLabel, formatNumber } from '@/lib/format';
-import { duration, easeIn, easeOut, enter, leave, timing } from '@/lib/motion';
+import { duration, easeExit, easeOut, enter, leave, timing } from '@/lib/motion';
 import { useElementWidth } from '@/lib/useElementWidth';
 import { useTweenedArray } from '@/lib/useTween';
 import { useHop } from '@/lib/store';
@@ -137,7 +137,7 @@ export function TrendChart() {
                 strokeWidth={1}
                 initial={{ opacity: 0, x1: g.xAt(hover), x2: g.xAt(hover) }}
                 animate={{ opacity: 1, x1: g.xAt(hover), x2: g.xAt(hover) }}
-                exit={{ opacity: 0, transition: { duration: duration.fast, ease: easeIn } }}
+                exit={{ opacity: 0, transition: { duration: duration.fast, ease: easeExit } }}
                 transition={{ opacity: { duration: duration.fast, ease: easeOut }, default: { duration: timing.tooltipFollow, ease: easeOut } }}
               />
             )}
@@ -240,7 +240,7 @@ function SeriesLayer({
   const dotsStart = intro && draw ? INTRO.dots : draw ? draw.duration * 0.5 : 0;
 
   return (
-    <motion.g exit={{ opacity: 0, transition: { duration: duration.fast, ease: easeIn } }}>
+    <motion.g exit={{ opacity: 0, transition: { duration: duration.fast, ease: easeExit } }}>
       {lastWeek ? (
         <path d={`M0 ${CHART.baseline}H${g.xAt(6)}`} className="stroke-surface-border-tint" strokeWidth={1} />
       ) : (
@@ -297,10 +297,12 @@ function SeriesLayer({
             className={`${isActive ? `${tone.dotFill} stroke-surface-default` : `fill-surface-default ${tone.line}`} ${COLOR_TWEEN}`}
             strokeWidth={isActive ? 2 : 1.5}
             style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
-            initial={draw ? { scale: 0, r } : false}
-            animate={{ scale: 1, r }}
+            // First load: each dot fades in growing 0.9 → 1 as the line reaches it (never from 0).
+            initial={draw ? { scale: 0.9, opacity: 0, r } : false}
+            animate={{ scale: 1, opacity: 1, r }}
             transition={{
               scale: { duration: duration.fast, ease: easeOut, delay: dotsStart + i * timing.dotStagger },
+              opacity: { duration: duration.fast, ease: easeOut, delay: dotsStart + i * timing.dotStagger },
               r: { duration: duration.fast, ease: easeOut },
             }}
           />
@@ -329,7 +331,7 @@ function Tooltip({ g, def, lastWeek, hover, kpi }: { g: ChartGeometry; def: KpiD
           className="pointer-events-none absolute left-0 top-0 flex -translate-x-1/2 -translate-y-full flex-col gap-2 whitespace-nowrap rounded-8 bg-action-primary px-8 py-6"
           initial={{ opacity: 0, left: x, top: y - 12 }}
           animate={{ opacity: 1, left: x, top: y - 12 }}
-          exit={{ opacity: 0, transition: { duration: duration.fast, ease: easeIn } }}
+          exit={{ opacity: 0, transition: { duration: duration.fast, ease: easeExit } }}
           transition={{ opacity: { duration: duration.fast, ease: easeOut }, left: { duration: timing.tooltipFollow }, top: { duration: timing.tooltipFollow } }}
         >
           <span className="text-12 font-600 text-text-on-dark tabular-nums">{formatNumber(v, def.format)}</span>

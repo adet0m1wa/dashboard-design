@@ -9,7 +9,10 @@ export const duration = {
 } as const;
 
 export const easeOut = [0.22, 1, 0.36, 1] as const; // everything that enters
-export const easeIn = [0.4, 0, 1, 1] as const; // everything that leaves
+// Everything that leaves eases out too (Emil Kowalski's standard, adopted 2026-09-30; the brief's
+// B4 had ease-in [0.4, 0, 1, 1]): ease-in starts slow, holding up the moment the user is watching.
+// Exits stay shorter than enters (exitOf).
+export const easeExit = easeOut;
 export const easeInOut = [0.45, 0, 0.55, 1] as const; // loops: scan sweep, sync spin
 
 // Sliding pills and indicators (layoutId). No bouncy springs anywhere else.
@@ -19,7 +22,7 @@ export const layoutSpring = { type: 'spring', stiffness: 500, damping: 40 } as c
 export const exitOf = (enter: number) => +(enter * 0.65).toFixed(3);
 
 export const enter = (d: number = duration.base) => ({ duration: d, ease: easeOut });
-export const leave = (d: number = duration.base) => ({ duration: exitOf(d), ease: easeIn });
+export const leave = (d: number = duration.base) => ({ duration: exitOf(d), ease: easeExit });
 
 // Buttons and chips: scale 0.97 over 100ms.
 export const press = { scale: 0.97, transition: { duration: 0.1, ease: easeOut } } as const;

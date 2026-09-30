@@ -204,3 +204,6 @@ The "fresh" section is now a single section (id 1816:4657, x 1694); the old dupl
   #B56025, tone-03 #CE4275, tone-15 #52840B, tone-17 #0C875E.
 - Round 3 (2026-09-29): motion pared back — see CLAUDE.md > Decisions (instant pages/sidebars,
   standard 48px chat fade, auto-hiding scrollbars, no Analytics title icon, static Urgent).
+- Round 4 (2026-09-30), departures from Figma on the user's say: the bottom card's title is the
+  KPI's name; "All pages" is 105 wide (Figma 97); the composer hint reads "Click the [BoundingBox
+  icon] to select a frame". Cards row stays at Figma's fixed 246 for every KPI (token `cards-row`).

@@ -30,9 +30,9 @@ export default async function (t) {
   const settled = await t.eval(revenue);
   if (reduced) await t.check(`[reduced] 1 first load: no count-up (${early} → ${settled})`, early === '$2,480' && settled === '$2,480');
   else await t.check(`1 first load: the entrance counts revenue up (${early} → ${settled})`, early !== '$2,480' && settled === '$2,480');
-  await t.check(`${m}1 first load: prompt cues, "Select any frame", sidebar open, Hop open`, async () =>
+  await t.check(`${m}1 first load: prompt cues, "Click the … to select a frame", sidebar open, Hop open`, async () =>
     (await t.eval(cues)) &&
-    (await t.eval(() => document.querySelector('.shadow-composer').textContent.includes('Select any frame') && document.querySelector('aside[aria-label=Sidebar]').offsetWidth === 224 && document.querySelector('aside[aria-label=Hop]').offsetWidth === 368)),
+    (await t.eval(() => document.querySelector('.shadow-composer').textContent.includes('to select a frame') && document.querySelector('aside[aria-label=Sidebar]').offsetWidth === 224 && document.querySelector('aside[aria-label=Hop]').offsetWidth === 368)),
   );
   await t.page.mouse.move(700, 880);
   await shot('01-analytics-first-load');
@@ -47,7 +47,7 @@ export default async function (t) {
   if (reduced) await t.check(`[reduced] 2 KPI: chart swaps at once (${y0.toFixed(1)} → ${yMid.toFixed(1)} → ${y1.toFixed(1)})`, yMid === y1);
   else await t.check(`2 KPI: the line morphs, eased (${y0.toFixed(1)} → ${yMid.toFixed(1)} at 150ms → ${y1.toFixed(1)})`, (yMid - y0) / (y1 - y0) > 0.5 && yMid !== y1);
   await t.check(`${m}2 KPI: chart title + card swap to Orders ("${await t.eval(title)}" / "${await t.eval(cardTitle)}")`, async () =>
-    (await t.eval(title)).startsWith('Orders') && (await t.eval(cardTitle)) !== 'Top revenue generators',
+    (await t.eval(title)).startsWith('Orders') && (await t.eval(cardTitle)) === 'Orders',
   );
   await t.check(`${m}2 KPI: the two cards are the same height`, () =>
     t.eval(() => {

@@ -2,7 +2,8 @@
 
 import { motion } from 'motion/react';
 import { shareWord } from '@/data/analytics';
-import type { Card, DmRow, OrderRow, Page, PeriodKey, PostRow, ProductRow, SourceRow } from '@/data/types';
+import { KPIS } from '@/data/kpis';
+import type { Card, DmRow, Kpi, OrderRow, Page, PeriodKey, PostRow, ProductRow, SourceRow } from '@/data/types';
 import { formatNumber, money } from '@/lib/format';
 import { press } from '@/lib/motion';
 import { useHop } from '@/lib/store';
@@ -14,24 +15,29 @@ import { SwapRow, SwapRows } from './swap';
 import { Truncate } from '@/components/ui/Truncate';
 
 // The card beside Urgent, one variant per KPI (brief A7, B7.1). Card: p 16, gap 12, radius 12,
-// 1px border; a spacer keeps the footer pinned to the bottom when the row stretches.
-export function KpiCard({ card, period, className = '' }: { card: Card; period: PeriodKey; className?: string }) {
+// 1px border; a spacer keeps the footer pinned to the bottom of the fixed-height row. Its title is
+// the selected KPI's name, with no period in it — the chart's toggle already says which (user
+// feedback 2026-09-30).
+export function KpiCard({ kpi, card, period, className = '' }: { kpi: Kpi; card: Card; period: PeriodKey; className?: string }) {
   const navigate = useHop((s) => s.navigate);
+  const title = KPIS[kpi].label;
 
   return (
     <HopFrame
       id="analytics.card"
-      label={card.title}
+      label={title}
       page="analytics"
       jumpTarget={card.link.page}
       radius={14}
       className={`flex min-w-0 flex-col gap-12 rounded-12 border border-surface-border-tint bg-surface-default p-16 ${className}`}
     >
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-12">
         {/* Title, link and footer change at once with the data (user feedback 2026-09-29); only
-            the rows swap with motion. */}
-        <h3 className="whitespace-nowrap text-13 font-600 text-text-primary">{card.title}</h3>
-        <div className="grid justify-items-end">
+            the rows swap with motion. The link never gives up its width to the title. */}
+        <h3 className="flex min-w-0 text-13 font-600 text-text-primary">
+          <Truncate>{title}</Truncate>
+        </h3>
+        <div className="grid shrink-0 justify-items-end">
           <motion.button
             type="button"
             whileTap={press}
@@ -44,7 +50,7 @@ export function KpiCard({ card, period, className = '' }: { card: Card; period: 
         </div>
       </div>
 
-      <SwapRows swapKey={`${card.kind}:${card.title}`} className="flex flex-col gap-12">
+      <SwapRows swapKey={`${kpi}:${period}`} className={`flex flex-col ${ROW_GAP[card.kind]}`}>
         <CardRows card={card} period={period} />
       </SwapRows>
 
@@ -58,6 +64,11 @@ export function KpiCard({ card, period, className = '' }: { card: Card; period: 
     </HopFrame>
   );
 }
+
+// Every variant fills the same 246px row (user feedback 2026-09-30): three 36px rows with 12px
+// gaps. Posts have taller 38px thumbnails, so their gap is 9; the follower bars are shorter
+// (30px), so they spread out to 20 — the footer keeps the last 2px.
+const ROW_GAP: Record<Card['kind'], string> = { products: 'gap-12', orders: 'gap-12', dms: 'gap-12', posts: 'gap-9', sources: 'gap-20' };
 
 function CardRows({ card, period }: { card: Card; period: PeriodKey }) {
   switch (card.kind) {
@@ -140,7 +151,7 @@ function OrderLine({ row }: { row: OrderRow }) {
           {row.item} × {row.qty} · {row.time}
         </Sub>
       </div>
-      <Tag tone="warning">{row.status}</Tag>
+      <Tag tone={row.tone ?? 'warning'}>{row.status}</Tag>
       <Amount>{money(row.amount)}</Amount>
     </div>
   );
@@ -186,7 +197,7 @@ function DmLine({ row }: { row: DmRow }) {
         <Name>{row.customer}</Name>
         <Sub>{row.quote}</Sub>
       </div>
-      <Tag tone="danger">{row.waiting}</Tag>
+      <Tag tone={row.tone ?? 'danger'}>{row.waiting}</Tag>
     </div>
   );
 }
