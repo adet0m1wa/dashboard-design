@@ -3,7 +3,7 @@
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { useLayoutEffect, useState, type ElementType, type ReactNode } from 'react';
 import type { Page } from '@/data/types';
-import { duration, easeIn, easeInOut, easeOut, exitOf, timing } from '@/lib/motion';
+import { duration, easeExit, easeInOut, easeOut, exitOf, timing } from '@/lib/motion';
 import { outlineBox, surfaceOf, type OutlineBox } from '@/lib/outline';
 import { useHop, type HopFrameRef } from '@/lib/store';
 
@@ -103,7 +103,7 @@ function FrameOverlay({ id, frame, radius }: { id: string; frame: HTMLElement | 
             style={place}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1, transition: { duration: duration.fast, ease: easeOut } }}
-            exit={{ opacity: 0, transition: { duration: exitOf(duration.fast), ease: easeIn } }}
+            exit={{ opacity: 0, transition: { duration: exitOf(duration.fast), ease: easeExit } }}
           />
         )}
       </AnimatePresence>
@@ -128,7 +128,7 @@ function FrameOverlay({ id, frame, radius }: { id: string; frame: HTMLElement | 
                   style={{ borderRadius: box.radius }}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1, transition: { duration: duration.fast } }}
-                  exit={{ opacity: 0, transition: { duration: duration.fast, ease: easeIn } }}
+                  exit={{ opacity: 0, transition: { duration: duration.fast, ease: easeExit } }}
                 >
                   <motion.span
                     className="absolute inset-y-0 left-0 w-2/5 bg-linear-to-r from-transparent via-selection/12 to-transparent"
@@ -156,18 +156,19 @@ function FrameOverlay({ id, frame, radius }: { id: string; frame: HTMLElement | 
               variants={{
                 hidden: reduce ? { opacity: 0 } : { opacity: 0, scale: 0.98 },
                 shown: { opacity: 1, scale: 1, transition: { duration: duration.base, ease: easeOut } },
-                gone: { opacity: 0, transition: { duration: duration.base, ease: easeIn } },
+                gone: { opacity: 0, transition: { duration: duration.base, ease: easeExit } },
               }}
             />
-            {/* Handles: pop in at the corners once it's picked (0 → 1, staggered 20ms); leave shrinking. */}
+            {/* Handles: pop in at the corners once it's picked (fade + 0.9 → 1, staggered 20ms — never
+                from scale 0); leave shrinking. */}
             {CORNERS.map((pos, i) => (
               <motion.span
                 key={pos}
                 className={`absolute ${pos} size-[7px] border-(length:--stroke-1-2) border-selection bg-surface-default`}
                 variants={{
-                  hidden: reduce ? { opacity: 0 } : { scale: 0 },
+                  hidden: reduce ? { opacity: 0 } : { opacity: 0, scale: 0.9 },
                   shown: { scale: 1, opacity: 1, transition: { duration: duration.fast, ease: easeOut, delay: reduce ? 0 : i * timing.handleStagger } },
-                  gone: { scale: reduce ? 1 : 0.6, opacity: 0, transition: { duration: duration.base, ease: easeIn } },
+                  gone: { scale: reduce ? 1 : 0.6, opacity: 0, transition: { duration: duration.base, ease: easeExit } },
                 }}
               />
             ))}

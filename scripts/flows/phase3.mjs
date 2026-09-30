@@ -17,7 +17,8 @@ export default async function (t) {
   await t.wait(120);
   const early = await t.eval(revenue);
   const earlyLine = await t.eval(() => [...document.querySelectorAll('#kpi-chart path[stroke-width="2"]')].pop().getAttribute('stroke-dasharray'));
-  const earlyDot = await t.eval(() => getComputedStyle(document.querySelectorAll('#kpi-chart circle')[3]).transform);
+  // Dots fade in from 0.9 (feedback 4: never from scale 0), so "not yet in" is opacity 0.
+  const earlyDot = await t.eval(() => getComputedStyle(document.querySelectorAll('#kpi-chart circle')[3]).opacity);
   const earlyCardOpacity = await t.eval(() => +getComputedStyle(document.querySelector('[data-hop-frame="analytics.card"]').parentElement).opacity);
   await t.wait(1400);
   const late = await t.eval(revenue);
@@ -29,7 +30,7 @@ export default async function (t) {
     await t.check(`entrance: revenue counts up from 0 (at 120ms: ${early})`, early !== '$2,480' && /^\$/.test(early));
     await t.check(`entrance: cards fade up (opacity at 120ms: ${earlyCardOpacity.toFixed(2)})`, earlyCardOpacity < 1);
     await t.check(`entrance: line draws in (dash at 120ms: ${String(earlyLine).slice(0, 5)})`, earlyLine && parseFloat(earlyLine) < 0.95);
-    await t.check(`entrance: dots pop in later (today's dot at 120ms: ${earlyDot})`, earlyDot.startsWith('matrix(0,'));
+    await t.check(`entrance: dots come in later (today's dot opacity at 120ms: ${earlyDot})`, earlyDot === '0');
   }
   await t.check(`${mode}entrance: settles on $2,480 (${late})`, late === '$2,480');
   await t.shot(`phase3-${reduced ? 'reduced-' : ''}first-load`);
@@ -53,7 +54,7 @@ export default async function (t) {
   const after = await t.eval(mainLine);
   if (reduced) await t.check(`${mode}KPI switch: line swaps instantly`, mid === after && after !== before);
   else await t.check('KPI switch: line morphs (mid-path differs from start and end)', mid !== before && mid !== after);
-  await t.check(`${mode}KPI switch: card is "Orders placed today"`, (await t.eval(cardTitle)) === 'Orders placed today');
+  await t.check(`${mode}KPI switch: card is "Orders"`, (await t.eval(cardTitle)) === 'Orders');
   await t.check(`${mode}KPI switch: title "Orders over the last 7 days"`, (await t.eval(chartTitle)) === 'Orders over the last 7 days');
   const heights = () =>
     t.eval(() => [...document.querySelector('[data-hop-frame="analytics.card"]').closest('.grid').children].map((c) => Math.round(c.getBoundingClientRect().height)));
@@ -97,7 +98,7 @@ export default async function (t) {
   await t.check(`${mode}Wed: title "${await t.eval(chartTitle)}"`, (await t.eval(chartTitle)) === 'Wednesday, 23 Sep');
   await t.check(`${mode}Wed: revenue counts to $3,120 (mid ${wedMid})`, (await t.eval(revenue)) === '$3,120' && (reduced ? wedMid === '$3,120' : wedMid !== '$3,120'));
   await t.check(`${mode}Wed: label drops "today"`, await t.eval(() => document.querySelector('#kpi-tab-revenue').textContent.startsWith('Revenue$')));
-  await t.check(`${mode}Wed: card "Top revenue generators · Wed"`, (await t.eval(cardTitle)) === 'Top revenue generators · Wed');
+  await t.check(`${mode}Wed: card "Revenue" (no day in the title) with Wednesday's rows`, (await t.eval(cardTitle)) === 'Revenue' && (await t.eval(() => document.querySelector('[data-hop-frame="analytics.card"]').textContent.includes('Pleated midi skirt'))));
   await t.check(`${mode}Wed: Urgent shows done pills`, await t.eval(() => ['Resolved', 'Completed', 'Attended'].every((s) => document.body.textContent.includes(s))));
   await t.check(`${mode}Wed: dashed guide drawn`, await t.eval(() => !!document.querySelector('#kpi-chart path[stroke-dasharray="2 3"]')));
   await t.shot(`phase3-${reduced ? 'reduced-' : ''}wednesday`);

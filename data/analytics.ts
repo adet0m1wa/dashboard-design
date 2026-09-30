@@ -19,10 +19,9 @@ export function periodOf(view: AnalyticsView): PeriodKey {
   return (['mon', 'tue', 'wed'] as const)[view.day];
 }
 
-/** The card beside Urgent. Past periods only have a revenue breakdown in the data. */
+/** The card beside Urgent: the selected KPI's breakdown for the period on show. */
 export function cardFor(view: AnalyticsView): Card {
-  const snap = SNAPSHOTS[periodOf(view)];
-  return snap.cards[view.kpi] ?? snap.cards.revenue;
+  return SNAPSHOTS[periodOf(view)].cards[view.kpi];
 }
 
 const DAY_TITLES = ['Monday, 21 Sep', 'Tuesday, 22 Sep', 'Wednesday, 23 Sep'];

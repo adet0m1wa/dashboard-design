@@ -259,6 +259,9 @@ export function createHopStore(initialPage: Page, init: Partial<HopState> = {}) 
       if (msg.tag.page !== s.page) get().navigate(msg.tag.page, 'tag');
       const now = get();
       set({
+        // A card row or a period's Urgent card only exists in the view it was asked in, so that
+        // view comes back with it (otherwise the tag pointed at nothing).
+        ...(msg.tag.page === 'analytics' && msg.view ? { analytics: msg.view } : {}),
         selection: msg.tag,
         selectPulse: now.selectPulse + 1,
         revealPulse: now.revealPulse + 1,

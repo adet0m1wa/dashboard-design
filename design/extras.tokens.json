@@ -117,6 +117,10 @@
       "value": 720,
       "source": "Not in Figma: the narrowest page area before the Analytics KPI tabs overlap (phase 8 zoom check; Figma draws it at 824). Below this the workspace scrolls sideways instead of squashing."
     },
+    "cards-row": {
+      "value": 246,
+      "source": "Analytics > Cards row: fixed h 246 in Figma. Every KPI's card keeps it, so Urgent beside it never changes height (user feedback 2026-09-30)"
+    },
     "panel-min": {
       "value": 300,
       "source": "Not in Figma: the narrowest the side panel can be dragged (user left the minimum to us, 2026-09-29) — keeps the jump chips on one line and the History chain readable"

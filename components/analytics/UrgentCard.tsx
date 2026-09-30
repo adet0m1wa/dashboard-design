@@ -1,6 +1,6 @@
 'use client';
 
-import type { UrgentIcon, UrgentItem } from '@/data/types';
+import type { PeriodKey, UrgentIcon, UrgentItem } from '@/data/types';
 import { BoxUrgentIcon, MsgIcon, UsersUrgentIcon } from '@/components/icons/figma';
 import { HopFrame } from '@/components/select/HopFrame';
 import { SmallButton } from '@/components/ui/SmallButton';
@@ -8,7 +8,8 @@ import { Truncate } from '@/components/ui/Truncate';
 
 // Urgent (Figma "Card/Needs you"). Live rows have an action button; past periods show the
 // items as done, with a quiet status pill instead (brief B7.1). Nothing here animates (user
-// feedback 2026-09-29): the rows change at once with the period.
+// feedback 2026-09-29): the rows change at once with the period. The whole card is a frame too
+// (user feedback 2026-09-30), one per period, so Hop answers about the items on show.
 const ICON: Record<UrgentIcon, { tile: string; Icon: typeof MsgIcon }> = {
   // Icon colours are the Figma strokes: tone-07 #DC2626, tone-08 #D97706, tone-10 #5B5BD6.
   msg: { tile: 'bg-status-danger-soft text-palette-tone-07', Icon: MsgIcon },
@@ -18,24 +19,30 @@ const ICON: Record<UrgentIcon, { tile: string; Icon: typeof MsgIcon }> = {
 
 export function UrgentCard({
   items,
-  swapKey,
+  period,
   onAction,
   className = '',
 }: {
   items: UrgentItem[];
-  swapKey: string;
+  period: PeriodKey;
   onAction?: (item: UrgentItem) => void;
   className?: string;
 }) {
   return (
-    <div className={`flex min-w-0 flex-col gap-12 rounded-12 border border-surface-border-tint bg-surface-default p-16 ${className}`}>
+    <HopFrame
+      id={period === 'today' ? 'analytics.urgent' : `analytics.urgent-${period}`}
+      label="Urgent"
+      page="analytics"
+      radius={14}
+      className={`flex min-w-0 flex-col gap-12 rounded-12 border border-surface-border-tint bg-surface-default p-16 ${className}`}
+    >
       <h3 className="text-13 font-600 text-text-primary">Urgent</h3>
-      <div key={swapKey} className="flex flex-col gap-12">
+      <div key={period} className="flex flex-col gap-12">
         {items.map((item) => (
           <UrgentRow key={item.id} item={item} onAction={onAction} />
         ))}
       </div>
-    </div>
+    </HopFrame>
   );
 }
 

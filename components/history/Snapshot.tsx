@@ -1,6 +1,6 @@
 'use client';
 
-import { motion, useReducedMotion } from 'motion/react';
+import { LayoutGroup, motion, useReducedMotion } from 'motion/react';
 import type { Brief } from '@/data/history';
 import { INSTAGRAM_SCREENSHOT } from '@/data/history';
 import { PAGE_TITLES } from '@/data/nav';
@@ -59,21 +59,26 @@ export function Snapshot({ brief }: { brief: Brief }) {
   );
 }
 
-/** The Analytics page as it was: that moment's KPI, week and day, and the tagged frame if any. */
+/** The Analytics page as it was: that moment's KPI, week and day, and the tagged frame if any.
+ *  Its own LayoutGroup keeps its KPI pill and week thumb apart from the live page's (and from
+ *  other briefs'): sharing the layoutIds made them fly across when changing page or brief (user
+ *  feedback 2026-09-30). */
 function AnalyticsSnapshot({ brief }: { brief: Brief }) {
   return (
-    <HopStoreProvider
-      initialPage="analytics"
-      init={{
-        analytics: brief.view ?? { kpi: 'revenue', range: 'thisWeek', day: null },
-        analyticsIntroPending: false,
-        selection: brief.tag?.page === 'analytics' ? brief.tag : null,
-      }}
-    >
-      <div inert aria-label={`Analytics as it was at ${brief.time}`} role="img">
-        <AnalyticsPage />
-      </div>
-    </HopStoreProvider>
+    <LayoutGroup id={`snapshot-${brief.id}`}>
+      <HopStoreProvider
+        initialPage="analytics"
+        init={{
+          analytics: brief.view ?? { kpi: 'revenue', range: 'thisWeek', day: null },
+          analyticsIntroPending: false,
+          selection: brief.tag?.page === 'analytics' ? brief.tag : null,
+        }}
+      >
+        <div inert aria-label={`Analytics as it was at ${brief.time}`} role="img">
+          <AnalyticsPage />
+        </div>
+      </HopStoreProvider>
+    </LayoutGroup>
   );
 }
 

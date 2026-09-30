@@ -96,7 +96,7 @@ export default async function (t) {
   );
   await t.check(`${m}answer: highlight cleared`, async () => !(await t.eval(selectedOverlay, SAND)));
   await t.check(`${m}answer: jump chips gone, no cues (the chat has started)`, async () => (await t.eval(chips)) === '' && !(await t.eval(cues)));
-  await t.check(`${m}answer: composer back to "Select any frame"`, () => t.eval(() => document.querySelector('aside[aria-label=Hop] .shadow-composer')?.textContent.includes('Select any frame')));
+  await t.check(`${m}answer: composer back to the "Click the … to select a frame" hint`, () => t.eval(() => document.querySelector('aside[aria-label=Hop] .shadow-composer')?.textContent.includes('to select a frame')));
   await t.page.mouse.move(700, 880);
   await t.wait(200);
   await t.shot(`phase5-${reduced ? 'reduced-' : ''}answered`);

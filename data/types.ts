@@ -62,6 +62,8 @@ export interface OrderRow {
   time: string;
   amount: number;
   status: string;
+  /** The status pill's tone: today's orders are "To pack" (warning, the default); past ones are done. */
+  tone?: Tone;
 }
 
 export interface PostRow {
@@ -85,11 +87,13 @@ export interface DmRow {
   initials: string;
   avatar: AvatarColor;
   quote: string;
-  waiting: string;
+  waiting: string; // "8h" today; "Replied in 1h 10m" for a past period
+  /** The wait pill's tone: danger (the default) while unanswered, success once replied. */
+  tone?: Tone;
 }
 
+// The card's title is the selected KPI's name (user feedback 2026-09-30), so it isn't stored here.
 interface CardBase {
-  title: string;
   link: { label: string; page: Page };
   footer: [left: string, right: string];
 }
@@ -119,7 +123,7 @@ export interface UrgentItem {
 export interface Snapshot {
   key: PeriodKey;
   kpis: Record<Kpi, KpiReading>;
-  /** The card beside Urgent. Today has one per KPI; past periods only have a revenue breakdown. */
-  cards: Partial<Record<Kpi, Card>> & { revenue: Card };
+  /** The card beside Urgent, one per KPI. */
+  cards: Record<Kpi, Card>;
   urgent: UrgentItem[];
 }

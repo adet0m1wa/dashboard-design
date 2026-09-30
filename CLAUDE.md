@@ -86,10 +86,11 @@ npm run check      # typecheck + token check
 | Final test | done | `scripts/flows/final.mjs` — the brief's 10 flows as one journey + feedback features: 38/38 in both motion modes on the production build, no console errors; screenshots in `docs/screenshots/`. `frames.mjs` recreates all 19 Figma frames: 2.0–7.4% pixel difference each (`docs/screenshots/compare/`). Full suite (`HOP_URL=http://localhost:3001 bash scripts/test-all.sh`): 22/22 runs green |
 | Feedback 2 | done | Highlight-off clears the pick, scroll-driven chat fade, wipe page transition (distance-timed), custom "All pages" menu, resizable side panel (History lives in it), expand icon, 2× Instagram image, thin scrollbars, Instagram glyph, cues only on an empty chat, 8 colour variables fixed for AA (Figma updated). `feedback2.mjs` 28/28, reduced 25/25; every flow green on the production build |
 | Feedback 3 | done | Instant: page changes, sidebar collapse + nav pill, Hop panel open/close and resizing, person pills, bottom card title; Urgent never animates; standard 48px chat fade; scrollbars only while scrolling; no icon beside "Analytics" in its top bar. `feedback3.mjs` 10/10 both modes; all 26 runs green on the production build |
+| Feedback 4 | done | Emil Kowalski skills installed (`npx skills add emilkowalski/skills`); History snapshots no longer share the KPI pill / week thumb with the live page; bottom card follows the KPI in every period (new past-period cards), titled with the KPI's name, fixed 246 row so Urgent never moves; Urgent card selectable; hint "Click the ⌗ to select a frame"; "All pages" 105; brief rows follow a panel resize at once; tags restore their view; exits ease out, nothing grows from scale 0. `feedback4.mjs` 16/16 both modes |
 
 
-**Status (2026-09-29):** all phases, feedback rounds 1–3 and the final test are done. Waiting on:
-product/post images (names + prompts in the latest report).
+**Status (2026-09-30):** all phases, feedback rounds 1–4 and the final test are done. Waiting on:
+product/post images (names + prompts in the round-3 report).
 
 ## Decisions (not in the brief)
 
@@ -129,8 +130,13 @@ product/post images (names + prompts in the latest report).
   without the antenna; the component is what the brief names, and "scanning" pulses its antenna light.
 - Monday/Tuesday breakdowns and done items are written for the prototype (`data/earlierDays.ts`);
   their KPIs come from the chart series.
-- Past periods (a selected day, last week) only have a revenue breakdown, so the card beside
-  Urgent shows that period's "Top revenue generators" whatever KPI is selected.
+- ~~Past periods only have a revenue breakdown~~ → every period has all five cards (feedback 4):
+  the Orders/Likes/Followers/DMs cards for Mon–Wed and last week are written for the prototype
+  (`data/earlierDays.ts`, `wednesday.ts`, `lastWeek.ts`); past orders are Shipped/Delivered and past
+  DMs "Replied in …" (success tone).
+- The card's title is the selected KPI's name ("Revenue", "Orders", "Instagram likes", "New
+  followers", "Unanswered DMs"), never a period (feedback 4; Figma: "Top revenue generators" etc.).
+  Its link never shrinks.
 - Prompt-cue, KPI, chart and Urgent-action answers are written for the prototype from the A7
   numbers (`data/conversation.ts`); the Sand and Adire answers are from the brief.
 - A tag sent with no text asks "Tell me more about this" (the frames' question).
@@ -145,8 +151,9 @@ product/post images (names + prompts in the latest report).
   or whether the entrance should play, and server-rendering caused hydration mismatches.
 - Chart tooltip (not designed): dark pill, value + "+30% vs last Wed"; in last week "Last week · Wed".
   Keyboard focus on a day shows it too; a mouse click on a day doesn't leave it up.
-- Equal-height cards: the grid row and cards have Motion `layout` (base); with today's data no
-  state changes their height, so it never visibly runs.
+- ~~Equal-height cards via Motion `layout`~~ → one fixed row, token `cards-row` 246 (Figma), no
+  layout animation (feedback 4: switching to Likes grew both cards 6px and scale-distorted Urgent).
+  Row gaps per variant so each fills it: 12, posts 9 (38px thumbnails), follower bars 20.
 - The first-load entrance plays the first time Analytics shows in a session (not on later visits).
 - Settings and the store switcher / panel icon are shown as designed but aren't interactive.
 - Prompt cues come back after an answer and on deselect (brief B6); the "answered, highlight off"
@@ -223,6 +230,7 @@ product/post images (names + prompts in the latest report).
   the brief's B7.6 slide and the pill's layoutSpring).
 - Sidebar collapse/expand and the Hop panel's open/close are instant (feedback 3, "like the Claude
   app"); resizing the panel follows the pointer (and keys) with no easing.
+- "All pages" is 105 wide (feedback 4; Figma 97); the search beside it takes the rest (8px gap).
 - "All pages" menu (feedback 2, Figma "All pages"/"transition"): chevron travels to the pick, then
   the list rolls up into the closed box; each move takes 0.16s + 0.04s per extra row. It's a
   listbox (↑/↓, Home/End, Enter, Esc). The option reads "Chats" (Figma) while brief pills say "Chat".
@@ -242,3 +250,16 @@ product/post images (names + prompts in the latest report).
 - History's person pills switch look instantly (feedback 3).
 - Bottom card (beside Urgent): title, link and footer change instantly with the data (feedback 3);
   only its rows still swap with motion. Urgent never animates: no entrance, no row swap, no resize.
+- History's Analytics snapshots each get their own `LayoutGroup` (feedback 4): sharing the
+  layoutIds `kpi-pill`/`week-thumb` with the live page made them fly across on every page change.
+- Brief list layout animations only re-measure when the filters or the pick change
+  (`layoutDependency`), and the list is a `layoutScroll` container: resizing the panel or
+  scrolling a brief into view no longer slides rows or the selected background (feedback 4).
+- The whole Urgent card is a frame (feedback 4), one id per period (`analytics.urgent`,
+  `analytics.urgent-lastWeek` …) with its own scripted answer. Clicking a tag in the chat brings
+  back the Analytics view it was asked in, so card rows and a period's Urgent card can re-highlight.
+- Composer hint (feedback 4): "Click the [highlight icon] to select a frame"; with highlight on,
+  "Click any frame to select it" (so it never says to click the button that would turn it off).
+- Motion follows Emil Kowalski's standards where they're rules, not taste (feedback 4): exits ease
+  out (`easeExit` = `easeOut`, was ease-in per brief B4) and nothing grows from scale 0 (handles
+  and first-load chart dots start at 0.9 + transparent).

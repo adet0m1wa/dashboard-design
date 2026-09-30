@@ -13,7 +13,6 @@ export const today: Snapshot = {
   cards: {
     revenue: {
       kind: 'products',
-      title: 'Top revenue generators',
       link: { label: 'Open Sales', page: 'sales' },
       rows: [
         {
@@ -32,7 +31,6 @@ export const today: Snapshot = {
     },
     orders: {
       kind: 'orders',
-      title: 'Orders placed today',
       link: { label: 'Open Sales', page: 'sales' },
       rows: [
         {
@@ -73,7 +71,6 @@ export const today: Snapshot = {
     },
     likes: {
       kind: 'posts',
-      title: 'Most liked posts today',
       link: { label: 'Open Instagram', page: 'instagram' },
       rows: [
         { id: 'post-sand-reel', title: 'Styling the Sand set 3 ways', meta: 'Reel · Tue · by Zee', swatch: 'post-sand-reel', likes: 9400 },
@@ -84,7 +81,6 @@ export const today: Snapshot = {
     },
     followers: {
       kind: 'sources',
-      title: 'Where new followers came from',
       link: { label: 'Open Instagram', page: 'instagram' },
       rows: [
         { id: 'source-sand-reel', label: 'The Sand reel', count: 132, share: 62 },
@@ -95,7 +91,6 @@ export const today: Snapshot = {
     },
     dms: {
       kind: 'dms',
-      title: 'Waiting for a reply',
       link: { label: 'Open Customers', page: 'customers' },
       rows: [
         {

@@ -92,17 +92,17 @@ export function AnalyticsPage() {
           <TrendChart />
         </section>
 
-        {/* Equal heights: one grid row, both cards stretch to the taller; the row animates its
-            height when either card grows (brief B7.1). */}
-        <motion.div layout transition={{ layout: { duration: duration.base, ease: easeOut } }} className="grid min-h-[246px] grid-cols-2 items-stretch gap-12">
-          <motion.div layout className="flex min-w-0" {...fadeUp(0)}>
-            <KpiCard card={card} period={period} className="flex-1" />
+        {/* One fixed-height row (Figma: 246) whatever the KPI or period, so neither card ever
+            changes height and Urgent never moves (user feedback 2026-09-30). */}
+        <div className="grid h-cards-row grid-cols-2 grid-rows-1 items-stretch gap-12">
+          <motion.div className="flex min-w-0" {...fadeUp(0)}>
+            <KpiCard kpi={view.kpi} card={card} period={period} className="flex-1" />
           </motion.div>
           {/* Urgent doesn't animate at all (user feedback 2026-09-29): no entrance, no resize. */}
           <div className="flex min-w-0">
-            <UrgentCard items={SNAPSHOTS[period].urgent} swapKey={period} onAction={onUrgentAction} className="flex-1" />
+            <UrgentCard items={SNAPSHOTS[period].urgent} period={period} onAction={onUrgentAction} className="flex-1" />
           </div>
-        </motion.div>
+        </div>
       </div>
     </IntroContext.Provider>
   );

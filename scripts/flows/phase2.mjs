@@ -1,10 +1,11 @@
 // Phase 2: every KPI state, Wednesday, Last week — screenshot each for comparison with Figma.
 const KPIS = [
-  ['revenue', 'Revenue today', 'Top revenue generators'],
-  ['orders', 'Orders', 'Orders placed today'],
-  ['likes', 'Instagram likes', 'Most liked posts today'],
-  ['followers', 'New followers', 'Where new followers came from'],
-  ['dms', 'Unanswered DMs', 'Waiting for a reply'],
+  // The card's title is the KPI's name (user feedback 2026-09-30).
+  ['revenue', 'Revenue today', 'Revenue'],
+  ['orders', 'Orders', 'Orders'],
+  ['likes', 'Instagram likes', 'Instagram likes'],
+  ['followers', 'New followers', 'New followers'],
+  ['dms', 'Unanswered DMs', 'Unanswered DMs'],
 ];
 
 export default async function (t) {
