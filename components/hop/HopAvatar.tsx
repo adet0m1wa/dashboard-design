@@ -42,6 +42,7 @@ export function HopAvatar({ state = 'idle', size = 30 }: { state?: HopAvatarStat
         r="3"
         className="fill-status-live"
         style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
+        // SVG: Motion's scale props (a transform string becomes a broken SVG attribute).
         animate={pulse ? { opacity: [1, 0.35, 1], scale: [1, 1.25, 1] } : { opacity: 1, scale: 1 }}
         transition={pulse ? loop : { duration: duration.fast }}
       />

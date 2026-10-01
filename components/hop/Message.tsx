@@ -112,7 +112,9 @@ export function HopMessage({ msg, onAction }: { msg: Extract<Message, { kind: 'h
 }
 
 function AnswerBlock({ block, partial, animate, onAction }: { block: Block; partial: string | null; animate: boolean; onAction?: (toast: string) => void }) {
-  const fadeUp = animate ? { initial: { opacity: 0, y: 6 }, animate: { opacity: 1, y: 0 }, transition: { duration: duration.base, ease: easeOut } } : {};
+  const fadeUp = animate
+    ? { initial: { opacity: 0, transform: 'translateY(6px)' }, animate: { opacity: 1, transform: 'translateY(0px)' }, transition: { duration: duration.base, ease: easeOut } }
+    : {};
 
   if (block.kind === 'text') return <p className={para}>{partial ?? block.text}</p>;
 
@@ -143,8 +145,8 @@ function AnswerBlock({ block, partial, animate, onAction }: { block: Block; part
       {block.buttons.map((b, i) => (
         <motion.div
           key={b.label}
-          initial={animate ? { opacity: 0, y: 6 } : false}
-          animate={{ opacity: 1, y: 0 }}
+          initial={animate ? { opacity: 0, transform: 'translateY(6px)' } : false}
+          animate={{ opacity: 1, transform: 'translateY(0px)' }}
           transition={{ duration: duration.base, ease: easeOut, delay: i * timing.actionStagger }}
         >
           <SmallButton variant={b.style} wide onClick={() => onAction?.(b.toast)}>

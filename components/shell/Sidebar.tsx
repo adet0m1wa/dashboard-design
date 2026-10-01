@@ -54,7 +54,7 @@ function Toggle({ collapsed, toggleRef }: { collapsed: boolean; toggleRef: React
       }}
       aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
       aria-expanded={!collapsed}
-      className="relative rounded-4 text-text-muted transition-colors duration-(--dur-fast) ease-hop-out after:absolute after:-inset-4 hover:text-text-primary"
+      className="relative rounded-4 text-text-muted transition-colors duration-(--dur-fast) ease-hop-color after:absolute after:-inset-4 hover:text-text-primary"
     >
       <PanelIcon />
     </motion.button>
@@ -120,7 +120,7 @@ function Full() {
             type="button"
             whileTap={press}
             onClick={() => openBrief(item)}
-            className="flex w-full items-center gap-8 rounded-6 px-10 py-6 text-left transition-colors duration-(--dur-fast) ease-hop-out hover:bg-surface-faint"
+            className="flex w-full items-center gap-8 rounded-6 px-10 py-6 text-left transition-colors duration-(--dur-fast) ease-hop-color hover:bg-surface-faint"
           >
             <PersonAvatar person={TEAM[item.who]} size={16} />
             <Truncate className="min-w-0 flex-1 text-12-5 text-text-tone-01">{item.text}</Truncate>
@@ -198,7 +198,7 @@ function Rail() {
             onClick={() => openBrief(item)}
             aria-label={item.text}
             title={item.text}
-            className="flex rounded-6 px-10 py-6 transition-colors duration-(--dur-fast) ease-hop-out hover:bg-surface-faint"
+            className="flex rounded-6 px-10 py-6 transition-colors duration-(--dur-fast) ease-hop-color hover:bg-surface-faint"
           >
             <PersonAvatar person={TEAM[item.who]} size={16} />
           </motion.button>
@@ -241,7 +241,7 @@ function Badge({ count, tone }: { count: number; tone: Extract<Tone, 'warning' |
   useEffect(() => {
     if (previous.current === count) return;
     previous.current = count;
-    if (!reduce) animate(scope.current, { scale: [1, 1.15, 1] }, { duration: timing.badgePulse });
+    if (!reduce) animate(scope.current, { transform: ['scale(1)', 'scale(1.15)', 'scale(1)'] }, { duration: timing.badgePulse });
   }, [count, reduce, animate, scope]);
 
   return (

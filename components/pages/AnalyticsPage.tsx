@@ -56,8 +56,8 @@ export function AnalyticsPage() {
   const fadeUp = (i: number) =>
     play
       ? {
-          initial: { opacity: 0, y: 6 },
-          animate: { opacity: 1, y: 0 },
+          initial: { opacity: 0, transform: 'translateY(6px)' },
+          animate: { opacity: 1, transform: 'translateY(0px)' },
           transition: { duration: duration.base, ease: easeOut, delay: INTRO.cards + i * timing.cardStagger },
         }
       : {};

@@ -8,6 +8,7 @@ import { useHop, useHopApi } from '@/lib/store';
 import { HopFrame } from '@/components/select/HopFrame';
 import { SmallButton } from '@/components/ui/SmallButton';
 import { Tag } from '@/components/ui/Tag';
+import { Thumb } from '@/components/ui/Thumb';
 import { Truncate } from '@/components/ui/Truncate';
 
 // Inventory (brief B7.4; Figma "Inventory — nothing selected, jump chips stay").
@@ -88,10 +89,10 @@ function StockLine({ row, index, grow }: { row: StockRow; index: number; grow: b
       page="inventory"
       jumpTarget="inventory"
       role="row"
-      className="flex items-center border-b border-surface-divider-tint px-16 py-10 transition-colors duration-(--dur-fast) ease-hop-out last:rounded-b-12 last:border-b-0 hover:bg-surface-canvas"
+      className="flex items-center border-b border-surface-divider-tint px-16 py-10 transition-colors duration-(--dur-fast) ease-hop-color last:rounded-b-12 last:border-b-0 hover:bg-surface-canvas"
     >
       <span role="cell" className="flex min-w-0 flex-1 items-center gap-10">
-        <span className="size-[32px] shrink-0 rounded-6" style={{ background: `var(--gradient-${row.swatch})` }} />
+        <Thumb id={row.id} swatch={row.swatch} className="size-[32px] rounded-6" />
         <span className="flex min-w-0 flex-col gap-1">
           <Truncate className="text-13 font-500 text-text-primary">{row.name}</Truncate>
           <Truncate className="text-11-5 text-text-muted">{row.variant}</Truncate>
@@ -100,10 +101,13 @@ function StockLine({ row, index, grow }: { row: StockRow; index: number; grow: b
       <span role="cell" className="flex w-[130px] items-center gap-10">
         <span className={`text-13 font-500 tabular-nums ${st.number}`}>{row.inStock}</span>
         <span className="relative h-[4px] w-[70px] overflow-hidden rounded-2 bg-palette-tone-16" aria-hidden="true">
+          {/* First visit: the bar is revealed left → right by clip-path (Emil Kowalski: animate
+              transform, opacity or clip-path — never width, which lays out every frame). */}
           <motion.span
             className={`absolute inset-y-0 left-0 rounded-2 ${st.bar}`}
-            initial={grow ? { width: 0 } : false}
-            animate={{ width }}
+            style={{ width }}
+            initial={grow ? { clipPath: 'inset(0 100% 0 0)' } : false}
+            animate={{ clipPath: 'inset(0 0% 0 0)' }}
             transition={{ duration: duration.data, ease: easeOut, delay: grow ? index * timing.stockBarStagger : 0 }}
           />
         </span>

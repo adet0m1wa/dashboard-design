@@ -139,7 +139,15 @@ export default async function (t) {
     const rows = [...document.querySelectorAll('[data-hop-frame^="analytics.card.source"]')].map((r) => r.getBoundingClientRect());
     return Math.round(rows[1].top - rows[0].bottom);
   });
-  await t.check(`${m}6 New followers: the bars sit 20px apart (${bars}px)`, bars === 20);
+  await t.check(`${m}6 New followers: the rows sit 18px apart (${bars}px)`, bars === 18);
+  // Every variant has the Revenue card's rhythm: posts 36px tall, 12px apart (feedback 4b)
+  await t.click('#kpi-tab-likes');
+  await t.wait(200);
+  const posts = await t.eval(() => {
+    const rows = [...document.querySelectorAll('[data-hop-frame^="analytics.card.post"]')].map((r) => r.getBoundingClientRect());
+    return { h: rows.map((r) => r.height), gap: Math.round(rows[1].top - rows[0].bottom), img: !!document.querySelector('[data-hop-frame^="analytics.card.post"] img[src$=".webp"]') };
+  });
+  await t.check(`${m}6 Likes: rows ${posts.h.join('/')}px, ${posts.gap}px apart, with photos`, posts.h.every((h) => h === 36) && posts.gap === 12 && posts.img);
 
   // 7. The hint shows the highlight icon; with highlight on it says to click a frame
   const hint = await t.eval(() => {
@@ -178,6 +186,22 @@ export default async function (t) {
     week: document.querySelector('main [role=radio][aria-checked=true]').textContent,
     lit: !!document.querySelector('[data-hop-frame="analytics.urgent"] .border-selection'),
   }));
-  // It was asked with New followers on, this week.
-  await t.check(`${m}tag clicked from last week + Orders: back to ${back.kpi}, ${back.week}, Urgent highlighted (${back.lit})`, back.kpi === 'kpi-tab-followers' && back.week.includes('This week') && back.lit);
+  // It was asked with Likes on (the step above), this week.
+  await t.check(`${m}tag clicked from last week + Orders: back to ${back.kpi}, ${back.week}, Urgent highlighted (${back.lit})`, back.kpi === 'kpi-tab-likes' && back.week.includes('This week') && back.lit);
+
+  // Emil Kowalski: keyboard changes don't animate — → on the KPI tabs lands the pill and the chart
+  // at once; a click still slides.
+  await t.eval(() => document.querySelector('[role=tab][aria-selected=true]').focus());
+  const keyed = await t.eval(async () => {
+    const before = document.querySelector('#kpi-chart path[class*=stroke-status]')?.getAttribute('d');
+    document.activeElement.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+    await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+    const tab = document.querySelector('[role=tab][aria-selected=true]');
+    const pill = tab.querySelector(':scope > span.absolute').getBoundingClientRect();
+    const d1 = document.querySelector('#kpi-chart path[class*=stroke-status]')?.getAttribute('d');
+    await new Promise((r) => setTimeout(r, 400));
+    const d2 = document.querySelector('#kpi-chart path[class*=stroke-status]')?.getAttribute('d');
+    return { pillOff: Math.abs(pill.x - tab.getBoundingClientRect().x), moved: before !== d1, settled: d1 === d2 };
+  });
+  await t.check(`${m}keyboard → : pill on the new tab two frames later (${keyed.pillOff.toFixed(1)}px off), chart already final`, keyed.pillOff < 1 && keyed.moved && keyed.settled);
 }

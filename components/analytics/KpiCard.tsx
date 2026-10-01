@@ -11,7 +11,7 @@ import { ArrowIcon } from '@/components/icons/figma';
 import { HopFrame } from '@/components/select/HopFrame';
 import { InitialsAvatar } from '@/components/ui/PersonAvatar';
 import { Tag } from '@/components/ui/Tag';
-import { SwapRow, SwapRows } from './swap';
+import { Thumb } from '@/components/ui/Thumb';
 import { Truncate } from '@/components/ui/Truncate';
 
 // The card beside Urgent, one variant per KPI (brief A7, B7.1). Card: p 16, gap 12, radius 12,
@@ -32,8 +32,9 @@ export function KpiCard({ kpi, card, period, className = '' }: { kpi: Kpi; card:
       className={`flex min-w-0 flex-col gap-12 rounded-12 border border-surface-border-tint bg-surface-default p-16 ${className}`}
     >
       <div className="flex items-center justify-between gap-12">
-        {/* Title, link and footer change at once with the data (user feedback 2026-09-29); only
-            the rows swap with motion. The link never gives up its width to the title. */}
+        {/* Everything here changes at once with the data (user feedback 2026-09-29; the rows too
+            since 2026-09-30 — Emil Kowalski: a KPI switch is too frequent to animate). The link
+            never gives up its width to the title. */}
         <h3 className="flex min-w-0 text-13 font-600 text-text-primary">
           <Truncate>{title}</Truncate>
         </h3>
@@ -42,7 +43,7 @@ export function KpiCard({ kpi, card, period, className = '' }: { kpi: Kpi; card:
             type="button"
             whileTap={press}
             onClick={() => navigate(card.link.page, 'link')}
-            className="flex items-center gap-4 rounded-4 text-12 font-500 text-text-secondary transition-colors duration-(--dur-fast) ease-hop-out hover:text-text-primary"
+            className="flex items-center gap-4 rounded-4 text-12 font-500 text-text-secondary transition-colors duration-(--dur-fast) ease-hop-color hover:text-text-primary"
           >
             {card.link.label}
             <ArrowIcon />
@@ -50,9 +51,9 @@ export function KpiCard({ kpi, card, period, className = '' }: { kpi: Kpi; card:
         </div>
       </div>
 
-      <SwapRows swapKey={`${kpi}:${period}`} className={`flex flex-col ${ROW_GAP[card.kind]}`}>
+      <div className={`flex flex-col ${ROW_GAP[card.kind]}`}>
         <CardRows card={card} period={period} />
-      </SwapRows>
+      </div>
 
       <div className="min-h-0 flex-1" />
       <div className="border-t border-surface-faint pt-10 text-12 tabular-nums">
@@ -65,10 +66,11 @@ export function KpiCard({ kpi, card, period, className = '' }: { kpi: Kpi; card:
   );
 }
 
-// Every variant fills the same 246px row (user feedback 2026-09-30): three 36px rows with 12px
-// gaps. Posts have taller 38px thumbnails, so their gap is 9; the follower bars are shorter
-// (30px), so they spread out to 20 — the footer keeps the last 2px.
-const ROW_GAP: Record<Card['kind'], string> = { products: 'gap-12', orders: 'gap-12', dms: 'gap-12', posts: 'gap-9', sources: 'gap-20' };
+// Every variant has the Revenue card's rhythm and fills the same 246px row (user feedback
+// 2026-09-30): three 36px rows, 12px apart. Post thumbnails are 29×36 (Figma's 30×38, same 4:5).
+// A follower row is shorter (label, 8, 6px bar = 32), so the rows sit 18 apart: 3×32 + 2×18 = 132,
+// the same block height.
+const ROW_GAP: Record<Card['kind'], string> = { products: 'gap-12', orders: 'gap-12', dms: 'gap-12', posts: 'gap-12', sources: 'gap-18' };
 
 function CardRows({ card, period }: { card: Card; period: PeriodKey }) {
   switch (card.kind) {
@@ -107,11 +109,9 @@ function CardRows({ card, period }: { card: Card; period: PeriodKey }) {
 
 function RowFrame({ id, label, jump, children }: { id: string; label: string; jump: Page; children: React.ReactNode }) {
   return (
-    <SwapRow>
-      <HopFrame id={`analytics.card.${id}`} label={label} page="analytics" jumpTarget={jump} className="rounded-6">
-        {children}
-      </HopFrame>
-    </SwapRow>
+    <HopFrame id={`analytics.card.${id}`} label={label} page="analytics" jumpTarget={jump} className="rounded-6">
+      {children}
+    </HopFrame>
   );
 }
 
@@ -128,7 +128,7 @@ const Amount = ({ children }: { children: React.ReactNode }) => (
 function ProductLine({ row, period }: { row: ProductRow; period: PeriodKey }) {
   return (
     <div className="flex items-center gap-10">
-      <span className="size-[36px] shrink-0 rounded-6" style={{ background: `var(--gradient-${row.swatch})` }} />
+      <Thumb id={row.id} swatch={row.swatch} className="size-[36px] rounded-6" />
       <div className="flex min-w-0 flex-1 flex-col gap-2">
         <Name>{row.name}</Name>
         <Sub>
@@ -160,7 +160,7 @@ function OrderLine({ row }: { row: OrderRow }) {
 function PostLine({ row }: { row: PostRow }) {
   return (
     <div className="flex items-center gap-10">
-      <span className="h-[38px] w-[30px] shrink-0 rounded-5" style={{ background: `var(--gradient-${row.swatch})` }} />
+      <Thumb id={row.id} swatch={row.swatch} className="h-[36px] w-[29px] rounded-5" />
       <div className="flex min-w-0 flex-1 flex-col gap-2">
         <Name>{row.title}</Name>
         <Sub>{row.meta}</Sub>
@@ -175,7 +175,7 @@ function PostLine({ row }: { row: PostRow }) {
 
 function SourceLine({ row }: { row: SourceRow }) {
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-8">
       <div className="flex items-start justify-between whitespace-nowrap">
         <span className="text-13-5 font-500 text-text-primary">{row.label}</span>
         <span className="text-12-5 text-text-secondary tabular-nums">

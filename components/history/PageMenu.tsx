@@ -4,6 +4,7 @@ import { animate, motion, useMotionValue, useReducedMotion, useTransform } from 
 import { useEffect, useId, useRef, useState } from 'react';
 import { HISTORY_PAGES } from '@/data/history';
 import type { Page } from '@/data/types';
+import { viaKeyboard } from '@/lib/input';
 import { easeInOut, travelTime } from '@/lib/motion';
 import { useHop } from '@/lib/store';
 import { Chev13Icon } from '@/components/icons/figma';
@@ -14,7 +15,8 @@ import { Chev13Icon } from '@/components/icons/figma';
 // a page: the chevron travels to it, then the drawer closes by scrolling — the picked row keeps
 // pace with the chevron as the list rolls up into the box, pushing "All pages" out of the top
 // while the rows below follow it up. Every move takes travel time by distance (lib/motion
-// `travel.menu`), so a long move isn't a slow one.
+// `travel.menu`), so a long move isn't a slow one. Opened or picked from the keyboard, it all
+// happens at once (Emil Kowalski: keyboard actions don't animate).
 const OPTIONS: { id: Page | 'all'; label: string }[] = [{ id: 'all', label: 'All pages' }, ...HISTORY_PAGES];
 const ROW = 22; // 16px line + 6px gap (Figma)
 const CLOSED = 32; // py 7 + 16 + border
@@ -39,9 +41,12 @@ export function PageMenu() {
   const chevron = useMotionValue(selected * ROW); // chevron's row, in px
   const turn = useMotionValue(0); // 0 = ⌄ (closed), 180 = ⌃ (open)
   const rotate = useTransform(turn, (t) => `rotate(${t}deg)`);
+  // Moved by transform strings, not Motion's y shorthand (Emil Kowalski: stays smooth under load).
+  const listY = useTransform(scroll, (v) => `translateY(${v}px)`);
+  const chevronY = useTransform(chevron, (v) => `translateY(${v}px)`);
 
   const go = (mv: typeof height, to: number, rows: number) =>
-    animate(mv, to, { duration: reduce ? 0 : travelTime('menu', Math.max(1, rows)), ease: easeInOut });
+    animate(mv, to, { duration: reduce || viaKeyboard() ? 0 : travelTime('menu', Math.max(1, rows)), ease: easeInOut });
 
   const openMenu = async () => {
     if (busy.current || open) return;
@@ -119,7 +124,7 @@ export function PageMenu() {
         className={`absolute left-0 top-0 w-[105px] overflow-hidden rounded-8 border border-surface-border-tint bg-surface-default outline-none ${open ? 'z-30' : ''}`}
         style={{ height }}
       >
-        <motion.div className="relative flex flex-col gap-6 px-10 py-7" style={{ y: scroll }}>
+        <motion.div className="relative flex flex-col gap-6 px-10 py-7" style={{ transform: listY }}>
           {OPTIONS.map((o, i) => (
             <div
               key={o.id}
@@ -128,7 +133,7 @@ export function PageMenu() {
               aria-selected={open ? i === selected : undefined}
               onClick={open ? () => !busy.current && close(i, true) : undefined}
               onPointerEnter={open ? () => setActive(i) : undefined}
-              className={`flex h-[16px] w-[83px] items-center whitespace-nowrap text-12-5 font-500 transition-colors duration-(--dur-fast) ease-hop-out ${
+              className={`flex h-[16px] w-[83px] items-center whitespace-nowrap text-12-5 font-500 transition-colors duration-(--dur-fast) ease-hop-color ${
                 open ? 'cursor-pointer' : ''
               } ${open && i === active ? 'text-text-primary' : 'text-text-strong-secondary'}`}
             >
@@ -136,7 +141,7 @@ export function PageMenu() {
             </div>
           ))}
           {/* The chevron marks the chosen row and rides with the list. */}
-          <motion.span className="pointer-events-none absolute left-[80px] top-[8.5px] flex" style={{ y: chevron }} aria-hidden="true">
+          <motion.span className="pointer-events-none absolute left-[80px] top-[8.5px] flex" style={{ transform: chevronY }} aria-hidden="true">
             <motion.span className="flex text-text-secondary" style={{ transform: rotate }}>
               <Chev13Icon />
             </motion.span>

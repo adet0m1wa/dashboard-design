@@ -21,7 +21,7 @@ export function SmallButton({
     <motion.button
       type="button"
       whileTap={press}
-      className={`shrink-0 whitespace-nowrap rounded-8 py-6 text-12 font-500 ${wide ? 'px-11' : 'px-10'} transition-colors duration-(--dur-fast) ease-hop-out ${STYLE[variant]} ${className}`}
+      className={`shrink-0 whitespace-nowrap rounded-8 py-6 text-12 font-500 ${wide ? 'px-11' : 'px-10'} transition-colors duration-(--dur-fast) ease-hop-color ${STYLE[variant]} ${className}`}
       {...props}
     />
   );

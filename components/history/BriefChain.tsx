@@ -5,7 +5,8 @@ import { useEffect, useRef } from 'react';
 import { HISTORY_PEOPLE, type Brief } from '@/data/history';
 import { TEAM } from '@/data/team';
 import { matches } from '@/lib/briefs';
-import { duration, easeExit, easeOut, layoutSpring, press } from '@/lib/motion';
+import { viaKeyboard } from '@/lib/input';
+import { duration, easeExit, easeOut, exitOf, indicatorSlide, press } from '@/lib/motion';
 import { useHop } from '@/lib/store';
 import { ArrowsOutIcon, Chev13Icon, Frame11Icon, SearchIcon } from '@/components/icons/figma';
 import { PersonAvatar } from '@/components/ui/PersonAvatar';
@@ -103,7 +104,7 @@ function Filters() {
   const person = useHop((s) => s.history.person);
   const query = useHop((s) => s.history.query);
   const setFilter = useHop((s) => s.setHistoryFilter);
-  const box = 'rounded-8 border border-surface-border-tint bg-surface-default transition-colors duration-(--dur-fast) ease-hop-out';
+  const box = 'rounded-8 border border-surface-border-tint bg-surface-default transition-colors duration-(--dur-fast) ease-hop-color';
 
   return (
     <div className="shrink-0 border-b border-surface-divider-tint">
@@ -174,6 +175,7 @@ function BriefItem({
   const selectBrief = useHop((s) => s.selectBrief);
   const setExpanded = useHop((s) => s.setExpanded);
   const reduce = useReducedMotion();
+  const keys = viaKeyboard(); // picked with Enter: the background and expand icon land at once
   const person = TEAM[brief.who];
   const summaryId = `${brief.id}-summary`;
   const open = `Open the chat for “${brief.question}”`;
@@ -185,10 +187,17 @@ function BriefItem({
       className="relative overflow-hidden"
       initial={reduce ? false : { opacity: 0, height: 0 }}
       animate={{ opacity: 1, height: 'auto', transition: { duration: duration.base, ease: easeOut } }}
-      exit={reduce ? { opacity: 0, transition: { duration: 0 } } : { opacity: 0, height: 0, transition: { duration: duration.base, ease: easeExit } }}
-      transition={layoutSpring}
+      exit={reduce ? { opacity: 0, transition: { duration: 0 } } : { opacity: 0, height: 0, transition: { duration: exitOf(duration.base), ease: easeExit } }}
+      transition={indicatorSlide}
     >
-      {selected && <motion.span layoutId="brief-selected" layoutDependency={layoutKey} transition={layoutSpring} className="absolute inset-0 bg-palette-tone-28" />}
+      {selected && (
+        <motion.span
+          layoutId="brief-selected"
+          layoutDependency={layoutKey}
+          transition={keys ? { duration: 0 } : indicatorSlide}
+          className="absolute inset-0 bg-palette-tone-28"
+        />
+      )}
       {/* The whole row is one button: it picks the brief, and on the picked brief it opens the chat
           (user feedback 2026-09-29). The expand icon sits above it. */}
       <button
@@ -223,8 +232,8 @@ function BriefItem({
                   whileTap={press}
                   aria-label={open}
                   className="pointer-events-auto relative -my-2 shrink-0 rounded-4 text-text-black after:absolute after:-inset-4"
-                  initial={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1, transition: { duration: duration.base, ease: easeOut } }}
+                  initial={keys ? false : reduce ? { opacity: 0 } : { opacity: 0, transform: 'scale(0.9)' }}
+                  animate={{ opacity: 1, transform: 'scale(1)', transition: { duration: duration.base, ease: easeOut } }}
                   exit={{ opacity: 0, transition: { duration: duration.fast, ease: easeExit } }}
                 >
                   <ArrowsOutIcon />

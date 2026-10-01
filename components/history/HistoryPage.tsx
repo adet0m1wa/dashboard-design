@@ -1,6 +1,7 @@
 'use client';
 
 import { AnimatePresence } from 'motion/react';
+import { viaKeyboard } from '@/lib/input';
 import { useMemo } from 'react';
 import { allBriefs } from '@/lib/briefs';
 import { useHop } from '@/lib/store';
@@ -16,7 +17,8 @@ export function HistoryPage() {
 
   return (
     <div className="h-full overflow-y-auto pb-24">
-      <AnimatePresence mode="wait" initial={false}>
+      {/* `custom`: picked with Enter → the old snapshot leaves at once too. */}
+      <AnimatePresence mode="wait" initial={false} custom={viaKeyboard()}>
         <Snapshot key={brief.id} brief={brief} />
       </AnimatePresence>
     </div>

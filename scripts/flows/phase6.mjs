@@ -132,9 +132,17 @@ export default async function (t) {
   await t.page.goto((process.env.HOP_URL ?? 'http://localhost:3000') + '/inventory', { waitUntil: 'domcontentloaded' });
   await t.page.waitForSelector('[data-hop-frame="inventory.row.scarf-rust"]');
   await t.wait(60);
-  const early = await t.eval(() => document.querySelector('[data-hop-frame="inventory.row.scarf-rust"] [aria-hidden=true] > span').getBoundingClientRect().width);
+  // The bar is revealed by clip-path (feedback 4, Emil: never animate width): read how much of
+  // its 70px is still clipped from the right.
+  const shown = () =>
+    t.eval(() => {
+      const bar = document.querySelector('[data-hop-frame="inventory.row.scarf-rust"] [aria-hidden=true] > span');
+      const clip = getComputedStyle(bar).clipPath.match(/inset\(0(?:px)? ([\d.]+)%/);
+      return Math.round(bar.getBoundingClientRect().width * (1 - (clip ? +clip[1] : 0) / 100));
+    });
+  const early = await shown();
   await t.wait(900);
-  const late = await t.eval(() => document.querySelector('[data-hop-frame="inventory.row.scarf-rust"] [aria-hidden=true] > span').getBoundingClientRect().width);
+  const late = await shown();
   if (reduced) await t.check(`[reduced] stock bars appear full at once (${early} → ${late})`, early === 70 && late === 70);
-  else await t.check(`stock bars grow from 0 on first visit (${early.toFixed(1)}px → ${late}px)`, early < 60 && late === 70);
+  else await t.check(`stock bars grow from 0 on first visit (${early}px → ${late}px shown)`, early < 60 && late === 70);
 }

@@ -1,11 +1,12 @@
 'use client';
 
 import { motion } from 'motion/react';
-import { layoutSpring } from '@/lib/motion';
+import { viaKeyboard } from '@/lib/input';
+import { indicatorSlide } from '@/lib/motion';
 import { useHop } from '@/lib/store';
 
 // This week / Last week (Figma "Mode toggle"). The white thumb slides between options
-// (layoutId + layoutSpring); the legend dots swap colour (brief B7.1).
+// (layoutId, indicatorSlide; at once when a key chose); the legend dots swap colour (brief B7.1).
 const OPTIONS = [
   { id: 'thisWeek', label: 'This week' },
   { id: 'lastWeek', label: 'Last week' },
@@ -30,11 +31,11 @@ export function WeekToggle({ tone }: { tone: 'success' | 'danger' }) {
             className={`relative flex items-center gap-6 rounded-6 p-8 text-12 text-text-secondary ${on ? 'font-500' : 'font-400'}`}
           >
             {on && (
-              <motion.span layoutId="week-thumb" transition={layoutSpring} className="absolute inset-0 rounded-6 bg-surface-default shadow-toggle-thumb" />
+              <motion.span layoutId="week-thumb" transition={viaKeyboard() ? { duration: 0 } : indicatorSlide} className="absolute inset-0 rounded-6 bg-surface-default shadow-toggle-thumb" />
             )}
             <span
               aria-hidden="true"
-              className={`relative size-[8px] rounded-full transition-colors duration-(--dur-base) ease-hop-out ${on ? onDot : 'bg-legend-off'}`}
+              className={`relative size-[8px] rounded-full transition-colors duration-(--dur-base) ease-hop-color ${on ? onDot : 'bg-legend-off'}`}
             />
             <span className="relative whitespace-nowrap">{o.label}</span>
           </button>

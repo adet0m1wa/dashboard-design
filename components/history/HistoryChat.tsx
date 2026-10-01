@@ -3,6 +3,7 @@
 import { useReducedMotion } from 'motion/react';
 import { useEffect, useRef, useState } from 'react';
 import type { Brief } from '@/data/history';
+import { viaKeyboard } from '@/lib/input';
 import { duration, timing } from '@/lib/motion';
 import { useHop } from '@/lib/store';
 import { HopMessage, Marker, UserMessage } from '@/components/hop/Message';
@@ -20,8 +21,10 @@ export function HistoryChat({ brief }: { brief: Brief }) {
 
   useEffect(() => {
     scroller.current?.querySelector(`[data-msg="${brief.anchor}"]`)?.scrollIntoView({ block: 'nearest', behavior: reduce ? 'auto' : 'smooth' });
-    const on = setTimeout(() => setFlash(true), (reduce ? 0 : duration.slow) * 1000);
-    const off = setTimeout(() => setFlash(false), ((reduce ? 0 : duration.slow) + timing.tagFlash) * 1000);
+    // Wait for the chat's slide — none when it opened from the keyboard (or reduced motion).
+    const slide = reduce || viaKeyboard() ? 0 : duration.slow;
+    const on = setTimeout(() => setFlash(true), slide * 1000);
+    const off = setTimeout(() => setFlash(false), (slide + timing.tagFlash) * 1000);
     return () => {
       clearTimeout(on);
       clearTimeout(off);

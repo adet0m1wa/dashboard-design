@@ -27,11 +27,11 @@ export function AnalyticsTopActions() {
         whileTap={press}
         onClick={startSync}
         aria-live="polite"
-        className="flex items-center gap-6 rounded-8 bg-action-primary px-10 py-6 text-12-5 font-500 text-text-on-dark transition-colors duration-(--dur-fast) ease-hop-out hover:bg-palette-tone-25"
+        className="flex items-center gap-6 rounded-8 bg-action-primary px-10 py-6 text-12-5 font-500 text-text-on-dark transition-colors duration-(--dur-fast) ease-hop-color hover:bg-palette-tone-25"
       >
         <motion.span
           className="flex"
-          animate={{ rotate: sync === 'syncing' && !reduce ? 360 : 0 }}
+          animate={{ transform: sync === 'syncing' && !reduce ? 'rotate(360deg)' : 'rotate(0deg)' }}
           transition={sync === 'syncing' && !reduce ? { duration: timing.syncSpin, ease: easeInOut } : { duration: 0 }}
         >
           <ArrowsClockwiseIcon />

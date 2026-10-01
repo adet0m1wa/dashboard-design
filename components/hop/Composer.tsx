@@ -3,6 +3,7 @@
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { useState } from 'react';
 import { duration, easeExit, easeOut, enter, leave, press } from '@/lib/motion';
+import { viaKeyboard } from '@/lib/input';
 import { useHop } from '@/lib/store';
 import { BoundingBoxIcon, FrameIcon, UpIcon, XIcon } from '@/components/icons/figma';
 import { Truncate } from '@/components/ui/Truncate';
@@ -14,6 +15,7 @@ import { Truncate } from '@/components/ui/Truncate';
 // frame instead, since clicking the button again would turn it off. With a frame selected:
 // its tag chip pops in (scale 0.92 → 1, base), the placeholder crossfades to "Ask about this
 // frame…". Once sent, the chip leaves (scale 0.92, fast) while the frame on the page scans.
+// Picked or sent from the keyboard, the chip comes and goes at once (Emil Kowalski).
 const IDLE_PLACEHOLDER = 'Ask Hop about sales, posts, stock or customers…';
 const TAG_PLACEHOLDER = 'Ask about this frame…';
 
@@ -26,6 +28,7 @@ export function Composer() {
   const ask = useHop((s) => s.ask);
   const deselect = useHop((s) => s.deselect);
   const reduce = useReducedMotion();
+  const still = reduce || viaKeyboard();
   const tag = selection && !scanning ? selection : null;
   const canSend = Boolean(text.trim() || tag) && !busy;
   const placeholder = tag ? TAG_PLACEHOLDER : IDLE_PLACEHOLDER;
@@ -39,16 +42,16 @@ export function Composer() {
   return (
     <div className="shrink-0 px-12 pb-12 pt-4">
       {/* Typing turns the box's own border blue (no second ring around it). */}
-      <div className="flex flex-col gap-14 rounded-14 border border-composer-border bg-surface-default pb-10 pl-14 pr-12 pt-12 shadow-composer transition-colors duration-(--dur-fast) ease-hop-out has-[textarea:focus]:border-selection">
+      <div className="flex flex-col gap-14 rounded-14 border border-composer-border bg-surface-default pb-10 pl-14 pr-12 pt-12 shadow-composer transition-colors duration-(--dur-fast) ease-hop-color has-[textarea:focus]:border-selection">
         <div className="grid" aria-live="polite">
           <AnimatePresence initial={false} mode="popLayout">
             {tag ? (
               <motion.span
                 key={`tag-${tag.id}`}
                 className="col-start-1 row-start-1 flex max-w-full items-center gap-6 justify-self-start rounded-6 border border-tag-border bg-tag-bg px-8 py-3 text-11-5 font-500 text-tag-text"
-                initial={reduce ? false : { opacity: 0, scale: 0.92 }}
-                animate={{ opacity: 1, scale: 1, transition: { duration: duration.base, ease: easeOut } }}
-                exit={reduce ? { opacity: 0, transition: { duration: 0 } } : { opacity: 0, scale: 0.92, transition: { duration: duration.fast, ease: easeExit } }}
+                initial={still ? false : { opacity: 0, transform: 'scale(0.92)' }}
+                animate={{ opacity: 1, transform: 'scale(1)', transition: { duration: duration.base, ease: easeOut } }}
+                exit={still ? { opacity: 0, transition: { duration: 0 } } : { opacity: 0, transform: 'scale(0.92)', transition: { duration: duration.fast, ease: easeExit } }}
                 style={{ transformOrigin: 'left center' }}
               >
                 <FrameIcon className="shrink-0 text-selection" />
@@ -57,7 +60,7 @@ export function Composer() {
                   type="button"
                   onClick={deselect}
                   aria-label={`Remove ${tag.label}`}
-                  className="relative -my-2 -mr-2 flex shrink-0 items-center rounded-4 text-selection transition-colors duration-(--dur-fast) ease-hop-out after:absolute after:-inset-6 hover:bg-tag-border"
+                  className="relative -my-2 -mr-2 flex shrink-0 items-center rounded-4 text-selection transition-colors duration-(--dur-fast) ease-hop-color after:absolute after:-inset-6 hover:bg-tag-border"
                 >
                   <XIcon />
                 </button>
