@@ -36,6 +36,8 @@ npm run check      # typecheck + token check
   Readable aliases for the non-semantic tones are in `styles/globals.css` (`bg-selection`, `bg-tag-bg` …).
   `npm run check:tokens` fails on raw colours, arbitrary colour/spacing values, and off-scale spacing.
 - Motion timings come from `lib/motion.ts` only (brief B4). Respect reduced motion (B5).
+  If `animate` sets a transform string, the reduced-motion start must name one too
+  (`scale(1)`): with no start, Motion reads the transform as `none` and grows it from scale(0).
 - Numbers live in `data/*.ts`, never in components. Format with `lib/format.ts`.
 - Icons are generated from the Figma SVGs: `design/icons/*.svg` → `node scripts/gen-icons.mjs`.
 - Don't add features, pages or animations that aren't in the brief. If something isn't covered,
@@ -90,10 +92,11 @@ npm run check      # typecheck + token check
 | Feedback 2 | done | Highlight-off clears the pick, scroll-driven chat fade, wipe page transition (distance-timed), custom "All pages" menu, resizable side panel (History lives in it), expand icon, 2× Instagram image, thin scrollbars, Instagram glyph, cues only on an empty chat, 8 colour variables fixed for AA (Figma updated). `feedback2.mjs` 28/28, reduced 25/25; every flow green on the production build |
 | Feedback 3 | done | Instant: page changes, sidebar collapse + nav pill, Hop panel open/close and resizing, person pills, bottom card title; Urgent never animates; standard 48px chat fade; scrollbars only while scrolling; no icon beside "Analytics" in its top bar. `feedback3.mjs` 10/10 both modes; all 26 runs green on the production build |
 | Feedback 4 | done | Emil Kowalski skills installed (`npx skills add emilkowalski/skills`); History snapshots no longer share the KPI pill / week thumb with the live page; bottom card follows the KPI in every period (new past-period cards), titled with the KPI's name, fixed 246 row so Urgent never moves; Urgent card selectable; hint "Click the ⌗ to select a frame"; "All pages" 105; brief rows follow a panel resize at once; tags restore their view; exits ease out, nothing grows from scale 0. `feedback4.mjs` 16/16 both modes |
-
 | Feedback 5 | done | Every bottom card has the Revenue card's rhythm (posts 29×36, follower rows 18 apart); Emil Kowalski pass over all motion (curves, <300ms, keyboard changes instant, transform strings, no scale(0), clip-path stock bars, toast recipe, reduced motion for cues/chips); photos for all 19 products/posts. `feedback4.mjs` 18/18; all 28 runs green on the production build |
+| Feedback 6 | done | Last week's days pick (seeded random data; KPIs, bottom card, Urgent follow); one sidebar layout for open/rail (icons keep y, press works in the rail); History: scroll kept across Expand/Back, expand icon grows with the highlight's slide, filters instant (rows no longer layout elements), cues static on Analytics; Sales, Instagram, Customers designed and built (every section a Hop frame; fit the 720 main column); Sand reel brief draws the Instagram page; reduced motion no longer grows the selection outline/handles from scale 0. `feedback6.mjs` 20/20, reduced 19/19; all 30 runs green on the production build |
 
-**Status (2026-10-01):** all phases, feedback rounds 1–5 and the final test are done. Product and
+**Status (2026-10-01):** all phases, feedback rounds 1–6 and the final test are done; the case
+study and a 20–30s video are planned for later. Product and
 post photos are in (`public/products`, mapped in `data/photos.ts`).
 
 ## Decisions (not in the brief)
@@ -256,9 +259,10 @@ post photos are in (`public/products`, mapped in `data/photos.ts`).
   only its rows still swap with motion. Urgent never animates: no entrance, no row swap, no resize.
 - History's Analytics snapshots each get their own `LayoutGroup` (feedback 4): sharing the
   layoutIds `kpi-pill`/`week-thumb` with the live page made them fly across on every page change.
-- Brief list layout animations only re-measure when the filters or the pick change
-  (`layoutDependency`), and the list is a `layoutScroll` container: resizing the panel or
-  scrolling a brief into view no longer slides rows or the selected background (feedback 4).
+- Brief list: the rows are plain elements (feedback 6 — they used to be layout elements, and
+  rows leaving a filter slid the rest even with `layoutDependency`, since Motion re-measures the
+  whole tree on unmount). Only the selected background is a layout element; the list is a
+  `layoutScroll` container, so scrolling or resizing doesn't slide it (feedback 4).
 - The whole Urgent card is a frame (feedback 4), one id per period (`analytics.urgent`,
   `analytics.urgent-lastWeek` …) with its own scripted answer. Clicking a tag in the chat brings
   back the Analytics view it was asked in, so card rows and a period's Urgent card can re-highlight.
@@ -281,3 +285,23 @@ post photos are in (`public/products`, mapped in `data/photos.ts`).
   apart; follower rows label·8·bar, 18 apart — every variant's rows total 132px.
 - Photos: `images/` holds the user's 2048² originals (git-ignored); `public/products/*.webp` are
   256² q80 copies. `Thumb` shows the photo over the gradient swatch (fallback + loading backdrop).
+- Feedback 6 — last week's days can be picked like this week's. `data/lastWeekDays.ts` builds
+  each day from a seeded generator (mulberry32, fixed seed): random, but the same on every load,
+  and each day's numbers add up to the chart's last-week series. Picking the picked day again (or
+  Esc) goes back to the whole week.
+- Sidebar (feedback 6): one layout for open and rail. Labels squeeze to zero width instead of
+  unmounting, so the same buttons stay put: icons keep their y and only move sideways, at once,
+  and the press (0.97) plays in the rail too. Rail badges sit on the icon's top-right corner.
+- History list (feedback 6): filtering is instant — no enter/exit, rows don't move, and the
+  highlight lands with its row on the render a filter changed; the list's scroll is
+  kept across Expand → Back (`HistoryPanel` holds it); the expand icon grows 0.75 → 1 with the
+  highlight's 250ms in-out slide — below Emil's 0.9 floor on the user's say ("gradually scale
+  up"), fade only under reduced motion. The snapshot renders deferred (`useDeferredValue`) so
+  the slide's first frames aren't blocked by drawing a page.
+- Prompt cues have no entrance on Analytics (feedback 6).
+- Sales, Instagram, Customers (feedback 6) are designed in code, not in Figma — see DESIGN_NOTES
+  Round 6. Their state is the store's `pages` slice; every section is a `HopFrame` with a
+  scripted answer (`SALES_ANSWERS` …), and a chat tag on a post or thread brings it back.
+  Filters and tabs switch at once (`Segmented`). History's Sand reel brief draws the Instagram
+  page (the PNG and `PlaceholderPage` are gone). Known gap: Dayo's 5:10 PM brief from yesterday
+  draws today's Customers inbox — there's no yesterday inbox data.

@@ -530,6 +530,8 @@ Wrap every selectable part of a page in `<HopFrame id label page jumpTarget>`.
 
 Build each as a placeholder with a real top bar (icon + title), an empty state reading "This page is being designed", and the Hop panel. Navigation, jump chips and History links to these pages must still work.
 
+> Superseded 2026-10-01 (feedback round 6): all three are now built as full pages — see CLAUDE.md > Decisions and docs/DESIGN_NOTES.md > Round 6.
+
 ## B8. Micro-animation checklist (quick reference)
 
 | Trigger | What happens | Timing |

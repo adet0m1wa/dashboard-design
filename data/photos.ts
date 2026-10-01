@@ -24,4 +24,9 @@ export const PHOTOS: Record<string, string> = {
   'post-emerald': '/products/emerald-post.webp',
   'post-packing': '/products/packing-day.webp',
   'post-kimono': '/products/kimono-restock.webp',
+  // Last week's other posts (data/lastWeekDays.ts) reuse the product shots
+  'post-rust': '/products/rust-scarf.webp',
+  'post-olive': '/products/olive-linen.webp',
+  'post-clutch': '/products/gold-clutch.webp',
+  'post-mocha': '/products/mocha-robe.webp',
 };

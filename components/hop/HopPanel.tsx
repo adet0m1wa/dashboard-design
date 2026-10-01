@@ -38,7 +38,6 @@ export function HopPanel() {
   const highlightMode = useHop((s) => s.highlightMode);
   const setHighlightMode = useHop((s) => s.setHighlightMode);
   const width = useHop((s) => s.panelWidth);
-  const reduce = useReducedMotion();
   const onHistory = page === 'history';
   const collapsed = useHop((s) => s.panelCollapsed) && !onHistory;
   const hidden = collapsed ? 'opacity-0' : '';
@@ -122,7 +121,8 @@ export function HopPanel() {
             <AnimatePresence initial={false} mode="wait">
               {bottom === 'chips' && <JumpChips key="chips" />}
               {bottom === 'cues' && (
-                <motion.div key="cues" className="flex shrink-0 flex-wrap gap-6" {...rise(reduce)}>
+                // No entrance (user feedback 2026-10-01): the cues are just there when Analytics shows.
+                <div key="cues" className="flex shrink-0 flex-wrap gap-6">
                   {PROMPT_CUES.map((cue) => (
                     <motion.button
                       key={cue}
@@ -134,7 +134,7 @@ export function HopPanel() {
                       {cue}
                     </motion.button>
                   ))}
-                </motion.div>
+                </div>
               )}
             </AnimatePresence>
           </div>

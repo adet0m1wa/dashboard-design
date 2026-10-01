@@ -24,6 +24,7 @@ export function HistoryPanel() {
   const briefs = useMemo(() => allBriefs(threads), [threads]);
   const brief = briefs.find((b) => b.id === selectedId) ?? briefs[0];
   const expandRef = useRef<HTMLButtonElement>(null);
+  const chainScroll = useRef<number | null>(null); // the list's scroll, kept while a chat is open
   // Set when the chat closes, so the chain focuses the expand icon it was opened from.
   const [returning, setReturning] = useState(false);
   const [lastExpanded, setLastExpanded] = useState(expanded);
@@ -66,7 +67,7 @@ export function HistoryPanel() {
           </motion.div>
         ) : (
           <motion.div key="chain" className="absolute inset-0" {...swap}>
-            <BriefChain briefs={briefs} expandRef={expandRef} focusExpand={returning} />
+            <BriefChain briefs={briefs} expandRef={expandRef} focusExpand={returning} scrollMemory={chainScroll} />
           </motion.div>
         )}
       </AnimatePresence>

@@ -47,7 +47,7 @@ export function TrendChart() {
 
   const def = KPIS[view.kpi];
   const lastWeek = view.range === 'lastWeek';
-  const active = lastWeek ? 6 : (view.day ?? TODAY_INDEX);
+  const active = view.day ?? (lastWeek ? 6 : TODAY_INDEX);
   const hoverable = lastWeek ? 7 : TODAY_INDEX + 1; // future days aren't hoverable
   const title = chartTitle(view);
   const tone = TONE[def.tone];
@@ -75,12 +75,13 @@ export function TrendChart() {
   };
 
   const values = lastWeek ? SERIES[view.kpi].lastWeek : SERIES[view.kpi].thisWeek;
-  const selectable = lastWeek ? [] : Array.from({ length: TODAY_INDEX + 1 }, (_, i) => i);
+  // Last week, every day can be picked (user feedback 2026-10-01); this week, today and before.
+  const selectable = Array.from({ length: hoverable }, (_, i) => i);
 
   const onDayKey = (e: React.KeyboardEvent, i: number) => {
     if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
     e.preventDefault();
-    const next = Math.max(0, Math.min(TODAY_INDEX, i + (e.key === 'ArrowRight' ? 1 : -1)));
+    const next = Math.max(0, Math.min(hoverable - 1, i + (e.key === 'ArrowRight' ? 1 : -1)));
     dayButtons.current[next]?.focus();
   };
 
@@ -111,7 +112,7 @@ export function TrendChart() {
               def={def}
               lastWeek={lastWeek}
               active={active}
-              selectedDay={lastWeek ? null : view.day}
+              selectedDay={view.day}
               hover={hover}
               draw={draw}
               intro={intro && !reduce}
@@ -146,7 +147,7 @@ export function TrendChart() {
             onPointerMove={onPointer}
             onPointerLeave={() => setHover(null)}
             onClick={() => {
-              if (!lastWeek && hover !== null) setDay(hover);
+              if (hover !== null) setDay(hover);
             }}
           />
         </svg>
@@ -171,7 +172,7 @@ export function TrendChart() {
               className={`${cls} rounded-4`}
               style={{ left: g.xAt(i) }}
               aria-pressed={isActive}
-              aria-label={i === TODAY_INDEX ? 'Today' : `${d}, show that day`}
+              aria-label={!lastWeek && i === TODAY_INDEX ? 'Today' : `${d}, show that day`}
               tabIndex={isActive ? 0 : -1}
               onClick={() => setDay(i)}
               onKeyDown={(e) => onDayKey(e, i)}

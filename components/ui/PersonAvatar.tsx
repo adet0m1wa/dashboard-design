@@ -10,10 +10,12 @@ const BG: Record<AvatarColor, string> = {
   'avatar-zee': 'bg-avatar-zee',
   'palette-tone-15': 'bg-palette-tone-15',
   'palette-tone-17': 'bg-palette-tone-17',
+  'status-info': 'bg-status-info',
 };
 
 // Figma sizes → initial type size: 16px avatar 8.5, 18px 9 (History), 28px 12, 32px 11.
-const TEXT: Record<number, string> = { 16: 'text-8-5', 18: 'text-9', 20: 'text-9', 24: 'text-11', 28: 'text-12', 32: 'text-11' };
+// Instagram comments 26 → 10.5, Customers list 32 and header 40.
+const TEXT: Record<number, string> = { 16: 'text-8-5', 18: 'text-9', 20: 'text-9', 24: 'text-11', 26: 'text-10-5', 28: 'text-12', 32: 'text-11', 40: 'text-13' };
 
 export function PersonAvatar({ person, size }: { person: Person; size: number }) {
   if (person.color === 'hop') return <HopAvatar size={size} />;

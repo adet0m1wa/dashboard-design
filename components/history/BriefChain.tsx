@@ -1,12 +1,12 @@
 'use client';
 
 import { AnimatePresence, LayoutGroup, motion, useReducedMotion } from 'motion/react';
-import { useEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect, useRef } from 'react';
 import { HISTORY_PEOPLE, type Brief } from '@/data/history';
 import { TEAM } from '@/data/team';
 import { matches } from '@/lib/briefs';
 import { viaKeyboard } from '@/lib/input';
-import { duration, easeExit, easeOut, exitOf, indicatorSlide, press } from '@/lib/motion';
+import { duration, easeExit, indicatorSlide, press } from '@/lib/motion';
 import { useHop } from '@/lib/store';
 import { ArrowsOutIcon, Chev13Icon, Frame11Icon, SearchIcon } from '@/components/icons/figma';
 import { PersonAvatar } from '@/components/ui/PersonAvatar';
@@ -16,30 +16,54 @@ import { Truncate } from '@/components/ui/Truncate';
 
 // The brief chain (brief B7.5; Figma "Brief chain"): person chips, search and page filter, then
 // the briefs grouped by day with the dotted trail. Selecting slides the soft background to the
-// brief (layoutId) and pops its Expand pill. Filtering collapses the removed briefs (base) and
-// the rest move up (layout); the trail is drawn per brief from the filtered list, so it stays
-// continuous.
+// brief (layoutId, like the KPI pill) while its expand icon grows in alongside. The rows
+// themselves never animate: filtering changes the list at once (user feedback 2026-10-01); the
+// trail is drawn per brief from the filtered list, so it stays continuous.
 const DAYS = ['Today', 'Yesterday'] as const;
 
 export function BriefChain({
   briefs,
   expandRef,
   focusExpand,
+  scrollMemory,
 }: {
   briefs: Brief[];
   expandRef: React.RefObject<HTMLButtonElement | null>;
   focusExpand: boolean;
+  /** Where the list was scrolled when a chat opened (HistoryPanel keeps it across the swap). */
+  scrollMemory: React.RefObject<number | null>;
 }) {
   const history = useHop((s) => s.history);
   const visible = briefs.filter((b) => matches(b, history));
   const list = useRef<HTMLDivElement>(null);
-  // Layout animations only run when the filters or the pick change. Anything else that moves the
-  // rows — dragging the panel narrower, text rewrapping — lands at once (user feedback 2026-09-30:
-  // the selected brief's background used to spring after the panel's edge).
-  const layoutKey = `${visible.map((b) => b.id).join()}|${history.selectedId}`;
-
-  // A brief selected from elsewhere (Recent with Hop, Back from Expand) is brought into view.
+  // Only the highlight is a layout element, and it only slides when the pick changes. Motion
+  // re-measures it whenever the rows change (rows leaving the list trigger that too), so on the
+  // render a filter changed it lands at once with its row (switching names is instant).
+  const layoutKey = history.selectedId;
+  const filterKey = `${history.person}|${history.pageFilter}|${history.query}`;
+  const lastFilter = useRef(filterKey);
+  const refiltered = lastFilter.current !== filterKey;
   useEffect(() => {
+    lastFilter.current = filterKey;
+  });
+
+  // Back from a chat: the list is where it was when the chat opened (user feedback 2026-10-01 —
+  // it used to jump to the picked brief and hide "Yesterday").
+  const restored = useRef(false);
+  useLayoutEffect(() => {
+    if (list.current && scrollMemory.current !== null) {
+      list.current.scrollTop = scrollMemory.current;
+      restored.current = true;
+    }
+  }, [scrollMemory]);
+
+  // A brief selected from elsewhere (Recent with Hop) is brought into view — not on the way back
+  // from a chat, which restores the scroll instead.
+  useEffect(() => {
+    if (restored.current) {
+      restored.current = false;
+      return;
+    }
     list.current?.querySelector('[aria-current="true"]')?.scrollIntoView({ block: 'nearest' });
   }, [history.selectedId]);
 
@@ -53,34 +77,27 @@ export function BriefChain({
       <Filters />
       {/* layoutScroll: Motion reads the list's scroll, so bringing a brief into view isn't taken
           for the rows moving (they used to slide by the scrolled distance). */}
-      <motion.div ref={list} layoutScroll className="min-h-0 flex-1 overflow-y-auto pb-14">
+      <motion.div
+        ref={list}
+        layoutScroll
+        onScroll={(e) => (scrollMemory.current = e.currentTarget.scrollTop)}
+        className="min-h-0 flex-1 overflow-y-auto pb-14"
+      >
         <LayoutGroup>
-          <AnimatePresence initial={false}>
-            {DAYS.map((day) => {
-              const items = visible.filter((b) => b.day === day);
-              if (items.length === 0) return null;
-              return (
-                <motion.section
-                  key={day}
-                  layout="position"
-                  layoutDependency={layoutKey}
-                  aria-label={day}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1, transition: { duration: duration.base, ease: easeOut } }}
-                  exit={{ opacity: 0, transition: { duration: duration.fast, ease: easeExit } }}
-                >
-                  <h2 className="px-16 pb-4 pt-14 text-11 font-500 text-text-muted">{day}</h2>
-                  <ul>
-                    <AnimatePresence initial={false}>
-                      {items.map((b, i) => (
-                        <BriefItem key={b.id} brief={b} first={i === 0} last={i === items.length - 1} expandRef={expandRef} layoutKey={layoutKey} />
-                      ))}
-                    </AnimatePresence>
-                  </ul>
-                </motion.section>
-              );
-            })}
-          </AnimatePresence>
+          {DAYS.map((day) => {
+            const items = visible.filter((b) => b.day === day);
+            if (items.length === 0) return null;
+            return (
+              <section key={day} aria-label={day}>
+                <h2 className="px-16 pb-4 pt-14 text-11 font-500 text-text-muted">{day}</h2>
+                <ul>
+                  {items.map((b, i) => (
+                    <BriefItem key={b.id} brief={b} first={i === 0} last={i === items.length - 1} expandRef={expandRef} layoutKey={layoutKey} instant={refiltered} />
+                  ))}
+                </ul>
+              </section>
+            );
+          })}
         </LayoutGroup>
         {visible.length === 0 && <NoMatches />}
       </motion.div>
@@ -164,12 +181,15 @@ function BriefItem({
   last,
   expandRef,
   layoutKey,
+  instant,
 }: {
   brief: Brief;
   first: boolean;
   last: boolean;
   expandRef: React.RefObject<HTMLButtonElement | null>;
-  layoutKey: string;
+  layoutKey: string | null;
+  /** The filters just changed: the highlight lands with its row. */
+  instant: boolean;
 }) {
   const selected = useHop((s) => s.history.selectedId === brief.id);
   const selectBrief = useHop((s) => s.selectBrief);
@@ -181,20 +201,12 @@ function BriefItem({
   const open = `Open the chat for “${brief.question}”`;
 
   return (
-    <motion.li
-      layout="position"
-      layoutDependency={layoutKey}
-      className="relative overflow-hidden"
-      initial={reduce ? false : { opacity: 0, height: 0 }}
-      animate={{ opacity: 1, height: 'auto', transition: { duration: duration.base, ease: easeOut } }}
-      exit={reduce ? { opacity: 0, transition: { duration: 0 } } : { opacity: 0, height: 0, transition: { duration: exitOf(duration.base), ease: easeExit } }}
-      transition={indicatorSlide}
-    >
+    <li className="relative overflow-hidden">
       {selected && (
         <motion.span
           layoutId="brief-selected"
           layoutDependency={layoutKey}
-          transition={keys ? { duration: 0 } : indicatorSlide}
+          transition={keys || instant ? { duration: 0 } : indicatorSlide}
           className="absolute inset-0 bg-palette-tone-28"
         />
       )}
@@ -232,8 +244,11 @@ function BriefItem({
                   whileTap={press}
                   aria-label={open}
                   className="pointer-events-auto relative -my-2 shrink-0 rounded-4 text-text-black after:absolute after:-inset-4"
-                  initial={keys ? false : reduce ? { opacity: 0 } : { opacity: 0, transform: 'scale(0.9)' }}
-                  animate={{ opacity: 1, transform: 'scale(1)', transition: { duration: duration.base, ease: easeOut } }}
+                  // Grows in with the highlight's slide — same 250ms, same in-out curve, no spring
+                  // (user feedback 2026-10-01). Reduced motion only fades — its start names scale(1),
+                  // or Motion reads the missing transform as scale(0) and grows it from nothing.
+                  initial={keys ? false : { opacity: 0, transform: reduce ? 'scale(1)' : 'scale(0.75)' }}
+                  animate={{ opacity: 1, transform: 'scale(1)', transition: indicatorSlide }}
                   exit={{ opacity: 0, transition: { duration: duration.fast, ease: easeExit } }}
                 >
                   <ArrowsOutIcon />
@@ -255,6 +270,6 @@ function BriefItem({
           )}
         </div>
       </div>
-    </motion.li>
+    </li>
   );
 }

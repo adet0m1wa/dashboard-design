@@ -147,7 +147,8 @@ Token names are the generated CSS names (`--color-surface-default` = Figma `colo
   Analytics kind: the Analytics page itself below the note (read-only). Screenshot kind: card at y70,
   776×732, white, radius 12, overflow clip, shadow token `screenshot-card`; page drawn at 0.83 scale
   (top bar 46 = 56×0.83). Tagged kind: same card + selection outline around the Adire row.
-  Instagram card image: public/history/instagram-1-40pm.png — 2× (1530×1464), from `download_assets` on node 1839:3721 at scale 2, cropped to the card (the export adds the shadow margin: 40px left/right, 28 top, 52 bottom at 2×).
+  Instagram card image (retired 2026-10-01): the card used to be a 2× PNG export of node 1839:3721;
+  it now draws the built Instagram page like the other screenshot briefs.
 - Chat expanded (frame 1869:68830, read 2026-09-28): Split under the top bar = Content 824 + a
   Hop-panel-style column 368 (border-l `surface/divider-tint`). Header h56, px16, border-b
   `surface/faint`: `CaretLeft` 16 + "Back" 14/600 `text/black`, gap 4, items-end. Conversation
@@ -207,3 +208,10 @@ The "fresh" section is now a single section (id 1816:4657, x 1694); the old dupl
 - Round 4 (2026-09-30), departures from Figma on the user's say: the bottom card's title is the
   KPI's name; "All pages" is 105 wide (Figma 97); the composer hint reads "Click the [BoundingBox
   icon] to select a frame". Cards row stays at Figma's fixed 246 for every KPI (token `cards-row`).
+- Round 6 (2026-10-01), pages designed in code (no "fresh" frames): Sales after "07 · Sales"
+  (1791:2608) and Customers after "04 · Customers", both in today's styling; Instagram is the
+  History card 1839:3721 at full size (its values ÷ 0.83: post list 250, preview 225×347 r14,
+  stats 2 columns gap 10, comments card). Customers columns: inbox 240 / conversation / profile
+  230. Under 800px of page width the Customers profile column hides and the Instagram preview
+  drops to 180×278. New text sizes 17 and 18 (extras); icons external/play from Figma,
+  download/funnel hand-made to match the set.

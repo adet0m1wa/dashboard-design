@@ -160,7 +160,8 @@ function FrameOverlay({ id, frame, radius }: { id: string; frame: HTMLElement | 
               className="absolute inset-0 border-(length:--stroke-1-5) border-selection"
               style={{ borderRadius: box.radius }}
               variants={{
-                hidden: reduce ? { opacity: 0 } : { opacity: 0, transform: 'scale(0.98)' },
+                // Reduced motion names scale(1): without a start, Motion grows the transform from scale(0).
+                hidden: { opacity: 0, transform: reduce ? 'scale(1)' : 'scale(0.98)' },
                 shown: { opacity: 1, transform: 'scale(1)', transition: { duration: duration.base, ease: easeOut } },
                 gone: { opacity: 0, transition: { duration: exitOf(duration.base), ease: easeExit } },
               }}
@@ -172,7 +173,7 @@ function FrameOverlay({ id, frame, radius }: { id: string; frame: HTMLElement | 
                 key={pos}
                 className={`absolute ${pos} size-[7px] border-(length:--stroke-1-2) border-selection bg-surface-default`}
                 variants={{
-                  hidden: reduce ? { opacity: 0 } : { opacity: 0, transform: 'scale(0.9)' },
+                  hidden: { opacity: 0, transform: reduce ? 'scale(1)' : 'scale(0.9)' },
                   shown: { transform: 'scale(1)', opacity: 1, transition: { duration: duration.fast, ease: easeOut, delay: reduce ? 0 : i * timing.handleStagger } },
                   gone: { transform: reduce ? 'scale(1)' : 'scale(0.9)', opacity: 0, transition: { duration: exitOf(duration.base), ease: easeExit } },
                 }}

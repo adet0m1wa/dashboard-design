@@ -40,8 +40,8 @@ export const lastWeek: Snapshot = {
       link: { label: 'Open Instagram', page: 'instagram' },
       rows: [
         { id: 'post-fit-check', title: 'Fit check: Tolu in Sand', meta: 'Reel · Fri · by Zee', swatch: 'post-fit-check', likes: 24300 },
-        { id: 'post-kimono', title: 'The kimono restock is live', meta: 'Post · Tue · by Zee', swatch: 'swatch-indigo', likes: 11800 },
-        { id: 'post-packing', title: 'Packing day, behind the scenes', meta: 'Post · Mon · by Zee', swatch: 'swatch-ecru', likes: 8900 },
+        { id: 'post-kimono', title: 'The kimono restock is live', meta: 'Post · Sat · by Zee', swatch: 'swatch-indigo', likes: 11800 },
+        { id: 'post-packing', title: 'Packing day, behind the scenes', meta: 'Story · Sun · by Zee', swatch: 'swatch-ecru', likes: 8900 },
       ],
       footer: ['Across 21 posts', '79.7k likes'],
     },

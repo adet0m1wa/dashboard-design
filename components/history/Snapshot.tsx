@@ -2,7 +2,6 @@
 
 import { LayoutGroup, motion, type Variants } from 'motion/react';
 import type { Brief } from '@/data/history';
-import { INSTAGRAM_SCREENSHOT } from '@/data/history';
 import { PAGE_TITLES } from '@/data/nav';
 import type { Page } from '@/data/types';
 import { snapshotNote } from '@/lib/briefs';
@@ -14,13 +13,16 @@ import { ScreenshotIcon, TimeIcon } from '@/components/icons/figma';
 import { StillOutline } from '@/components/select/HopFrame';
 import { AnalyticsPage } from '@/components/pages/AnalyticsPage';
 import { InventoryPage } from '@/components/pages/InventoryPage';
-import { PlaceholderPage } from '@/components/pages/PlaceholderPage';
+import { CustomersPage } from '@/components/customers/CustomersPage';
+import { InstagramPage } from '@/components/instagram/InstagramPage';
+import { SalesPage } from '@/components/sales/SalesPage';
 import { TopBar } from '@/components/shell/TopBar';
 
 // History's left side: what the selected brief looked like when it was asked (brief B7.5).
 //   • asked on Analytics → the Analytics page redrawn with that moment's view, read-only
 //   • asked on another page → a screenshot card: the real page drawn at 0.83 inside a white card
-//     (12px radius, soft shadow); Instagram isn't built, so its card is the Figma export
+//     (12px radius, soft shadow) — Instagram too, since it was built (2026-10-01; it used to be the
+//     Figma export, gradients and all)
 //   • a tagged frame → the same, with the selection outline on the tagged frame
 // Each snapshot has its own store, so it draws the page as it was without touching the live one.
 // The swap is a quick crossfade (fast; no movement — briefs are switched all day, so Emil
@@ -46,16 +48,6 @@ export function Snapshot({ brief }: { brief: Brief }) {
         </p>
         {brief.page === 'analytics' ? (
           <AnalyticsSnapshot brief={brief} />
-        ) : brief.page === 'instagram' ? (
-          <Card>
-            <img
-              src={INSTAGRAM_SCREENSHOT.src}
-              width={INSTAGRAM_SCREENSHOT.width}
-              height={INSTAGRAM_SCREENSHOT.height}
-              alt={`The Instagram page at ${brief.time}: the Sand reel's numbers and top comments`}
-              className="block h-auto max-w-full"
-            />
-          </Card>
         ) : (
           <PageCard brief={brief} />
         )}
@@ -116,5 +108,8 @@ function PageCard({ brief }: { brief: Brief }) {
 function SnapshotPage({ page }: { page: Page }) {
   if (page === 'inventory') return <InventoryPage />;
   if (page === 'analytics') return <AnalyticsPage />;
-  return <PlaceholderPage page={page} />;
+  if (page === 'sales') return <SalesPage />;
+  if (page === 'instagram') return <InstagramPage />; // opens on the Sand reel, as at 1:40 PM
+  if (page === 'customers') return <CustomersPage />; // opens on Chioma's thread
+  return null;
 }

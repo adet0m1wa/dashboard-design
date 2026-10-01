@@ -196,7 +196,7 @@ export default async function (t) {
     await t.check(`${m}8 sidebar → ${path}: page, title and pill (${from?.toFixed(0)} → ${mid?.toFixed(0)} → ${to?.toFixed(0)})`, async () =>
       slid && (await t.eval(() => location.pathname)) === path && (await t.eval(() => document.title.startsWith(document.querySelector('main header h1').textContent.trim()))),
     );
-    if (path === '/sales') await shot('08-sales-placeholder');
+    if (path === '/sales') await shot('08-sales');
   }
   await t.click('button[aria-label="Collapse sidebar"]');
   await t.wait(700);
@@ -232,7 +232,7 @@ export default async function (t) {
   await shot('09b-history-analytics');
   await t.eval(pick, 'Why is the Sand reel');
   await t.wait(900);
-  await t.check(`${m}9 screenshot kind: Instagram card`, async () => (await t.eval(note)).startsWith('Screenshot of Instagram') && (await t.eval(() => document.querySelector('[data-page=history] img')?.naturalWidth === 1530)));
+  await t.check(`${m}9 screenshot kind: the Instagram page in a card`, async () => (await t.eval(note)).startsWith('Screenshot of Instagram') && (await t.eval(() => document.querySelector('[data-page=history] [inert] h2.truncate')?.textContent === 'Styling the Sand set 3 ways')));
   await shot('09c-history-screenshot');
   await t.click('button[aria-pressed][class*=rounded-999]:nth-of-type(3)'); // Ife
   await t.wait(700);

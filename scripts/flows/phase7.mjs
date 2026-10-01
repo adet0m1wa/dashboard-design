@@ -92,13 +92,14 @@ export default async function (t) {
   );
   await t.shot(`phase7-${reduced ? 'reduced-' : ''}analytics`);
 
-  // Zee's Instagram brief: the screenshot image
+  // Zee's Instagram brief: the Instagram page drawn in a card (the 2× PNG until 2026-10-01)
   await t.eval(pick, 'Why is the Sand reel');
   await t.wait(800);
-  await t.check(`${m}screenshot kind: Instagram image in a card`, () =>
+  await t.check(`${m}screenshot kind: the Instagram page in a card, its photos loaded`, () =>
     t.eval(() => {
-      const img = document.querySelector('[data-page=history] .shadow-screenshot-card img');
-      return !!img && img.complete && img.naturalWidth === 1530;
+      const card = document.querySelector('[data-page=history] .shadow-screenshot-card');
+      const imgs = [...(card?.querySelectorAll('img') ?? [])];
+      return card?.querySelector('h2.truncate')?.textContent === 'Styling the Sand set 3 ways' && imgs.length >= 6 && imgs.every((i) => i.complete && i.naturalWidth > 0);
     }),
   );
   await t.check(`${m}screenshot kind: note`, async () => (await t.eval(note)) === 'Screenshot of Instagram — taken at 1:40 PM, Thu 24 Sep, when Zee asked');
@@ -117,7 +118,8 @@ export default async function (t) {
   const collapsing = await t.eval(() => [...document.querySelectorAll('[data-history-panel] li')].length);
   await t.wait(600);
   await t.check(`${m}person filter: Amara's 4 briefs (${(await t.eval(items)).length})`, async () => (await t.eval(items)).length === 4);
-  if (!reduced) await t.check(`person filter: removed briefs collapse out (${collapsing} items mid-way)`, collapsing > 4);
+  // Removed briefs used to collapse out; switching names is instant since feedback 6 (2026-10-01).
+  await t.check(`${m}person filter: removed briefs are gone at once (${collapsing} items 80ms in)`, collapsing === 4);
   await t.check(`${m}person filter: trail stays continuous (${(await t.eval(trail)).join(' / ')})`, async () => (await t.eval(trail)).join(' / ') === '.| || || |.');
   await t.click('button[aria-pressed][class*=rounded-999]:nth-of-type(1)'); // Everyone
   await t.wait(500);
