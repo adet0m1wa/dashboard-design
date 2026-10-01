@@ -27,6 +27,10 @@ Token names are the generated CSS names (`--color-surface-default` = Figma `colo
 ## Sidebar
 
 - Store switcher: px 8 py 6, space-between. Logo 22px `action-primary` radius 6 "AA" 9/700 white · "Amara Atelier" 13/600 · chevron 14px muted. Right: panel icon 16px muted.
+  The "AA" placeholder is replaced by the user's logo (2026-10-01): the monogram cropped from
+  their 1024² export (original in `images/`, git-ignored) onto its own off-white (#FEFDF9),
+  monogram ≈86% of the tile, `public/brand/amara-atelier-mark.webp` 66² (3×), same 22px radius-6
+  slot plus a 1px `surface/border-tint` ring so the light tile keeps its edge.
 - Nav stack: pt 16, gap 2. Item: px 10, py 7, gap 10, radius 8, icon 16. Active: white bg, 0.5px border `surface-border-tint`, shadow nav-active, text 13/600 primary, icon primary. Inactive: 13/500 secondary, icon secondary.
 - Badges: px 7 py 1 radius 10, 11/600. Inventory "4" warning-soft/warning-text. Customers "3" danger-soft/danger-text.
 - "Recent with Hop": pt 16, gap 2. Header px 10 pb 6: "Recent with Hop" 11.5/500 muted + history icon 13px muted. Items px 10 py 6 gap 8 radius 6: avatar 16px radius 8 (initial 8.5/600 white) + text 12.5/400 `text-tone-01`, ellipsis.
