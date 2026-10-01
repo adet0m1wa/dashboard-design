@@ -50,10 +50,10 @@ export default async function (t) {
     await t.shot(`phase1-${slug}`);
   }
 
-  // Placeholder pages (B7.7)
+  // Sales, Instagram, Customers were placeholders (B7.7) until feedback 6 (2026-10-01): now built
   await t.goto('/instagram');
-  await t.check('Instagram placeholder says "This page is being designed"', () =>
-    t.eval(() => document.querySelector('[data-page]')?.textContent.includes('This page is being designed')),
+  await t.check('Instagram is built: the week\'s posts are listed', () =>
+    t.eval(() => document.querySelectorAll('[data-page] [data-hop-frame^="instagram.post."]').length === 5),
   );
 
   // Browser back/forward

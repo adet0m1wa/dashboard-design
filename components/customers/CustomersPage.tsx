@@ -17,11 +17,13 @@ import { Truncate } from '@/components/ui/Truncate';
 // styling): the DM inbox (waiting first, how long in red), the open conversation with Hop's
 // drafted reply on top of the composer, and who the customer is — what they've spent, their
 // recent orders, the team's notes. Picking a conversation or a tab changes things at once.
+// Under 800px wide (Hop open on a smaller laptop) the profile steps aside so the conversation
+// keeps room, and the header drops its wait tag when the conversation itself gets narrow.
 export function CustomersPage() {
   const threadId = useHop((s) => s.pages.thread);
   const t = findThread(threadId);
   return (
-    <div className="flex h-full min-h-[560px]">
+    <div className="@container flex h-full min-h-[560px]">
       <Inbox selected={t.id} />
       <Conversation key={t.id} t={t} />
       <Profile t={t} />
@@ -96,17 +98,21 @@ function Conversation({ t }: { t: Thread }) {
 
   let lastDay: Bubble['day'] | null = null;
   return (
-    <HopFrame id="customers.thread" label={`Conversation · ${t.name}`} page="customers" className="flex min-w-0 flex-1 flex-col border-r border-surface-divider-tint">
+    <HopFrame id="customers.thread" label={`Conversation · ${t.name}`} page="customers" className="@container flex min-w-0 flex-1 flex-col border-r border-surface-divider-tint">
       <div className="flex items-center justify-between gap-12 border-b border-surface-divider-tint px-20 py-12">
         <div className="flex min-w-0 items-center gap-10">
           <InitialsAvatar initials={t.initials} color={t.avatar} size={40} />
           <div className="flex min-w-0 flex-col gap-2">
-            <span className="text-15 font-600 text-text-primary">{t.name}</span>
+            <Truncate className="text-15 font-600 text-text-primary">{t.name}</Truncate>
             <Truncate className="text-11-5 text-text-muted">{t.handle}</Truncate>
           </div>
         </div>
         <div className="flex shrink-0 items-center gap-8">
-          {t.waiting && <Tag tone={waitTone(t.waiting)}>Waiting {t.waiting}</Tag>}
+          {t.waiting && (
+            <span className="@max-[440px]:hidden">
+              <Tag tone={waitTone(t.waiting)}>Waiting {t.waiting}</Tag>
+            </span>
+          )}
           <OutlineButton onClick={() => navigate('sales', 'link')}>View orders</OutlineButton>
         </div>
       </div>
@@ -193,7 +199,7 @@ const TAG_TONE: Record<string, string> = {
 function Profile({ t }: { t: Thread }) {
   const p = t.profile;
   return (
-    <HopFrame id={`customers.profile.${t.id}`} label={`${t.name} · customer`} page="customers" jumpTarget="sales" className="flex w-[230px] shrink-0 flex-col gap-18 overflow-y-auto px-16 py-16">
+    <HopFrame id={`customers.profile.${t.id}`} label={`${t.name} · customer`} page="customers" jumpTarget="sales" className="flex w-[230px] shrink-0 flex-col gap-18 overflow-y-auto px-16 py-16 @max-[800px]:hidden">
       <div className="flex gap-6">
         {[
           ['Spent', p.spent],

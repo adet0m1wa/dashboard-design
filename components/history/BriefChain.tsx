@@ -16,9 +16,9 @@ import { Truncate } from '@/components/ui/Truncate';
 
 // The brief chain (brief B7.5; Figma "Brief chain"): person chips, search and page filter, then
 // the briefs grouped by day with the dotted trail. Selecting slides the soft background to the
-// brief (layoutId, like the KPI pill) while its expand icon grows in alongside. Filtering changes
-// the list at once (user feedback 2026-10-01); the trail is drawn per brief from the filtered
-// list, so it stays continuous.
+// brief (layoutId, like the KPI pill) while its expand icon grows in alongside. The rows
+// themselves never animate: filtering changes the list at once (user feedback 2026-10-01); the
+// trail is drawn per brief from the filtered list, so it stays continuous.
 const DAYS = ['Today', 'Yesterday'] as const;
 
 export function BriefChain({
@@ -36,10 +36,16 @@ export function BriefChain({
   const history = useHop((s) => s.history);
   const visible = briefs.filter((b) => matches(b, history));
   const list = useRef<HTMLDivElement>(null);
-  // Layout animations only run when the pick changes: the highlight slides to the new brief.
-  // Anything else that moves the rows — a filter (user feedback 2026-10-01: switching names is
-  // instant), dragging the panel narrower, text rewrapping — lands at once.
+  // Only the highlight is a layout element, and it only slides when the pick changes. Motion
+  // re-measures it whenever the rows change (rows leaving the list trigger that too), so on the
+  // render a filter changed it lands at once with its row (switching names is instant).
   const layoutKey = history.selectedId;
+  const filterKey = `${history.person}|${history.pageFilter}|${history.query}`;
+  const lastFilter = useRef(filterKey);
+  const refiltered = lastFilter.current !== filterKey;
+  useEffect(() => {
+    lastFilter.current = filterKey;
+  });
 
   // Back from a chat: the list is where it was when the chat opened (user feedback 2026-10-01 —
   // it used to jump to the picked brief and hide "Yesterday").
@@ -82,14 +88,14 @@ export function BriefChain({
             const items = visible.filter((b) => b.day === day);
             if (items.length === 0) return null;
             return (
-              <motion.section key={day} layout="position" layoutDependency={layoutKey} aria-label={day}>
+              <section key={day} aria-label={day}>
                 <h2 className="px-16 pb-4 pt-14 text-11 font-500 text-text-muted">{day}</h2>
                 <ul>
                   {items.map((b, i) => (
-                    <BriefItem key={b.id} brief={b} first={i === 0} last={i === items.length - 1} expandRef={expandRef} layoutKey={layoutKey} />
+                    <BriefItem key={b.id} brief={b} first={i === 0} last={i === items.length - 1} expandRef={expandRef} layoutKey={layoutKey} instant={refiltered} />
                   ))}
                 </ul>
-              </motion.section>
+              </section>
             );
           })}
         </LayoutGroup>
@@ -175,12 +181,15 @@ function BriefItem({
   last,
   expandRef,
   layoutKey,
+  instant,
 }: {
   brief: Brief;
   first: boolean;
   last: boolean;
   expandRef: React.RefObject<HTMLButtonElement | null>;
   layoutKey: string | null;
+  /** The filters just changed: the highlight lands with its row. */
+  instant: boolean;
 }) {
   const selected = useHop((s) => s.history.selectedId === brief.id);
   const selectBrief = useHop((s) => s.selectBrief);
@@ -192,12 +201,12 @@ function BriefItem({
   const open = `Open the chat for “${brief.question}”`;
 
   return (
-    <motion.li layout="position" layoutDependency={layoutKey} className="relative overflow-hidden" transition={indicatorSlide}>
+    <li className="relative overflow-hidden">
       {selected && (
         <motion.span
           layoutId="brief-selected"
           layoutDependency={layoutKey}
-          transition={keys ? { duration: 0 } : indicatorSlide}
+          transition={keys || instant ? { duration: 0 } : indicatorSlide}
           className="absolute inset-0 bg-palette-tone-28"
         />
       )}
@@ -236,8 +245,9 @@ function BriefItem({
                   aria-label={open}
                   className="pointer-events-auto relative -my-2 shrink-0 rounded-4 text-text-black after:absolute after:-inset-4"
                   // Grows in with the highlight's slide — same 250ms, same in-out curve, no spring
-                  // (user feedback 2026-10-01).
-                  initial={keys ? false : reduce ? { opacity: 0 } : { opacity: 0, transform: 'scale(0.75)' }}
+                  // (user feedback 2026-10-01). Reduced motion only fades — its start names scale(1),
+                  // or Motion reads the missing transform as scale(0) and grows it from nothing.
+                  initial={keys ? false : { opacity: 0, transform: reduce ? 'scale(1)' : 'scale(0.75)' }}
                   animate={{ opacity: 1, transform: 'scale(1)', transition: indicatorSlide }}
                   exit={{ opacity: 0, transition: { duration: duration.fast, ease: easeExit } }}
                 >
@@ -260,6 +270,6 @@ function BriefItem({
           )}
         </div>
       </div>
-    </motion.li>
+    </li>
   );
 }

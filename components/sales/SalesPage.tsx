@@ -93,7 +93,7 @@ function RevenueByDay() {
   );
 }
 
-const COLUMNS = 'grid grid-cols-[56px_minmax(120px,1fr)_minmax(150px,1.4fr)_56px_60px_80px_64px] items-center gap-12 px-16';
+const COLUMNS = 'grid grid-cols-[56px_minmax(110px,1fr)_minmax(130px,1.4fr)_56px_60px_80px_64px] items-center gap-12 px-16';
 
 function Orders() {
   const filter = useHop((s) => s.pages.salesFilter);

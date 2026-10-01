@@ -23,12 +23,15 @@ export function TopBar() {
 
   return (
     <header className="flex h-bar shrink-0 items-center justify-between border-b border-surface-faint px-20">
-      <h1 className="flex items-center gap-8 text-13 font-600 text-text-primary">
-        {page !== 'analytics' && <PageIcon page={page} className="text-text-primary" />}
-        {PAGE_TITLES[page]}
+      {/* The note sits beside the heading, not in it: the heading reads just the page's name. */}
+      <div className="flex items-center gap-8">
+        <h1 className="flex items-center gap-8 text-13 font-600 text-text-primary">
+          {page !== 'analytics' && <PageIcon page={page} className="text-text-primary" />}
+          {PAGE_TITLES[page]}
+        </h1>
         {page === 'instagram' && <TitleNote text={INSTAGRAM_TITLE_NOTE} />}
         {page === 'customers' && <TitleNote text={CUSTOMERS_TITLE_NOTE} />}
-      </h1>
+      </div>
       <TopActions page={page} />
     </header>
   );

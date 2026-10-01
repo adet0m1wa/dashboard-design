@@ -13,13 +13,14 @@ import { Truncate } from '@/components/ui/Truncate';
 // 1839:3721) drawn at full size — that card is this page at 0.83, so every value here is the
 // Figma one ÷ 0.83. Left: the account and the week's posts; right: the picked post — preview,
 // how it did against the usual, and the comments worth answering. Picking a post swaps the right
-// side at once. History's 1:40 PM brief now draws this page instead of a flat image.
+// side at once. History's 1:40 PM brief now draws this page instead of a flat image. Under 800px
+// wide the preview shrinks so the stats keep two readable columns.
 export function InstagramPage() {
   const postId = useHop((s) => s.pages.igPost);
   const post = igPost(postId);
 
   return (
-    <div className="flex h-full min-h-[640px]">
+    <div className="@container flex h-full min-h-[640px]">
       <PostList selected={post.id} />
       <PostCanvas post={post} />
     </div>
@@ -91,7 +92,7 @@ function PostCanvas({ post }: { post: IgPost }) {
           label={`${post.kind} preview`}
           page="instagram"
           radius={14}
-          className="flex h-[347px] w-[225px] shrink-0 flex-col items-center justify-between overflow-hidden rounded-14 p-12"
+          className="flex h-[347px] w-[225px] shrink-0 flex-col items-center justify-between overflow-hidden rounded-14 p-12 @max-[800px]:h-[278px] @max-[800px]:w-[180px]"
         >
           {/* The photo, with a dark wash at the foot so the caption reads (Figma's was a gradient stand-in). */}
           <img src={post.image} alt="" decoding="async" className="absolute inset-0 size-full object-cover" />
@@ -120,9 +121,9 @@ function PostCanvas({ post }: { post: IgPost }) {
               radius={10}
               className="flex min-w-0 flex-col gap-3 rounded-10 border border-surface-border-tint bg-surface-default px-12 py-10"
             >
-              <Truncate className="text-11-5 text-text-secondary">{s.label}</Truncate>
+              <span className="text-11-5 text-text-secondary">{s.label}</span>
               <span className="text-18 font-600 tracking-px-0-166 text-text-primary tabular-nums">{s.value}</span>
-              <Truncate className={`text-11 ${s.good ? 'text-status-success-text' : 'text-text-muted'}`}>{s.note}</Truncate>
+              <span className={`text-11 leading-15 ${s.good ? 'text-status-success-text' : 'text-text-muted'}`}>{s.note}</span>
             </HopFrame>
           ))}
         </div>
