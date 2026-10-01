@@ -40,7 +40,7 @@ export const wednesday: Snapshot = {
       rows: [
         { id: 'post-sand-reel', title: 'Styling the Sand set 3 ways', meta: 'Reel · Tue · by Zee', swatch: 'post-sand-reel', likes: 13800 },
         { id: 'post-emerald', title: 'New in: the Emerald slip dress', meta: 'Post · Mon · by Zee', swatch: 'swatch-emerald', likes: 3900 },
-        { id: 'post-packing', title: 'Packing day, behind the scenes', meta: 'Post · Wed · by Zee', swatch: 'swatch-ecru', likes: 2100 },
+        { id: 'post-packing', title: 'Packing day, behind the scenes', meta: 'Story · Sun · by Zee', swatch: 'swatch-ecru', likes: 2100 },
       ],
       footer: ['Across 6 posts', '21.6k likes'],
     },

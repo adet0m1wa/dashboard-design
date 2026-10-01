@@ -7,7 +7,9 @@ import { AnalyticsPage } from '@/components/pages/AnalyticsPage';
 import { InventoryPage } from '@/components/pages/InventoryPage';
 import { HistoryPage } from '@/components/history/HistoryPage';
 import { useSelection } from '@/components/select/useSelection';
-import { PlaceholderPage } from '@/components/pages/PlaceholderPage';
+import { CustomersPage } from '@/components/customers/CustomersPage';
+import { InstagramPage } from '@/components/instagram/InstagramPage';
+import { SalesPage } from '@/components/sales/SalesPage';
 
 // Only the page area's content changes between pages; the sidebar stays put. The switch is
 // instant (user feedback 2026-09-29: no slide, no wipe).
@@ -33,7 +35,11 @@ export function PageContent({ page }: { page: Page }) {
       return <InventoryPage />;
     case 'history':
       return <HistoryPage />;
-    default:
-      return <PlaceholderPage page={page} />;
+    case 'sales':
+      return <SalesPage />;
+    case 'instagram':
+      return <InstagramPage />;
+    case 'customers':
+      return <CustomersPage />;
   }
 }

@@ -55,8 +55,16 @@ export function ClockCounterClockwiseIcon(props: IconProps) {
   return (<svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false" {...props}><path d="M8.75 5V7.57562L10.8856 8.85688C10.972 8.90656 11.0476 8.97295 11.108 9.05217C11.1684 9.1314 11.2124 9.22187 11.2375 9.31829C11.2626 9.41472 11.2682 9.51518 11.254 9.61379C11.2398 9.71241 11.2061 9.80721 11.1549 9.89266C11.1036 9.9781 11.0359 10.0525 10.9556 10.1115C10.8753 10.1704 10.784 10.2128 10.6872 10.2361C10.5903 10.2595 10.4897 10.2632 10.3914 10.2473C10.2931 10.2313 10.1989 10.1959 10.1144 10.1431L7.61438 8.64312C7.50327 8.57652 7.41131 8.48227 7.34746 8.36957C7.2836 8.25686 7.25003 8.12954 7.25 8V5C7.25 4.80109 7.32902 4.61032 7.46967 4.46967C7.61032 4.32902 7.80109 4.25 8 4.25C8.19891 4.25 8.38968 4.32902 8.53033 4.46967C8.67098 4.61032 8.75 4.80109 8.75 5ZM8 1.75C7.17818 1.74788 6.36412 1.90888 5.60497 2.22365C4.84582 2.53842 4.15669 3.00072 3.5775 3.58375C3.28438 3.88 3.015 4.16937 2.75 4.45875V4C2.75 3.80109 2.67098 3.61032 2.53033 3.46967C2.38968 3.32902 2.19891 3.25 2 3.25C1.80109 3.25 1.61032 3.32902 1.46967 3.46967C1.32902 3.61032 1.25 3.80109 1.25 4V6.5C1.25 6.69891 1.32902 6.88968 1.46967 7.03033C1.61032 7.17098 1.80109 7.25 2 7.25H4.5C4.69891 7.25 4.88968 7.17098 5.03033 7.03033C5.17098 6.88968 5.25 6.69891 5.25 6.5C5.25 6.30109 5.17098 6.11032 5.03033 5.96967C4.88968 5.82902 4.69891 5.75 4.5 5.75H3.61063C3.9375 5.375 4.27313 5.01375 4.64125 4.64125C5.30135 3.98096 6.1414 3.52985 7.05643 3.34428C7.97147 3.15872 8.92089 3.24694 9.78607 3.59791C10.6512 3.94888 11.3938 4.54704 11.921 5.31764C12.4481 6.08825 12.7365 6.99712 12.75 7.93068C12.7635 8.86423 12.5016 9.78108 11.997 10.5666C11.4925 11.3522 10.7675 11.9716 9.9129 12.3475C9.05826 12.7234 8.11179 12.8391 7.19176 12.6802C6.27174 12.5212 5.41896 12.0946 4.74 11.4538C4.59529 11.3172 4.40225 11.2437 4.20335 11.2494C4.00444 11.2551 3.81596 11.3397 3.67938 11.4844C3.54279 11.6291 3.46928 11.8221 3.47503 12.021C3.48077 12.2199 3.56529 12.4084 3.71 12.545C4.45189 13.2453 5.35393 13.7533 6.33737 14.0248C7.3208 14.2962 8.35573 14.3227 9.35179 14.1021C10.3479 13.8815 11.2748 13.4204 12.0516 12.759C12.8284 12.0977 13.4315 11.2563 13.8083 10.3082C14.1851 9.36012 14.3241 8.33422 14.2131 7.32007C14.1021 6.30592 13.7445 5.33436 13.1716 4.49021C12.5987 3.64607 11.8279 2.955 10.9264 2.47734C10.0249 1.99969 9.0202 1.74997 8 1.75Z" fill="currentColor"/></svg>);
 }
 
+export function DownloadIcon(props: IconProps) {
+  return (<svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true" focusable="false" {...props}><path d="M6.5 1.625V8.125" stroke="currentColor" strokeWidth="1.08333" strokeLinecap="round" strokeLinejoin="round"/><path d="M3.79167 5.41667L6.5 8.125L9.20833 5.41667" stroke="currentColor" strokeWidth="1.08333" strokeLinecap="round" strokeLinejoin="round"/><path d="M2.16667 9.75V10.8333C2.16667 11.1325 2.40917 11.375 2.70833 11.375H10.2917C10.5908 11.375 10.8333 11.1325 10.8333 10.8333V9.75" stroke="currentColor" strokeWidth="1.08333" strokeLinecap="round" strokeLinejoin="round"/></svg>);
+}
+
 export function ExpandIcon(props: IconProps) {
   return (<svg width="11" height="11" viewBox="0 0 11 11" fill="none" aria-hidden="true" focusable="false" {...props}><path d="M6.875 1.375H9.625V4.125" stroke="currentColor" strokeWidth="0.916667" strokeLinecap="round" strokeLinejoin="round"/><path d="M4.125 9.625H1.375V6.875" stroke="currentColor" strokeWidth="0.916667" strokeLinecap="round" strokeLinejoin="round"/><path d="M9.625 1.375L6.41667 4.58333" stroke="currentColor" strokeWidth="0.916667" strokeLinecap="round" strokeLinejoin="round"/><path d="M1.375 9.625L4.58333 6.41667" stroke="currentColor" strokeWidth="0.916667" strokeLinecap="round" strokeLinejoin="round"/></svg>);
+}
+
+export function ExternalIcon(props: IconProps) {
+  return (<svg width="13" height="13" viewBox="0 0 10.7891 10.7891" fill="none" aria-hidden="true" focusable="false" {...props}><path d="M8.092 5.84455V8.54183C8.092 8.78028 7.99727 9.00897 7.82866 9.17758C7.66005 9.3462 7.43136 9.44092 7.1929 9.44092H2.24789C2.00944 9.44092 1.78075 9.3462 1.61214 9.17758C1.44352 9.00897 1.3488 8.78028 1.3488 8.54183V3.59682C1.3488 3.35836 1.44352 3.12967 1.61214 2.96106C1.78075 2.79245 2.00944 2.69772 2.24789 2.69772H4.94517" stroke="currentColor" strokeWidth="0.899093" strokeLinecap="round" strokeLinejoin="round"/><path d="M6.74336 1.34908H9.44064V4.04636" stroke="currentColor" strokeWidth="0.899093" strokeLinecap="round" strokeLinejoin="round"/><path d="M4.49549 6.2941L9.4405 1.34908" stroke="currentColor" strokeWidth="0.899093" strokeLinecap="round" strokeLinejoin="round"/></svg>);
 }
 
 export function Frame11Icon(props: IconProps) {
@@ -65,6 +73,10 @@ export function Frame11Icon(props: IconProps) {
 
 export function FrameIcon(props: IconProps) {
   return (<svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true" focusable="false" {...props}><path d="M11 3H1" stroke="currentColor" strokeWidth="0.995918" strokeLinecap="round" strokeLinejoin="round"/><path d="M11 9H1" stroke="currentColor" strokeWidth="0.995918" strokeLinecap="round" strokeLinejoin="round"/><path d="M3 1V11" stroke="currentColor" strokeWidth="0.995918" strokeLinecap="round" strokeLinejoin="round"/><path d="M9 1V11" stroke="currentColor" strokeWidth="0.995918" strokeLinecap="round" strokeLinejoin="round"/></svg>);
+}
+
+export function FunnelIcon(props: IconProps) {
+  return (<svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true" focusable="false" {...props}><path d="M1.625 2.70833H11.375" stroke="currentColor" strokeWidth="1.08333" strokeLinecap="round" strokeLinejoin="round"/><path d="M3.25 6.5H9.75" stroke="currentColor" strokeWidth="1.08333" strokeLinecap="round" strokeLinejoin="round"/><path d="M5.41667 10.2917H7.58333" stroke="currentColor" strokeWidth="1.08333" strokeLinecap="round" strokeLinejoin="round"/></svg>);
 }
 
 export function HistoryIcon(props: IconProps) {
@@ -85,6 +97,10 @@ export function NewChatIcon(props: IconProps) {
 
 export function PanelIcon(props: IconProps) {
   return (<svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false" {...props}><path d="M12.6667 2H3.33333C2.59695 2 2 2.59695 2 3.33333V12.6667C2 13.403 2.59695 14 3.33333 14H12.6667C13.403 14 14 13.403 14 12.6667V3.33333C14 2.59695 13.403 2 12.6667 2Z" stroke="currentColor" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round"/><path d="M6 2V14" stroke="currentColor" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round"/></svg>);
+}
+
+export function PlayIcon(props: IconProps) {
+  return (<svg width="14" height="14" viewBox="0 0 11.619 11.619" fill="none" aria-hidden="true" focusable="false" {...props}><path d="M2.32341 1.16228L10.4567 5.80989L2.32341 10.4575V1.16228Z" fill="currentColor"/></svg>);
 }
 
 export function PlusIcon(props: IconProps) {

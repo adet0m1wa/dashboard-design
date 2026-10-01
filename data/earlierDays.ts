@@ -44,7 +44,7 @@ export const monday: Snapshot = {
       rows: [
         { id: 'post-emerald', title: 'New in: the Emerald slip dress', meta: 'Post · Mon · by Zee', swatch: 'swatch-emerald', likes: 3900 },
         { id: 'post-fit-check', title: 'Fit check: Tolu in Sand', meta: 'Reel · Fri · by Zee', swatch: 'post-fit-check', likes: 2600 },
-        { id: 'post-kimono', title: 'The kimono restock is live', meta: 'Post · Sun · by Zee', swatch: 'swatch-indigo', likes: 1400 },
+        { id: 'post-kimono', title: 'The kimono restock is live', meta: 'Post · Sat · by Zee', swatch: 'swatch-indigo', likes: 1400 },
       ],
       footer: ['Across 4 posts', '9.8k likes'],
     },

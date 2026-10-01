@@ -1,3 +1,7 @@
+import { CUSTOMERS_ANSWERS } from './customers';
+import { INSTAGRAM_ANSWERS } from './instagram';
+import { LAST_WEEK_URGENT_ANSWERS } from './lastWeekDays';
+import { SALES_ANSWERS } from './sales';
 import type { Page } from './types';
 
 // Scripted Hop answers (brief B9). Keyed by the tagged frame's id, or by the prompt-cue text.
@@ -170,6 +174,11 @@ export const ANSWERS_BY_FRAME: Record<string, Answer> = {
     reads: ['customers', 'inventory'],
     blocks: [text('Nothing from last week is still open. All 7 weekend return requests were closed, the supplier confirmed 60 Mocha robes, and 18 customers got a post-sale follow-up.')],
   },
+  ...LAST_WEEK_URGENT_ANSWERS,
+  // Sales, Instagram and Customers (designed 2026-10-01): every frame on them has an answer
+  ...SALES_ANSWERS,
+  ...INSTAGRAM_ANSWERS,
+  ...CUSTOMERS_ANSWERS,
   // KPI tabs
   'analytics.kpi.revenue': { reads: ['sales'], blocks: [text('Revenue today is $2,480, up 12% on last Thursday ($2,210). Wednesday was the peak of the week at $3,120.')] },
   'analytics.kpi.orders': { reads: ['sales'], blocks: [text('34 orders so far today, up 6% on last Thursday. 6 are still to pack.')] },

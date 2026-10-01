@@ -5,7 +5,7 @@ export type Kpi = 'revenue' | 'orders' | 'likes' | 'followers' | 'dms';
 export type PersonId = 'amara' | 'ife' | 'dayo' | 'zee' | 'hop';
 
 /** A token-backed fill: a colour alias from styles/globals.css or a gradient from tokens.css. */
-export type AvatarColor = 'avatar-amara' | 'avatar-ife' | 'avatar-dayo' | 'avatar-zee' | 'palette-tone-15' | 'palette-tone-17';
+export type AvatarColor = 'avatar-amara' | 'avatar-ife' | 'avatar-dayo' | 'avatar-zee' | 'palette-tone-15' | 'palette-tone-17' | 'status-info';
 export type Swatch =
   | 'swatch-sand'
   | 'swatch-emerald'
@@ -23,7 +23,9 @@ export type Tone = 'success' | 'warning' | 'danger' | 'info';
 export type NumberFormat = 'currency' | 'int' | 'compact';
 
 /** Which slice of time the Analytics page is showing. */
-export type PeriodKey = 'today' | 'mon' | 'tue' | 'wed' | 'lastWeek';
+/** A day of last week, 0 = Mon 14 Sep (data/lastWeekDays.ts). */
+export type LastWeekDay = `lw${0 | 1 | 2 | 3 | 4 | 5 | 6}`;
+export type PeriodKey = 'today' | 'mon' | 'tue' | 'wed' | 'lastWeek' | LastWeekDay;
 
 export interface KpiDef {
   id: Kpi;

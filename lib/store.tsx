@@ -3,6 +3,9 @@
 import { createContext, useContext, useState, type ReactNode } from 'react';
 import { createStore, useStore, type StoreApi } from 'zustand';
 import { answerFor, DEFAULT_TAGGED_QUESTION, type Block } from '@/data/conversation';
+import { DEFAULT_THREAD, type InboxTab } from '@/data/customers';
+import { IG_DEFAULT_POST } from '@/data/instagram';
+import type { SalesFilter } from '@/data/sales';
 import { TODAY_INDEX } from '@/data/kpis';
 import { PAGE_TITLES } from '@/data/nav';
 import type { Kpi, Page, PersonId } from '@/data/types';
@@ -31,6 +34,9 @@ export type Message =
       page: Page;
       /** What Analytics was showing when she asked there — History redraws it (brief B7.5). */
       view?: AnalyticsState;
+      /** The post or conversation open when she asked on Instagram / Customers, so a tag can
+       *  bring it back (its frames only exist while it's open). */
+      openItem?: string;
     }
   | { id: string; kind: 'hop'; time: string; reads: Page[]; blocks: Block[]; status: 'thinking' | 'streaming' | 'done' }
   | { id: string; kind: 'marker'; text: string; time: string; page: Page };
@@ -59,9 +65,19 @@ export interface HistoryState {
   query: string;
 }
 
+/** What's open on the Sales, Instagram and Customers pages (user feedback 2026-10-01). */
+export interface PagesState {
+  salesFilter: SalesFilter;
+  igPost: string;
+  thread: string;
+  inboxTab: InboxTab;
+  inboxQuery: string;
+}
+
 export interface HopState {
   page: Page;
   analytics: AnalyticsState;
+  pages: PagesState;
   selection: HopFrameRef | null;
   jumpOrigin: Page | null;
   history: HistoryState;
@@ -107,7 +123,8 @@ export interface HopState {
   hideToast: (id: number) => void;
   setKpi: (kpi: Kpi) => void;
   setRange: (range: AnalyticsState['range']) => void;
-  /** Select a past day on the chart (0 = Mon). null or today's index = back to today. */
+  /** Select a day on the chart (0 = Mon). This week: null or today's index = back to today.
+   *  Last week: null or the shown day = back to the whole week. */
   setDay: (day: number | null) => void;
   /** Sidebar "Recent with Hop": open History with that brief selected (or, for an item that
    *  isn't in the chain, filtered to the person who asked). */
@@ -119,6 +136,7 @@ export interface HopState {
   togglePanel: () => void;
   setPanelWidth: (width: number) => void;
   setHighlightMode: (on: boolean) => void;
+  setPages: (pages: Partial<PagesState>) => void;
 }
 
 export { PAGE_IDS, isPage } from './pages';
@@ -127,6 +145,7 @@ export function createHopStore(initialPage: Page, init: Partial<HopState> = {}) 
   return createStore<HopState>()((set, get) => ({
     page: initialPage,
     analytics: { kpi: 'revenue', range: 'thisWeek', day: null },
+    pages: { salesFilter: 'all', igPost: IG_DEFAULT_POST, thread: DEFAULT_THREAD, inboxTab: 'all', inboxQuery: '' },
     selection: null,
     jumpOrigin: null,
     history: { selectedId: 'b-2-33', expanded: false, person: 'all', pageFilter: 'all', query: '' },
@@ -198,7 +217,17 @@ export function createHopStore(initialPage: Page, init: Partial<HopState> = {}) 
           ...(moved
             ? [{ id: nextId(), kind: 'marker' as const, text: `Moved to ${PAGE_TITLES[moved]}`, time: clockLabel(markerClock), page: moved }]
             : []),
-          { id: nextId(), kind: 'user', author: 'amara', time, text, tag, page: s.page, view: s.page === 'analytics' ? s.analytics : undefined },
+          {
+            id: nextId(),
+            kind: 'user',
+            author: 'amara',
+            time,
+            text,
+            tag,
+            page: s.page,
+            view: s.page === 'analytics' ? s.analytics : undefined,
+            openItem: s.page === 'instagram' ? s.pages.igPost : s.page === 'customers' ? s.pages.thread : undefined,
+          },
           { id: answerId, kind: 'hop', time, reads: answer.reads, blocks: answer.blocks, status: 'thinking' },
         ],
       });
@@ -262,6 +291,8 @@ export function createHopStore(initialPage: Page, init: Partial<HopState> = {}) 
         // A card row or a period's Urgent card only exists in the view it was asked in, so that
         // view comes back with it (otherwise the tag pointed at nothing).
         ...(msg.tag.page === 'analytics' && msg.view ? { analytics: msg.view } : {}),
+        ...(msg.openItem && msg.tag.page === 'instagram' ? { pages: { ...now.pages, igPost: msg.openItem } } : {}),
+        ...(msg.openItem && msg.tag.page === 'customers' ? { pages: { ...now.pages, thread: msg.openItem, inboxTab: 'all' as const, inboxQuery: '' } } : {}),
         selection: msg.tag,
         selectPulse: now.selectPulse + 1,
         revealPulse: now.revealPulse + 1,
@@ -297,8 +328,16 @@ export function createHopStore(initialPage: Page, init: Partial<HopState> = {}) 
 
     setKpi: (kpi) => set((s) => ({ analytics: { ...s.analytics, kpi } })),
     setRange: (range) => set((s) => ({ analytics: { ...s.analytics, range, day: null } })),
+    // This week: a past day, or back to today. Last week (user feedback 2026-10-01): any of its
+    // seven days; picking the shown day again (or Esc → null) goes back to the whole week.
     setDay: (day) =>
-      set((s) => ({ analytics: { ...s.analytics, range: 'thisWeek', day: day === TODAY_INDEX ? null : day } })),
+      set((s) =>
+        s.analytics.range === 'lastWeek'
+          ? { analytics: { ...s.analytics, day: day === null || day === s.analytics.day ? null : day } }
+          : { analytics: { ...s.analytics, range: 'thisWeek', day: day === TODAY_INDEX ? null : day } },
+      ),
+
+    setPages: (pages) => set((s) => ({ pages: { ...s.pages, ...pages } })),
 
     openBrief: ({ briefId, who }) => {
       set((s) => ({

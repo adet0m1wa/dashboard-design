@@ -132,6 +132,16 @@
       "source": "Agent character > Eye left/right drop shadow (blur 4, #2BB35A at 70%)"
     }
   },
+  "text": {
+    "17": {
+      "value": 17,
+      "source": "Instagram page title (Figma 1839:3644, 14.11px in the 0.83 History card = 17px on the page)"
+    },
+    "18": {
+      "value": 18,
+      "source": "Instagram post stats (Figma 1839:3665, 14.94px at 0.83 = 18px on the page)"
+    }
+  },
   "override": {
     "$description": "Figma variables changed after the last JSON export. gen-tokens applies these over design/Default.tokens.json (which is never edited by hand).",
     "color/text/muted": {

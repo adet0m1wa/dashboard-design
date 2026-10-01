@@ -199,5 +199,3 @@ export const HISTORY_PAGES: { id: Page; label: string }[] = [
   { id: 'customers', label: 'Customers' },
 ];
 
-// Figma's 2× export of the History frame's Instagram card (1530×1464), drawn at its 765×732 size.
-export const INSTAGRAM_SCREENSHOT = { src: '/history/instagram-1-40pm.png', width: 765, height: 732 };
