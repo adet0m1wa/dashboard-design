@@ -41,9 +41,9 @@ export function Sidebar() {
           <div className={`flex min-h-[34px] items-center px-8 py-6 ${collapsed ? 'justify-center' : 'w-full justify-between'}`}>
             {!collapsed && (
               <div className="flex items-center gap-8">
-                <span className="flex size-[22px] items-center justify-center rounded-6 bg-action-primary text-9 font-700 text-text-on-dark">
-                  {CURRENT_USER.storeInitials}
-                </span>
+                {/* The store's logo (user's design, 2026-10-01): its monogram on its own off-white, in
+                    Figma's 22px / radius-6 slot; a hairline ring keeps the light tile's edge. */}
+                <img src={CURRENT_USER.storeLogo} alt="" width={22} height={22} className="size-[22px] rounded-6 ring-1 ring-surface-border-tint" />
                 <span className="text-13 font-600 text-text-primary">{CURRENT_USER.store}</span>
                 <ChevIcon className="text-text-muted" />
               </div>

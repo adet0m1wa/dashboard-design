@@ -17,7 +17,7 @@ export const TEAM: Record<PersonId, Person> = {
   hop: { id: 'hop', name: 'Hop', initial: 'H', role: 'Analyst', color: 'hop' },
 };
 
-export const CURRENT_USER = { ...TEAM.amara, fullName: 'Amara Obi', store: 'Amara Atelier', storeInitials: 'AA' };
+export const CURRENT_USER = { ...TEAM.amara, fullName: 'Amara Obi', store: 'Amara Atelier', storeLogo: '/brand/amara-atelier-mark.webp' };
 
 export const NOW = { dayLabel: 'Thursday, 24 Sep', time: '2:30 PM', shortDate: 'Thu 24 Sep' };
 export const SYNC = { before: '14:00', after: '14:30', checkedBefore: '2:00 PM', checkedAfter: '2:30 PM' };
