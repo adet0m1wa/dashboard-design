@@ -223,21 +223,25 @@ export default async function (t) {
   // 5. Sales: the filter, and a frame Hop can answer about
   await t.eval(nav(3));
   await t.settle();
-  const orderRows = () => document.querySelectorAll('[data-hop-frame^="sales.order."]').length;
+  // The card's count (rows are drawn only where they're in view since round 7).
+  const orderRows = () => Number(document.querySelector('[data-hop-frame^="sales.orders."] h2 span').textContent.replace(/,/g, ''));
   const counts = {};
   for (const f of ['To pack', 'Shipped', 'Delivered', 'All']) {
     await t.eval(radio, f);
     await t.wait(80);
     counts[f] = await t.eval(orderRows);
   }
-  await t.check(`${m}5 Sales filter: To pack ${counts['To pack']}, Shipped ${counts.Shipped}, Delivered ${counts.Delivered}, All ${counts.All}`, counts['To pack'] === 6 && counts.Shipped === 2 && counts.Delivered === 2 && counts.All === 10);
+  await t.check(
+    `${m}5 Sales filter (this week): To pack ${counts['To pack']}, Shipped ${counts.Shipped}, Delivered ${counts.Delivered}, All ${counts.All}`,
+    counts['To pack'] === 6 && counts.All === 131 && counts['To pack'] + counts.Shipped + counts.Delivered === counts.All,
+  );
   await t.click(HIGHLIGHT);
-  await t.click('[data-hop-frame="sales.tile.revenue"] span');
+  await t.click('[data-hop-frame="sales.tile.revenue.thisWeek"] span');
   await t.wait(300);
   await t.click('textarea[aria-label="Message Hop"]');
   await t.page.keyboard.press('Enter');
   const answered = await t.page
-    .waitForFunction(() => document.querySelector('aside[aria-label^=Hop]').textContent.includes('Wednesday was the best day at $3,120.'), { timeout: 10000 })
+    .waitForFunction(() => document.querySelector('aside[aria-label^=Hop]').textContent.includes('The best day was Wednesday ($3,120).'), { timeout: 10000 })
     .then(() => true, () => false);
   await t.check(`${m}5 Sales: Hop answers about the Revenue tile`, answered);
   await t.wait(400);

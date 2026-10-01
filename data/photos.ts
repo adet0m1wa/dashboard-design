@@ -29,4 +29,17 @@ export const PHOTOS: Record<string, string> = {
   'post-olive': '/products/olive-linen.webp',
   'post-clutch': '/products/gold-clutch.webp',
   'post-mocha': '/products/mocha-robe.webp',
+  // Earlier posts (data/instagram.ts, round 7) reuse the product shots too
+  'post-opening-teaser': '/products/sand-linen.webp',
+  'post-opening': '/products/olive-linen.webp',
+  'post-adire': '/products/adire-dress.webp',
+  'post-trousers': '/products/ecru-trousers.webp',
+  'post-tote': '/products/canvas-tote.webp',
+  'post-terracotta': '/products/terracotta-scarf.webp',
+  'post-poplin': '/products/poplin-shirt.webp',
+  'post-midi': '/products/navy-skirt.webp',
+  'post-white-shirt': '/products/white-shirt.webp',
+  'post-kimono-evening': '/products/indigo-kimono.webp',
+  'post-sand-photos': '/products/sand-linen.webp',
+  'post-olive-teaser': '/products/olive-linen.webp',
 };

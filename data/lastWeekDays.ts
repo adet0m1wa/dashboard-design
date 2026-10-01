@@ -1,5 +1,6 @@
 import type { Answer } from './conversation';
 import { SERIES } from './kpis';
+import { between, pick, rng, split, type Rand } from './random';
 import type { AvatarColor, Card, Kpi, KpiReading, LastWeekDay, OrderRow, Snapshot, SourceRow, Swatch, UrgentItem } from './types';
 
 // The seven days of last week, Mon 14 – Sun 20 September, each one selectable on the chart (user
@@ -14,25 +15,6 @@ const DAY_NAMES = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Satu
 const SHORT = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] as const;
 export const LAST_WEEK_DAY_TITLES = DAY_NAMES.map((d, i) => `${d}, ${14 + i} Sep`);
 
-// mulberry32: tiny, seedable, good enough for picking rows.
-function rng(seed: number) {
-  let a = seed;
-  return () => {
-    a |= 0;
-    a = (a + 0x6d2b79f5) | 0;
-    let t = Math.imul(a ^ (a >>> 15), 1 | a);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-type Rand = () => number;
-const between = (r: Rand, lo: number, hi: number) => lo + Math.floor(r() * (hi - lo + 1));
-function pick<T>(r: Rand, items: readonly T[], n: number): T[] {
-  const pool = [...items];
-  const out: T[] = [];
-  while (out.length < n && pool.length) out.push(pool.splice(Math.floor(r() * pool.length), 1)[0]);
-  return out;
-}
 const money = (n: number) => `$${n.toLocaleString('en-US')}`;
 const compact = (n: number) => `${(n / 1000).toFixed(1)}k`;
 const change = (pct: number) => (pct < 0 ? `−${-pct}%` : `+${pct}%`);
@@ -123,16 +105,6 @@ function weightedPick(r: Rand, n: number) {
     if (!out.includes(p)) out.push(p);
   }
   return out;
-}
-
-/** Splits `total` into whole parts by `weights`, largest remainder, so they add up exactly. */
-function split(total: number, weights: number[]) {
-  const sum = weights.reduce((a, b) => a + b, 0);
-  const raw = weights.map((w) => (total * w) / sum);
-  const parts = raw.map(Math.floor);
-  const order = raw.map((v, i) => [v - Math.floor(v), i] as const).sort((a, b) => b[0] - a[0]);
-  for (let k = 0; k < total - parts.reduce((a, b) => a + b, 0); k++) parts[order[k][1]]++;
-  return parts;
 }
 
 function time(r: Rand) {

@@ -21,6 +21,8 @@ export interface HopFrameProps {
   /** Corner radius for the outline when the frame has none of its own and no box to sit on. */
   radius?: 8 | 10 | 14;
   role?: string;
+  /** Its place in a table drawn a window at a time (Sales orders): aria-rowindex. */
+  rowIndex?: number;
   /** The frame is a wrapper around one focusable control (a KPI tab): keyboard users reach it
    *  through that control — Enter on it picks the frame in highlight mode — so the wrapper
    *  itself never joins the Tab order or takes a role (it would break the tablist). */
@@ -28,7 +30,7 @@ export interface HopFrameProps {
   children: ReactNode;
 }
 
-export function HopFrame({ id, label, page, jumpTarget, as: Tag = 'div', className, radius = 8, role, viaControl = false, children }: HopFrameProps) {
+export function HopFrame({ id, label, page, jumpTarget, as: Tag = 'div', className, radius = 8, role, rowIndex, viaControl = false, children }: HopFrameProps) {
   // A state ref, not useRef: a frame that mounts already selected (a tag re-highlighting it on
   // another page) must re-measure once its element exists.
   const [el, setEl] = useState<HTMLElement | null>(null);
@@ -41,6 +43,7 @@ export function HopFrame({ id, label, page, jumpTarget, as: Tag = 'div', classNa
       ref={setEl}
       // A labelled group, not a button: many frames hold buttons of their own.
       role={role ?? (picking ? 'group' : undefined)}
+      aria-rowindex={rowIndex}
       tabIndex={picking ? 0 : undefined}
       aria-roledescription={picking && !role ? 'frame' : undefined}
       aria-label={picking && !role ? label : undefined}

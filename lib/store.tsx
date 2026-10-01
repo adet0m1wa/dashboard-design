@@ -4,8 +4,8 @@ import { createContext, useContext, useState, type ReactNode } from 'react';
 import { createStore, useStore, type StoreApi } from 'zustand';
 import { answerFor, DEFAULT_TAGGED_QUESTION, type Block } from '@/data/conversation';
 import { DEFAULT_THREAD, type InboxTab } from '@/data/customers';
-import { IG_DEFAULT_POST } from '@/data/instagram';
-import type { SalesFilter } from '@/data/sales';
+import { IG_DEFAULT_POST, igListDay } from '@/data/instagram';
+import { rangeOf, type SalesFilter, type SalesPeriod, type SalesRange, type SalesWhich } from '@/data/sales';
 import { TODAY_INDEX } from '@/data/kpis';
 import { PAGE_TITLES } from '@/data/nav';
 import type { Kpi, Page, PersonId } from '@/data/types';
@@ -68,10 +68,17 @@ export interface HistoryState {
 /** What's open on the Sales, Instagram and Customers pages (user feedback 2026-10-01). */
 export interface PagesState {
   salesFilter: SalesFilter;
+  salesPeriod: SalesPeriod; // the top bar's menu: Weekly / Monthly / All time
+  salesWhich: SalesWhich; // the chart's toggle: this week (month) or last
   igPost: string;
+  /** The day picked on the Instagram calendar (data/orders day numbers); null = the last 7 days. */
+  igDay: number | null;
   thread: string;
   inboxTab: InboxTab;
   inboxQuery: string;
+  inboxWidth: number; // the conversation list's width, dragged (Customers)
+  /** The customer's order list's height once dragged (Customers); null = whatever the details leave. */
+  ordersHeight: number | null;
 }
 
 export interface HopState {
@@ -145,7 +152,7 @@ export function createHopStore(initialPage: Page, init: Partial<HopState> = {}) 
   return createStore<HopState>()((set, get) => ({
     page: initialPage,
     analytics: { kpi: 'revenue', range: 'thisWeek', day: null },
-    pages: { salesFilter: 'all', igPost: IG_DEFAULT_POST, thread: DEFAULT_THREAD, inboxTab: 'all', inboxQuery: '' },
+    pages: { salesFilter: 'all', salesPeriod: 'week', salesWhich: 'this', igPost: IG_DEFAULT_POST, igDay: null, thread: DEFAULT_THREAD, inboxTab: 'all', inboxQuery: '', inboxWidth: 240, ordersHeight: null },
     selection: null,
     jumpOrigin: null,
     history: { selectedId: 'b-2-33', expanded: false, person: 'all', pageFilter: 'all', query: '' },
@@ -226,7 +233,8 @@ export function createHopStore(initialPage: Page, init: Partial<HopState> = {}) 
             tag,
             page: s.page,
             view: s.page === 'analytics' ? s.analytics : undefined,
-            openItem: s.page === 'instagram' ? s.pages.igPost : s.page === 'customers' ? s.pages.thread : undefined,
+            openItem:
+              s.page === 'instagram' ? s.pages.igPost : s.page === 'customers' ? s.pages.thread : s.page === 'sales' ? salesRange(s.pages) : undefined,
           },
           { id: answerId, kind: 'hop', time, reads: answer.reads, blocks: answer.blocks, status: 'thinking' },
         ],
@@ -291,7 +299,8 @@ export function createHopStore(initialPage: Page, init: Partial<HopState> = {}) 
         // A card row or a period's Urgent card only exists in the view it was asked in, so that
         // view comes back with it (otherwise the tag pointed at nothing).
         ...(msg.tag.page === 'analytics' && msg.view ? { analytics: msg.view } : {}),
-        ...(msg.openItem && msg.tag.page === 'instagram' ? { pages: { ...now.pages, igPost: msg.openItem } } : {}),
+        ...(msg.openItem && msg.tag.page === 'instagram' ? { pages: { ...now.pages, igPost: msg.openItem, igDay: igListDay(msg.openItem) } } : {}),
+        ...(msg.openItem && msg.tag.page === 'sales' ? { pages: { ...now.pages, ...salesView(msg.openItem as SalesRange) } } : {}),
         ...(msg.openItem && msg.tag.page === 'customers' ? { pages: { ...now.pages, thread: msg.openItem, inboxTab: 'all' as const, inboxQuery: '' } } : {}),
         selection: msg.tag,
         selectPulse: now.selectPulse + 1,
@@ -405,3 +414,13 @@ export function useHop<T>(selector: (s: HopState) => T): T {
 export function useHopApi() {
   return useStoreApi();
 }
+
+/** The Sales period on show, as one key ("thisWeek" …). */
+export const salesRange = (p: Pick<PagesState, 'salesPeriod' | 'salesWhich'>): SalesRange => rangeOf(p.salesPeriod, p.salesWhich);
+
+/** The page state that shows a Sales period, every order in it (a tag on a row brings it back). */
+const salesView = (range: SalesRange): Pick<PagesState, 'salesPeriod' | 'salesWhich' | 'salesFilter'> => ({
+  salesPeriod: range === 'all' ? 'all' : range.endsWith('Week') ? 'week' : 'month',
+  salesWhich: range.startsWith('last') ? 'last' : 'this',
+  salesFilter: 'all',
+});

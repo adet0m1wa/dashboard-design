@@ -76,8 +76,9 @@
  * for a moment after each scroll). Chrome/Safari take the ::-webkit-scrollbar rules (they ignore
  * them once scrollbar-width is set, so that's only given to browsers without them: Firefox). */
 ::-webkit-scrollbar {
-  width: var(--spacing-6);
-  height: var(--spacing-6);
+  /* 3px (user feedback 2026-10-01: half the 6 it was) */
+  width: var(--spacing-3);
+  height: var(--spacing-3);
 }
 ::-webkit-scrollbar-track {
   background: transparent;

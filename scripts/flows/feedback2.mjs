@@ -94,16 +94,16 @@ export default async function (t) {
     (await t.eval(width, PANEL)) === 368 && (await t.eval(() => !document.querySelector('button[aria-label="Close Hop"]') && !!document.querySelector('aside[aria-label^=Hop] header svg[role=img]'))),
   );
 
-  // 7. Scrollbars: thin (6px), faint, and only while scrolling (round 3)
+  // 7. Scrollbars: thin (3px since round 7; 6px before), faint, and only while scrolling (round 3)
   // (headless Chrome runs with scrollbars hidden, so this reads the rules; see the report for a render)
-  await t.check(`${m}7 scrollbar rules: 6px wide; thumb see-through until [data-scrolling], then faint`, () =>
+  await t.check(`${m}7 scrollbar rules: 3px wide; thumb see-through until [data-scrolling], then faint`, () =>
     t.eval(() => {
       const rules = [...document.styleSheets].flatMap((sh) => { try { return [...sh.cssRules]; } catch { return []; } });
       const flat = rules.flatMap((r) => (r.cssRules ? [r, ...r.cssRules] : [r]));
       const bar = flat.find((r) => r.selectorText === '::-webkit-scrollbar');
       const thumb = flat.find((r) => r.selectorText === '::-webkit-scrollbar-thumb');
       const scrolling = flat.find((r) => r.selectorText === '[data-scrolling]::-webkit-scrollbar-thumb');
-      return !!bar && bar.style.width.includes('--spacing-6') && ['transparent', 'initial'].includes(thumb?.style.backgroundColor) /* the minifier writes "0 0" */ && !!scrolling?.style.background.includes('--color-surface-border-tint');
+      return !!bar && bar.style.width.includes('--spacing-3') && ['transparent', 'initial'].includes(thumb?.style.backgroundColor) /* the minifier writes "0 0" */ && !!scrolling?.style.background.includes('--color-surface-border-tint');
     }),
   );
   const marks = await t.eval(async () => {
