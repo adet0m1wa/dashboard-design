@@ -1,9 +1,10 @@
 'use client';
 
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
-import { useLayoutEffect, useState, type ElementType, type ReactNode } from 'react';
+import { createContext, useContext, useLayoutEffect, useState, type ElementType, type ReactNode } from 'react';
 import type { Page } from '@/data/types';
-import { duration, easeExit, easeInOut, easeOut, exitOf, timing } from '@/lib/motion';
+import { viaKeyboard } from '@/lib/input';
+import { duration, easeExit, easeOut, exitOf, timing } from '@/lib/motion';
 import { outlineBox, surfaceOf, type OutlineBox } from '@/lib/outline';
 import { useHop, type HopFrameRef } from '@/lib/store';
 
@@ -62,6 +63,9 @@ export function frameRefFrom(el: Element): HopFrameRef {
   return { id: d.hopFrame!, label: d.hopLabel!, page: d.hopPage as Page, jumpTarget: (d.hopJump as Page) || undefined };
 }
 
+/** Inside a History snapshot the tag outline is part of the picture: it's there, it doesn't pop in. */
+export const StillOutline = createContext(false);
+
 // Figma "example 3": handles are 7×7 white squares with a 1.2px blue edge, on the outline's corners.
 const CORNERS = ['-left-5 -top-5', '-right-5 -top-5', '-left-5 -bottom-5', '-right-5 -bottom-5'] as const;
 
@@ -87,6 +91,7 @@ function FrameOverlay({ id, frame, radius }: { id: string; frame: HTMLElement | 
   const scanning = useHop((s) => s.scanning && s.selection?.id === id);
   const pulse = useHop((s) => (s.selection?.id === id ? s.selectPulse : 0));
   const reduce = useReducedMotion();
+  const still = useContext(StillOutline);
   const box = useOutline(frame, selected || hovered, radius);
   if (!box) return null;
   const place = { top: box.top, right: box.right, bottom: box.bottom, left: box.left, borderRadius: box.radius };
@@ -115,7 +120,8 @@ function FrameOverlay({ id, frame, radius }: { id: string; frame: HTMLElement | 
             aria-hidden="true"
             className="pointer-events-none absolute z-10"
             style={place}
-            initial="hidden"
+            // Picked from the keyboard (Enter/Space), or drawn in a snapshot: no pop, it's just there.
+            initial={still || viaKeyboard() ? false : 'hidden'}
             animate="shown"
             exit="gone"
           >
@@ -132,9 +138,9 @@ function FrameOverlay({ id, frame, radius }: { id: string; frame: HTMLElement | 
                 >
                   <motion.span
                     className="absolute inset-y-0 left-0 w-2/5 bg-linear-to-r from-transparent via-selection/12 to-transparent"
-                    initial={{ x: '-100%' }}
-                    animate={{ x: '250%' }}
-                    transition={{ duration: timing.scanSweep, ease: easeInOut, repeat: Infinity }}
+                    initial={{ transform: 'translateX(-100%)' }}
+                    animate={{ transform: 'translateX(250%)' }}
+                    transition={{ duration: timing.scanSweep, ease: 'linear', repeat: Infinity }}
                   />
                 </motion.span>
               )}
@@ -149,14 +155,14 @@ function FrameOverlay({ id, frame, radius }: { id: string; frame: HTMLElement | 
                 transition={{ duration: timing.glowLoop, repeat: Infinity, ease: 'easeInOut' }}
               />
             )}
-            {/* Outline: 1.5px on the existing strokes, fades in growing 98% → 100% (base). */}
+            {/* Outline: 1.5px on the existing strokes, fades in growing 98% → 100% (base); leaves faster. */}
             <motion.span
               className="absolute inset-0 border-(length:--stroke-1-5) border-selection"
               style={{ borderRadius: box.radius }}
               variants={{
-                hidden: reduce ? { opacity: 0 } : { opacity: 0, scale: 0.98 },
-                shown: { opacity: 1, scale: 1, transition: { duration: duration.base, ease: easeOut } },
-                gone: { opacity: 0, transition: { duration: duration.base, ease: easeExit } },
+                hidden: reduce ? { opacity: 0 } : { opacity: 0, transform: 'scale(0.98)' },
+                shown: { opacity: 1, transform: 'scale(1)', transition: { duration: duration.base, ease: easeOut } },
+                gone: { opacity: 0, transition: { duration: exitOf(duration.base), ease: easeExit } },
               }}
             />
             {/* Handles: pop in at the corners once it's picked (fade + 0.9 → 1, staggered 20ms — never
@@ -166,9 +172,9 @@ function FrameOverlay({ id, frame, radius }: { id: string; frame: HTMLElement | 
                 key={pos}
                 className={`absolute ${pos} size-[7px] border-(length:--stroke-1-2) border-selection bg-surface-default`}
                 variants={{
-                  hidden: reduce ? { opacity: 0 } : { opacity: 0, scale: 0.9 },
-                  shown: { scale: 1, opacity: 1, transition: { duration: duration.fast, ease: easeOut, delay: reduce ? 0 : i * timing.handleStagger } },
-                  gone: { scale: reduce ? 1 : 0.6, opacity: 0, transition: { duration: duration.base, ease: easeExit } },
+                  hidden: reduce ? { opacity: 0 } : { opacity: 0, transform: 'scale(0.9)' },
+                  shown: { transform: 'scale(1)', opacity: 1, transition: { duration: duration.fast, ease: easeOut, delay: reduce ? 0 : i * timing.handleStagger } },
+                  gone: { transform: reduce ? 'scale(1)' : 'scale(0.9)', opacity: 0, transition: { duration: exitOf(duration.base), ease: easeExit } },
                 }}
               />
             ))}

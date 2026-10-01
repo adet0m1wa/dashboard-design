@@ -56,6 +56,9 @@ npm run check      # typecheck + token check
   so animations crawl there. Use it for clicking and console checks only.
 - `bash scripts/test-all.sh [out-dir]` runs every flow in `scripts/flows/` in both motion modes
   (dev server must be up; `HOP_URL=http://localhost:3001` points the flows at another server).
+- Dev CSS can go stale: Turbopack's on-disk cache (`.next/dev`) once kept serving an old
+  Tailwind build (new classes missing) across restarts while JS hot-reloaded. If a new class has
+  no effect in dev, check the served CSS; stop dev, delete `.next/dev`, restart.
 - Dev mode is slow: navigating to History costs 100–250ms long tasks there, enough for Motion to
   skip a slide (phase1's "pill slides" check can fail under dev + load). The production build has
   no long tasks; judge motion on `npm run preview`.
@@ -88,9 +91,10 @@ npm run check      # typecheck + token check
 | Feedback 3 | done | Instant: page changes, sidebar collapse + nav pill, Hop panel open/close and resizing, person pills, bottom card title; Urgent never animates; standard 48px chat fade; scrollbars only while scrolling; no icon beside "Analytics" in its top bar. `feedback3.mjs` 10/10 both modes; all 26 runs green on the production build |
 | Feedback 4 | done | Emil Kowalski skills installed (`npx skills add emilkowalski/skills`); History snapshots no longer share the KPI pill / week thumb with the live page; bottom card follows the KPI in every period (new past-period cards), titled with the KPI's name, fixed 246 row so Urgent never moves; Urgent card selectable; hint "Click the ⌗ to select a frame"; "All pages" 105; brief rows follow a panel resize at once; tags restore their view; exits ease out, nothing grows from scale 0. `feedback4.mjs` 16/16 both modes |
 
+| Feedback 5 | done | Every bottom card has the Revenue card's rhythm (posts 29×36, follower rows 18 apart); Emil Kowalski pass over all motion (curves, <300ms, keyboard changes instant, transform strings, no scale(0), clip-path stock bars, toast recipe, reduced motion for cues/chips); photos for all 19 products/posts. `feedback4.mjs` 18/18; all 28 runs green on the production build |
 
-**Status (2026-09-30):** all phases, feedback rounds 1–4 and the final test are done. Waiting on:
-product/post images (names + prompts in the round-3 report).
+**Status (2026-10-01):** all phases, feedback rounds 1–5 and the final test are done. Product and
+post photos are in (`public/products`, mapped in `data/photos.ts`).
 
 ## Decisions (not in the brief)
 
@@ -263,3 +267,17 @@ product/post images (names + prompts in the round-3 report).
 - Motion follows Emil Kowalski's standards where they're rules, not taste (feedback 4): exits ease
   out (`easeExit` = `easeOut`, was ease-in per brief B4) and nothing grows from scale 0 (handles
   and first-load chart dots start at 0.9 + transparent).
+- Feedback 5 — Emil Kowalski's standards across the app ("follow all of Emil skill"): curves
+  ease-out [0.23, 1, 0.32, 1] / in-out [0.77, 0, 0.175, 1] / CSS `ease` for colour; durations
+  under 300ms (slow 0.25, data 0.28); sliding indicators = 250ms strong in-out (no spring);
+  anything a key changed lands at once (`lib/input.ts` `viaKeyboard()`: KPI/week/day, numbers,
+  chart, menu, brief pick, History chat, frame pick, tag chip); KPI card rows and the chart title
+  change at once; History snapshot swap is a quick fade and its tag outline doesn't pop; HTML
+  motion uses transform strings (SVG keeps Motion's scale props — strings break there); stock
+  bars reveal by clip-path; toasts rise their own height (400ms ease) and replace in place;
+  exits faster than enters; staggers ≥ 30ms. Kept by design: the "All pages" two-step menu
+  (user's design), now ≤ 250ms per step.
+- Bottom card rows all match the Revenue card: post thumbnails 29×36 (Figma 30×38, same 4:5), 12
+  apart; follower rows label·8·bar, 18 apart — every variant's rows total 132px.
+- Photos: `images/` holds the user's 2048² originals (git-ignored); `public/products/*.webp` are
+  256² q80 copies. `Thumb` shows the photo over the gradient swatch (fallback + loading backdrop).

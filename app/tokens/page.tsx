@@ -1,6 +1,6 @@
 import tokens from '@/design/Default.tokens.json';
 import extras from '@/design/extras.tokens.json';
-import { duration, easeExit, easeOut, layoutSpring, timing } from '@/lib/motion';
+import { duration, easeExit, easeInOut, easeOut, indicatorSlide, timing } from '@/lib/motion';
 
 // Phase 0 test page: every token rendered from its CSS variable, so a wrong or missing
 // variable shows up as an empty swatch. Not linked from the app — open /tokens directly.
@@ -91,7 +91,7 @@ export default function TokensPage() {
 
       <section className="mt-24 text-12 text-text-secondary">
         <h2 className="text-13 font-600 text-text-primary">motion (lib/motion.ts)</h2>
-        <pre className="mt-8">{JSON.stringify({ duration, easeOut, easeExit, layoutSpring, timing }, null, 2)}</pre>
+        <pre className="mt-8">{JSON.stringify({ duration, easeOut, easeExit, easeInOut, indicatorSlide, timing }, null, 2)}</pre>
       </section>
     </main>
   );

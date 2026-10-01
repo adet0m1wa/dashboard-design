@@ -7,7 +7,8 @@ import { DAY_LABELS, KPIS, SERIES, TODAY_INDEX } from '@/data/kpis';
 import type { KpiDef } from '@/data/types';
 import { CHART, chartGeometry, yAt, type ChartGeometry } from '@/lib/chart';
 import { changeLabel, formatNumber } from '@/lib/format';
-import { duration, easeExit, easeOut, enter, leave, timing } from '@/lib/motion';
+import { viaKeyboard } from '@/lib/input';
+import { duration, easeExit, easeOut, timing } from '@/lib/motion';
 import { useElementWidth } from '@/lib/useElementWidth';
 import { useTweenedArray } from '@/lib/useTween';
 import { useHop } from '@/lib/store';
@@ -17,19 +18,20 @@ import { WeekToggle } from './WeekToggle';
 
 // The chart section of the Quick stats box (Figma "Revenue chart"; brief B7.1).
 // Custom SVG + d3-shape — no chart library, so every motion is ours:
-//   • KPI change: each day's height (value ÷ chart max) tweens (data) and the path is rebuilt
-//     each frame. Tweening the raw values and the max separately made the line sit still and
-//     then snap at the end when the scales were far apart (revenue → orders).
+//   • KPI change: each day's height (value ÷ chart max) tweens (data, ease-in-out) and the path
+//     is rebuilt each frame. Tweening the raw values and the max separately made the line sit
+//     still and then snap at the end when the scales were far apart (revenue → orders).
 //   • the plot fills its box and re-lays itself out while the box resizes (sidebars collapsing)
 //   • DMs: line/area/dots tint green → red (base, CSS colour transition)
-//   • week toggle: the partial line fades out (fast), the full week draws in (450ms)
+//   • week toggle: the partial line fades out (fast), the full week draws in (280ms)
 //   • hover: snaps to the nearest past day; guide, grown dot, dark tooltip (80ms follow)
-//   • day select: dot fills, dashed guide draws down (160ms)
+//   • day select: dot fills, dashed guide fades in (160ms)
+//   • the title changes at once; anything a key changed lands at once (Emil Kowalski)
 const TONE = {
   success: { line: 'stroke-status-success', area: 'fill-chart-fill', dotFill: 'fill-status-success', text: 'text-status-success-text' },
   danger: { line: 'stroke-status-danger-text', area: 'fill-status-danger-soft', dotFill: 'fill-status-danger-text', text: 'text-status-danger-text' },
 } as const;
-const COLOR_TWEEN = 'transition-colors duration-(--dur-base) ease-hop-out';
+const COLOR_TWEEN = 'transition-colors duration-(--dur-base) ease-hop-color';
 
 type Draw = { duration: number; delay: number } | null;
 
@@ -57,7 +59,7 @@ export function TrendChart() {
   let draw: Draw = null;
   if (!reduce) {
     if (!mounted.current && intro) draw = { duration: timing.lineDraw, delay: INTRO.line };
-    else if (prevRange.current !== view.range) draw = { duration: timing.weekLineDraw, delay: 0 };
+    else if (prevRange.current !== view.range && !viaKeyboard()) draw = { duration: timing.weekLineDraw, delay: 0 };
   }
   useEffect(() => {
     mounted.current = true;
@@ -85,19 +87,9 @@ export function TrendChart() {
   return (
     <HopFrame id="analytics.chart" label={title} page="analytics" jumpTarget="sales" radius={10} className="flex flex-col gap-12 pb-10 pl-14 pr-20 pt-14">
       <div className="flex items-center justify-between">
-        <div className="grid">
-          <AnimatePresence initial={false}>
-            <motion.h3
-              key={title}
-              className="col-start-1 row-start-1 whitespace-nowrap text-13 font-500 text-text-primary"
-              initial={{ opacity: 0, y: 4 }}
-              animate={{ opacity: 1, y: 0, transition: enter() }}
-              exit={{ opacity: 0, transition: leave() }}
-            >
-              {title}
-            </motion.h3>
-          </AnimatePresence>
-        </div>
+        {/* Changes at once: it follows every KPI, day and week switch (Emil Kowalski: frequent
+            changes don't animate), like the card title below. */}
+        <h3 className="whitespace-nowrap text-13 font-500 text-text-primary">{title}</h3>
         <WeekToggle tone={def.tone} />
       </div>
 
@@ -279,9 +271,8 @@ function SeriesLayer({
           className={`${tone.line} ${COLOR_TWEEN}`}
           strokeWidth={1}
           strokeDasharray="2 3"
-          style={{ transformBox: 'fill-box', transformOrigin: 'top' }}
-          initial={reduce ? false : { scaleY: 0 }}
-          animate={{ scaleY: 1 }}
+          initial={reduce || viaKeyboard() ? false : { opacity: 0 }}
+          animate={{ opacity: 1 }}
           transition={{ duration: timing.guideDraw, ease: easeOut }}
         />
       )}
@@ -298,6 +289,7 @@ function SeriesLayer({
             strokeWidth={isActive ? 2 : 1.5}
             style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
             // First load: each dot fades in growing 0.9 → 1 as the line reaches it (never from 0).
+            // SVG: Motion's scale prop (a transform string becomes a broken SVG attribute).
             initial={draw ? { scale: 0.9, opacity: 0, r } : false}
             animate={{ scale: 1, opacity: 1, r }}
             transition={{
@@ -329,10 +321,11 @@ function Tooltip({ g, def, lastWeek, hover, kpi }: { g: ChartGeometry; def: KpiD
           key="tooltip"
           role="status"
           className="pointer-events-none absolute left-0 top-0 flex -translate-x-1/2 -translate-y-full flex-col gap-2 whitespace-nowrap rounded-8 bg-action-primary px-8 py-6"
-          initial={{ opacity: 0, left: x, top: y - 12 }}
-          animate={{ opacity: 1, left: x, top: y - 12 }}
+          // Positioned by transform, not left/top, so following the pointer never lays out.
+          initial={{ opacity: 0, transform: `translate(${x}px, ${y - 12}px)` }}
+          animate={{ opacity: 1, transform: `translate(${x}px, ${y - 12}px)` }}
           exit={{ opacity: 0, transition: { duration: duration.fast, ease: easeExit } }}
-          transition={{ opacity: { duration: duration.fast, ease: easeOut }, left: { duration: timing.tooltipFollow }, top: { duration: timing.tooltipFollow } }}
+          transition={{ opacity: { duration: duration.fast, ease: easeOut }, transform: { duration: timing.tooltipFollow, ease: easeOut } }}
         >
           <span className="text-12 font-600 text-text-on-dark tabular-nums">{formatNumber(v, def.format)}</span>
           <span className="text-11 text-chip-off-text tabular-nums">

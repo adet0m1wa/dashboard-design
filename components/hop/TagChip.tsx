@@ -25,7 +25,7 @@ export function TagChip({
       <Truncate>{label}</Truncate>
     </>
   );
-  const look = `flex max-w-full items-center gap-6 rounded-6 border px-8 py-3 text-11-5 font-500 transition-[background-color,color,border-color,box-shadow] duration-(--dur-fast) ease-hop-out ${
+  const look = `flex max-w-full items-center gap-6 rounded-6 border px-8 py-3 text-11-5 font-500 transition-[background-color,color,border-color,box-shadow] duration-(--dur-fast) ease-hop-color ${
     active ? 'border-selection bg-selection text-text-on-dark ring-3 ring-selection/25' : 'border-tag-border bg-tag-bg text-tag-text'
   }`;
 
@@ -44,7 +44,7 @@ export function TagChip({
           type="button"
           onClick={onRemove}
           aria-label={`Remove ${label}`}
-          className="-my-2 -mr-2 flex shrink-0 items-center rounded-4 text-selection transition-colors duration-(--dur-fast) ease-hop-out hover:bg-tag-border"
+          className="-my-2 -mr-2 flex shrink-0 items-center rounded-4 text-selection transition-colors duration-(--dur-fast) ease-hop-color hover:bg-tag-border"
         >
           <XIcon />
         </button>

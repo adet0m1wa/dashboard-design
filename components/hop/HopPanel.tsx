@@ -4,7 +4,7 @@ import { AnimatePresence, motion, useReducedMotion, type Variants } from 'motion
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { PROMPT_CUES } from '@/data/conversation';
 import { PAGE_TITLES } from '@/data/nav';
-import { duration, easeExit, easeOut, press, timing } from '@/lib/motion';
+import { duration, easeExit, easeOut, press, rise, timing } from '@/lib/motion';
 import { CHAT_FADE, PANEL_MAX, PANEL_MIN } from '@/lib/layout';
 import { useHop, type Message } from '@/lib/store';
 import { ArrowRIcon, BoundingBoxIcon, ChatCenteredIcon } from '@/components/icons/figma';
@@ -38,6 +38,7 @@ export function HopPanel() {
   const highlightMode = useHop((s) => s.highlightMode);
   const setHighlightMode = useHop((s) => s.setHighlightMode);
   const width = useHop((s) => s.panelWidth);
+  const reduce = useReducedMotion();
   const onHistory = page === 'history';
   const collapsed = useHop((s) => s.panelCollapsed) && !onHistory;
   const hidden = collapsed ? 'opacity-0' : '';
@@ -103,7 +104,7 @@ export function HopPanel() {
                 aria-label="Highlight a frame"
                 aria-pressed={highlightMode}
                 aria-describedby="highlight-help"
-                className={`-m-4 rounded-6 p-4 transition-colors duration-(--dur-fast) ease-hop-out ${
+                className={`-m-4 rounded-6 p-4 transition-colors duration-(--dur-fast) ease-hop-color ${
                   highlightMode ? 'bg-tag-bg text-selection' : 'text-text-black hover:bg-surface-subtle'
                 }`}
               >
@@ -121,20 +122,14 @@ export function HopPanel() {
             <AnimatePresence initial={false} mode="wait">
               {bottom === 'chips' && <JumpChips key="chips" />}
               {bottom === 'cues' && (
-                <motion.div
-                  key="cues"
-                  className="flex shrink-0 flex-wrap gap-6"
-                  initial={{ opacity: 0, y: 6 }}
-                  animate={{ opacity: 1, y: 0, transition: { duration: duration.base, ease: easeOut } }}
-                  exit={{ opacity: 0, y: -4, transition: { duration: duration.fast, ease: easeExit } }}
-                >
+                <motion.div key="cues" className="flex shrink-0 flex-wrap gap-6" {...rise(reduce)}>
                   {PROMPT_CUES.map((cue) => (
                     <motion.button
                       key={cue}
                       type="button"
                       whileTap={press}
                       onClick={() => ask(cue)}
-                      className="rounded-999 border border-surface-border-tint px-11 py-6 text-12-5 text-text-strong-secondary transition-colors duration-(--dur-fast) ease-hop-out hover:bg-surface-subtle"
+                      className="rounded-999 border border-surface-border-tint px-11 py-6 text-12-5 text-text-strong-secondary transition-colors duration-(--dur-fast) ease-hop-color hover:bg-surface-subtle"
                     >
                       {cue}
                     </motion.button>
@@ -225,6 +220,7 @@ function JumpChips() {
   const selection = useHop((s) => s.selection);
   const jumpOrigin = useHop((s) => s.jumpOrigin);
   const navigate = useHop((s) => s.navigate);
+  const reduce = useReducedMotion();
   const arrived = jumpOrigin !== null;
   const target = arrived ? page : (selection?.jumpTarget ?? page);
   const chips = [
@@ -233,12 +229,7 @@ function JumpChips() {
   ];
 
   return (
-    <motion.div
-      className="flex shrink-0 flex-col gap-8"
-      initial={{ opacity: 0, y: 6 }}
-      animate={{ opacity: 1, y: 0, transition: { duration: duration.base, ease: easeOut } }}
-      exit={{ opacity: 0, y: -4, transition: { duration: duration.fast, ease: easeExit } }}
-    >
+    <motion.div className="flex shrink-0 flex-col gap-8" {...rise(reduce)}>
       <span className="text-11 font-500 text-text-muted">Jump to</span>
       <div className="flex gap-6">
         {chips.map((c) => (
@@ -249,7 +240,7 @@ function JumpChips() {
             onClick={c.active ? c.go : undefined}
             aria-disabled={!c.active}
             tabIndex={c.active ? 0 : -1}
-            className={`flex items-center gap-6 whitespace-nowrap rounded-999 px-12 py-7 text-12-5 font-500 transition-colors duration-(--dur-base) ease-hop-out ${
+            className={`flex items-center gap-6 whitespace-nowrap rounded-999 px-12 py-7 text-12-5 font-500 transition-colors duration-(--dur-base) ease-hop-color ${
               c.active ? 'bg-action-primary text-text-on-dark hover:bg-palette-tone-25' : 'cursor-default bg-chip-off-bg text-chip-off-text'
             }`}
           >
@@ -263,14 +254,14 @@ function JumpChips() {
 }
 
 // Enter: user bubbles rise from the composer (y 8 → 0), everything else fades in (base).
-// New chat: messages lift and fade out (y −8, 20ms stagger, fast).
+// New chat: messages lift and fade out (y −8, 30ms stagger, fast). Moved by transform strings.
 type ItemCustom = { kind: Message['kind']; index: number };
 const ITEM: Variants = {
-  enter: (c: ItemCustom) => (c.kind === 'user' ? { opacity: 0, y: 8 } : { opacity: 0 }),
-  shown: { opacity: 1, y: 0, transition: { duration: duration.base, ease: easeOut } },
+  enter: (c: ItemCustom) => (c.kind === 'user' ? { opacity: 0, transform: 'translateY(8px)' } : { opacity: 0, transform: 'translateY(0px)' }),
+  shown: { opacity: 1, transform: 'translateY(0px)', transition: { duration: duration.base, ease: easeOut } },
   leave: (c: ItemCustom) => ({
     opacity: 0,
-    y: -8,
+    transform: 'translateY(-8px)',
     transition: { duration: duration.fast, ease: easeExit, delay: c.index * timing.rowExitStagger },
   }),
 };

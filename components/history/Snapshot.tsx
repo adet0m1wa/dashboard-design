@@ -1,15 +1,17 @@
 'use client';
 
-import { LayoutGroup, motion, useReducedMotion } from 'motion/react';
+import { LayoutGroup, motion, type Variants } from 'motion/react';
 import type { Brief } from '@/data/history';
 import { INSTAGRAM_SCREENSHOT } from '@/data/history';
 import { PAGE_TITLES } from '@/data/nav';
 import type { Page } from '@/data/types';
 import { snapshotNote } from '@/lib/briefs';
-import { duration, easeOut, leave } from '@/lib/motion';
+import { viaKeyboard } from '@/lib/input';
+import { duration, easeExit, easeOut, exitOf } from '@/lib/motion';
 import { HopStoreProvider } from '@/lib/store';
 import { useElementWidth } from '@/lib/useElementWidth';
 import { ScreenshotIcon, TimeIcon } from '@/components/icons/figma';
+import { StillOutline } from '@/components/select/HopFrame';
 import { AnalyticsPage } from '@/components/pages/AnalyticsPage';
 import { InventoryPage } from '@/components/pages/InventoryPage';
 import { PlaceholderPage } from '@/components/pages/PlaceholderPage';
@@ -21,40 +23,43 @@ import { TopBar } from '@/components/shell/TopBar';
 //     (12px radius, soft shadow); Instagram isn't built, so its card is the Figma export
 //   • a tagged frame → the same, with the selection outline on the tagged frame
 // Each snapshot has its own store, so it draws the page as it was without touching the live one.
-// The swap: fade + y 6 → 0 (slow); a card also grows 0.98 → 1.
+// The swap is a quick crossfade (fast; no movement — briefs are switched all day, so Emil
+// Kowalski's rule for frequent changes: drastically reduce), instant from the keyboard. A
+// snapshot is a picture: its tag outline is simply there (StillOutline), it doesn't pop in.
 const SCALE = 0.83; // Figma: the page's 56px top bar is 46px in the card
 
+const SWAP: Variants = {
+  hidden: (instant: boolean) => ({ opacity: 0, transition: instant ? { duration: 0 } : { duration: exitOf(duration.fast), ease: easeExit } }),
+  shown: (instant: boolean) => ({ opacity: 1, transition: instant ? { duration: 0 } : { duration: duration.fast, ease: easeOut } }),
+};
+
 export function Snapshot({ brief }: { brief: Brief }) {
-  const reduce = useReducedMotion();
   const Icon = brief.page === 'analytics' ? TimeIcon : ScreenshotIcon;
 
   return (
-    <motion.div
-      className="flex flex-col"
-      initial={reduce ? { opacity: 0 } : { opacity: 0, y: 6 }}
-      animate={{ opacity: 1, y: 0, transition: { duration: duration.slow, ease: easeOut } }}
-      exit={{ opacity: 0, transition: leave(duration.fast) }}
-    >
-      {/* Figma "Snapshot note" */}
-      <p className="mx-28 mt-24 flex items-center gap-8 rounded-8 bg-surface-subtle px-12 py-8 text-12-5 font-500 text-text-strong-secondary">
-        <Icon className="shrink-0 text-text-secondary" />
-        {snapshotNote(brief)}
-      </p>
-      {brief.page === 'analytics' ? (
-        <AnalyticsSnapshot brief={brief} />
-      ) : brief.page === 'instagram' ? (
-        <Card>
-          <img
-            src={INSTAGRAM_SCREENSHOT.src}
-            width={INSTAGRAM_SCREENSHOT.width}
-            height={INSTAGRAM_SCREENSHOT.height}
-            alt={`The Instagram page at ${brief.time}: the Sand reel's numbers and top comments`}
-            className="block h-auto max-w-full"
-          />
-        </Card>
-      ) : (
-        <PageCard brief={brief} />
-      )}
+    <motion.div className="flex flex-col" variants={SWAP} custom={viaKeyboard()} initial="hidden" animate="shown" exit="hidden">
+      <StillOutline.Provider value={true}>
+        {/* Figma "Snapshot note" */}
+        <p className="mx-28 mt-24 flex items-center gap-8 rounded-8 bg-surface-subtle px-12 py-8 text-12-5 font-500 text-text-strong-secondary">
+          <Icon className="shrink-0 text-text-secondary" />
+          {snapshotNote(brief)}
+        </p>
+        {brief.page === 'analytics' ? (
+          <AnalyticsSnapshot brief={brief} />
+        ) : brief.page === 'instagram' ? (
+          <Card>
+            <img
+              src={INSTAGRAM_SCREENSHOT.src}
+              width={INSTAGRAM_SCREENSHOT.width}
+              height={INSTAGRAM_SCREENSHOT.height}
+              alt={`The Instagram page at ${brief.time}: the Sand reel's numbers and top comments`}
+              className="block h-auto max-w-full"
+            />
+          </Card>
+        ) : (
+          <PageCard brief={brief} />
+        )}
+      </StillOutline.Provider>
     </motion.div>
   );
 }
@@ -83,16 +88,7 @@ function AnalyticsSnapshot({ brief }: { brief: Brief }) {
 }
 
 function Card({ children, fill = false }: { children: React.ReactNode; fill?: boolean }) {
-  const reduce = useReducedMotion();
-  return (
-    <motion.div
-      className={`mx-28 mt-14 overflow-hidden rounded-12 bg-surface-default shadow-screenshot-card ${fill ? 'h-snapshot' : 'self-start'}`}
-      initial={reduce ? false : { scale: 0.98 }}
-      animate={{ scale: 1, transition: { duration: duration.slow, ease: easeOut } }}
-    >
-      {children}
-    </motion.div>
-  );
+  return <div className={`mx-28 mt-14 overflow-hidden rounded-12 bg-surface-default shadow-screenshot-card ${fill ? 'h-snapshot' : 'self-start'}`}>{children}</div>;
 }
 
 /** A built page (or a placeholder) drawn at 0.83 with its top bar, read-only. */

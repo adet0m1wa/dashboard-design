@@ -4,6 +4,7 @@ import { animate, useReducedMotion } from 'motion/react';
 import { useEffect, useLayoutEffect, useRef } from 'react';
 import type { NumberFormat } from '@/data/types';
 import { formatNumber } from '@/lib/format';
+import { viaKeyboard } from '@/lib/input';
 import { duration, easeOut } from '@/lib/motion';
 
 const useIsoLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
@@ -12,7 +13,7 @@ const useIsoLayoutEffect = typeof window === 'undefined' ? useEffect : useLayout
  * A number that counts to its new value (`data`, easeOut). Writes straight to the DOM so a
  * count-up never re-renders the tree. Tabular figures keep it from wobbling (brief B5).
  * `from` sets the starting value on mount (0 for the first-load entrance).
- * Reduced motion: no count-up, the new value appears at once.
+ * Reduced motion, or a change made from the keyboard: no count-up, the new value appears at once.
  */
 export function AnimatedNumber({
   value,
@@ -34,7 +35,7 @@ export function AnimatedNumber({
   useIsoLayoutEffect(() => {
     const el = ref.current;
     if (!el) return;
-    if (reduce || shown.current === value) {
+    if (reduce || viaKeyboard() || shown.current === value) {
       shown.current = value;
       el.textContent = formatNumber(value, format);
       return;

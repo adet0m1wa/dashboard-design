@@ -6,3 +6,6 @@ out/
 next-env.d.ts
 .env*.local
 .vercel
+
+# Full-size image originals (compressed copies live in public/products)
+/images/
