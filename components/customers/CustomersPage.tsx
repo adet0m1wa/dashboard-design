@@ -1,8 +1,11 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { STATUS_TONE, thread as findThread, THREADS, WAITING_COUNT, waitTone, type Bubble, type InboxTab, type Thread } from '@/data/customers';
+import { profileOf, STATUS_TONE, thread as findThread, THREADS, WAITING_COUNT, waitTone, type Bubble, type InboxTab, type Thread } from '@/data/customers';
+import { dateOf, itemLabel } from '@/data/orders';
+import { money } from '@/lib/format';
 import { useHop } from '@/lib/store';
+import { useElementHeight, useElementWidth } from '@/lib/useElementWidth';
 import { UpIcon } from '@/components/icons/figma';
 import { HopAvatar } from '@/components/hop/HopAvatar';
 import { HopFrame } from '@/components/select/HopFrame';
@@ -10,23 +13,43 @@ import { OutlineButton } from '@/components/ui/OutlineButton';
 import { InitialsAvatar } from '@/components/ui/PersonAvatar';
 import { Segmented } from '@/components/ui/Segmented';
 import { SmallButton } from '@/components/ui/SmallButton';
+import { Splitter } from '@/components/ui/Splitter';
 import { Tag } from '@/components/ui/Tag';
 import { Truncate } from '@/components/ui/Truncate';
 
 // Customers (designed 2026-10-01 after the older "04 · Customers" Figma reference, in today's
-// styling): the DM inbox (waiting first, how long in red), the open conversation with Hop's
-// drafted reply on top of the composer, and who the customer is — what they've spent, their
-// recent orders, the team's notes. Picking a conversation or a tab changes things at once.
-// Under 800px wide (Hop open on a smaller laptop) the profile steps aside so the conversation
-// keeps room, and the header drops its wait tag when the conversation itself gets narrow.
+// styling). Round 7 (user feedback 2026-10-01), laid out like Instagram: on the left, who the
+// customer is — what they've spent, where they are, the team's notes and every order they've
+// placed (a list whose height can be dragged); then the DM inbox and the open conversation as one
+// area, with a handle to drag between them. Picking a conversation or a tab changes things at
+// once. The header drops its wait tag when the conversation gets narrow.
 export function CustomersPage() {
   const threadId = useHop((s) => s.pages.thread);
   const t = findThread(threadId);
   return (
-    <div className="@container flex h-full min-h-[560px]">
-      <Inbox selected={t.id} />
+    <div className="flex h-full min-h-[560px]">
+      <Details t={t} />
+      <Conversations t={t} />
+    </div>
+  );
+}
+
+const INBOX_MIN = 180;
+const INBOX_MAX = 420;
+const CHAT_MIN = 300;
+
+/** The inbox and the open chat, side by side; the chat always keeps 300px. */
+function Conversations({ t }: { t: Thread }) {
+  const stored = useHop((s) => s.pages.inboxWidth);
+  const setPages = useHop((s) => s.setPages);
+  const [box, width] = useElementWidth<HTMLDivElement>(574);
+  const max = Math.max(INBOX_MIN, Math.min(INBOX_MAX, width - CHAT_MIN));
+  const inbox = Math.min(max, Math.max(INBOX_MIN, stored));
+  return (
+    <div ref={box} className="flex min-w-0 flex-1">
+      <Inbox selected={t.id} width={inbox} />
+      <Splitter label="Conversation list width" orientation="vertical" value={inbox} min={INBOX_MIN} max={max} onChange={(inboxWidth) => setPages({ inboxWidth })} />
       <Conversation key={t.id} t={t} />
-      <Profile t={t} />
     </div>
   );
 }
@@ -37,14 +60,14 @@ const TABS: { id: InboxTab; label: string; count?: number }[] = [
   { id: 'vip', label: 'VIP' },
 ];
 
-function Inbox({ selected }: { selected: string }) {
+function Inbox({ selected, width }: { selected: string; width: number }) {
   const tab = useHop((s) => s.pages.inboxTab);
   const query = useHop((s) => s.pages.inboxQuery.trim().toLowerCase());
   const setPages = useHop((s) => s.setPages);
   const rows = THREADS.filter((x) => (tab === 'waiting' ? x.waiting : tab === 'vip' ? x.vip : true)).filter((x) => !query || x.name.toLowerCase().includes(query));
 
   return (
-    <div className="flex w-[240px] shrink-0 flex-col border-r border-surface-divider-tint">
+    <div className="flex shrink-0 flex-col border-r border-surface-divider-tint" style={{ width }}>
       <div className="px-12 py-12">
         <Segmented label="Show conversations" options={TABS} value={tab} onChange={(inboxTab) => setPages({ inboxTab })} stretch />
       </div>
@@ -98,14 +121,13 @@ function Conversation({ t }: { t: Thread }) {
 
   let lastDay: Bubble['day'] | null = null;
   return (
-    <HopFrame id="customers.thread" label={`Conversation · ${t.name}`} page="customers" className="@container flex min-w-0 flex-1 flex-col border-r border-surface-divider-tint">
+    // No right border: it ends at the side panel's own line (user feedback 2026-10-01: one stroke).
+    <HopFrame id="customers.thread" label={`Conversation · ${t.name}`} page="customers" className="@container flex min-w-0 flex-1 flex-col">
       <div className="flex items-center justify-between gap-12 border-b border-surface-divider-tint px-20 py-12">
         <div className="flex min-w-0 items-center gap-10">
           <InitialsAvatar initials={t.initials} color={t.avatar} size={40} />
-          <div className="flex min-w-0 flex-col gap-2">
-            <Truncate className="text-15 font-600 text-text-primary">{t.name}</Truncate>
-            <Truncate className="text-11-5 text-text-muted">{t.handle}</Truncate>
-          </div>
+          {/* Just the name: who they are is in the details on the left (user feedback 2026-10-01). */}
+          <Truncate className="text-15 font-600 text-text-primary">{t.name}</Truncate>
         </div>
         <div className="flex shrink-0 items-center gap-8">
           {t.waiting && (
@@ -196,56 +218,100 @@ const TAG_TONE: Record<string, string> = {
   'Repeat buyer': 'bg-status-success-soft text-status-success-text',
 };
 
-function Profile({ t }: { t: Thread }) {
-  const p = t.profile;
+const DETAILS_TOP_MIN = 150; // what stays above the order list: the numbers and a few lines
+const ORDERS_MIN = 120; // min-h-[120px] below
+
+/** Who the customer is (the Instagram page's left column, in its 250px): their numbers, where
+ *  they are, notes, tags, and every order they've placed — a list whose height can be dragged. */
+function Details({ t }: { t: Thread }) {
+  const p = profileOf(t.id);
+  const stored = useHop((s) => s.pages.ordersHeight);
+  const setPages = useHop((s) => s.setPages);
+  const [column, height] = useElementHeight<HTMLDivElement>(640);
+  const [list, listHeight] = useElementHeight<HTMLElement>(220);
+  const max = Math.max(ORDERS_MIN, height - DETAILS_TOP_MIN - 60);
+  // Until it's dragged, the list takes whatever the details above leave it.
+  const ordersHeight = stored === null ? null : Math.min(max, Math.max(ORDERS_MIN, stored));
+
   return (
-    <HopFrame id={`customers.profile.${t.id}`} label={`${t.name} · customer`} page="customers" jumpTarget="sales" className="flex w-[230px] shrink-0 flex-col gap-18 overflow-y-auto px-16 py-16 @max-[800px]:hidden">
-      <div className="flex gap-6">
-        {[
-          ['Spent', p.spent],
-          ['Orders', p.orders],
-          ['Avg order', p.average],
-        ].map(([label, value]) => (
-          <div key={label} className="flex min-w-0 flex-1 flex-col gap-1 rounded-8 bg-surface-subtle px-8 py-6">
-            <span className="text-10-5 text-text-secondary">{label}</span>
-            <span className="text-13 font-600 text-text-primary tabular-nums">{value}</span>
-          </div>
-        ))}
-      </div>
-
-      <section className="flex flex-col gap-10">
-        <h3 className="text-12 font-500 text-text-secondary">Recent orders</h3>
-        {p.recent.map((o) => (
-          <div key={o.order} className="flex items-center justify-between gap-8">
-            <span className="flex min-w-0 flex-col gap-1">
-              <Truncate className="text-12 font-500 text-text-primary">{o.item}</Truncate>
-              <span className="text-11 text-text-muted tabular-nums">
-                #{o.order} · {o.total}
-              </span>
-            </span>
-            <Tag tone={STATUS_TONE[o.status]}>{o.status}</Tag>
-          </div>
-        ))}
-      </section>
-
-      {p.notes && (
-        <section className="flex flex-col gap-6">
-          <h3 className="text-12 font-500 text-text-secondary">Notes</h3>
-          <p className="text-12 leading-18 text-text-strong-secondary">{p.notes}</p>
-          <span className="text-11 text-text-muted">{p.notesBy}</span>
-        </section>
-      )}
-
-      <section className="flex flex-col gap-8">
-        <h3 className="text-12 font-500 text-text-secondary">Tags</h3>
-        <div className="flex flex-wrap gap-6">
-          {p.tags.map((tag) => (
-            <span key={tag} className={`rounded-999 px-8 py-2 text-11 font-500 ${TAG_TONE[tag] ?? 'bg-surface-subtle text-text-secondary'}`}>
-              {tag}
-            </span>
+    <HopFrame id={`customers.profile.${t.id}`} label={`${t.name} · customer`} page="customers" jumpTarget="sales" className="flex w-[250px] shrink-0 border-r border-surface-divider-tint">
+      <div ref={column} className="flex min-w-0 flex-1 flex-col">
+        <div className="flex gap-6 border-b border-surface-divider-tint px-16 py-14">
+          {[
+            ['Spent', p.spent],
+            ['Orders', p.count],
+            ['Avg order', p.average],
+          ].map(([label, value]) => (
+            <div key={label} className="flex min-w-0 flex-1 flex-col gap-1 rounded-8 bg-surface-subtle px-9 py-7">
+              <span className="text-10-5 text-text-secondary">{label}</span>
+              <span className="text-14 font-600 tracking-px-0-141 text-text-primary tabular-nums">{value}</span>
+            </div>
           ))}
         </div>
-      </section>
+
+        <div className={`flex min-h-0 flex-col gap-16 overflow-y-auto px-16 py-14 ${ordersHeight === null ? 'shrink' : 'flex-1'}`}>
+          <dl className="flex flex-col gap-6 text-12">
+            {[
+              ['Instagram', t.handle],
+              ['City', t.city],
+              ['Customer since', p.since],
+            ].map(([k, v]) => (
+              <div key={k} className="flex items-baseline justify-between gap-8">
+                <dt className="shrink-0 text-text-secondary">{k}</dt>
+                <dd className="min-w-0 truncate text-right font-500 text-text-primary">{v}</dd>
+              </div>
+            ))}
+          </dl>
+
+          {t.notes && (
+            <section className="flex flex-col gap-6">
+              <h3 className="text-12 font-500 text-text-secondary">Notes</h3>
+              <p className="text-12 leading-18 text-text-strong-secondary">{t.notes}</p>
+              <span className="text-11 text-text-muted">{t.notesBy}</span>
+            </section>
+          )}
+
+          <section className="flex flex-col gap-8">
+            <h3 className="text-12 font-500 text-text-secondary">Tags</h3>
+            <div className="flex flex-wrap gap-6">
+              {t.tags.map((tag) => (
+                <span key={tag} className={`rounded-999 px-8 py-2 text-11 font-500 ${TAG_TONE[tag] ?? 'bg-surface-subtle text-text-secondary'}`}>
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </section>
+        </div>
+
+        <Splitter label="Order list height" orientation="horizontal" after value={Math.round(ordersHeight ?? listHeight)} min={ORDERS_MIN} max={max} onChange={(h) => setPages({ ordersHeight: h })} />
+        <section
+          ref={list}
+          aria-labelledby="customer-orders"
+          className={`flex flex-col border-t border-surface-divider-tint ${ordersHeight === null ? 'min-h-[120px] flex-1' : 'shrink-0'}`}
+          style={ordersHeight === null ? undefined : { height: ordersHeight }}
+        >
+          <h3 id="customer-orders" className="flex items-baseline gap-6 px-16 pb-8 pt-12 text-12 font-500 text-text-secondary">
+            Orders
+            <span className="text-11-5 font-400 text-text-muted tabular-nums">{p.count}</span>
+          </h3>
+          {/* Keyed by customer: another customer's list starts at the top. */}
+          <ul key={t.id} className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto px-8 pb-10">
+            {p.orders.map((o) => (
+              <li key={o.number}>
+                <HopFrame id={`customers.order.${o.number}`} label={`Order #${o.number}`} page="customers" jumpTarget="sales" className="flex items-center justify-between gap-8 rounded-8 px-8 py-6">
+                  <span className="flex min-w-0 flex-col gap-1">
+                    <Truncate className="text-12 font-500 text-text-primary">{itemLabel(o).replace(' × 1', '')}</Truncate>
+                    <span className="text-11 text-text-muted tabular-nums">
+                      #{o.number} · {dateOf(o.day).d} {dateOf(o.day).month} · {money(o.total)}
+                    </span>
+                  </span>
+                  <Tag tone={STATUS_TONE[o.fulfilment]}>{o.fulfilment}</Tag>
+                </HopFrame>
+              </li>
+            ))}
+          </ul>
+        </section>
+      </div>
     </HopFrame>
   );
 }

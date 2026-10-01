@@ -94,8 +94,9 @@ npm run check      # typecheck + token check
 | Feedback 4 | done | Emil Kowalski skills installed (`npx skills add emilkowalski/skills`); History snapshots no longer share the KPI pill / week thumb with the live page; bottom card follows the KPI in every period (new past-period cards), titled with the KPI's name, fixed 246 row so Urgent never moves; Urgent card selectable; hint "Click the ⌗ to select a frame"; "All pages" 105; brief rows follow a panel resize at once; tags restore their view; exits ease out, nothing grows from scale 0. `feedback4.mjs` 16/16 both modes |
 | Feedback 5 | done | Every bottom card has the Revenue card's rhythm (posts 29×36, follower rows 18 apart); Emil Kowalski pass over all motion (curves, <300ms, keyboard changes instant, transform strings, no scale(0), clip-path stock bars, toast recipe, reduced motion for cues/chips); photos for all 19 products/posts. `feedback4.mjs` 18/18; all 28 runs green on the production build |
 | Feedback 6 | done | Last week's days pick (seeded random data; KPIs, bottom card, Urgent follow); one sidebar layout for open/rail (icons keep y, press works in the rail); History: scroll kept across Expand/Back, expand icon grows with the highlight's slide, filters instant (rows no longer layout elements), cues static on Analytics; Sales, Instagram, Customers designed and built (every section a Hop frame; fit the 720 main column); Sand reel brief draws the Instagram page; reduced motion no longer grows the selection outline/handles from scale 0. `feedback6.mjs` 20/20, reduced 19/19; all 30 runs green on the production build |
+| Feedback 7 | done | Every order since the store opened (1,098, seeded, pinned to Analytics and the inbox); Sales by this/last week, this/last month or all time (from #1, dd/mm/yy), one orders-card size, rows drawn in view; Customers: details left (250) with every order and a draggable list height, inbox and chat with a drag handle, name-only chat header; one stroke at the side panel; Instagram calendar (16 earlier posts); 3px scrollbars; split() remainder fix. `feedback7.mjs` 18/18 |
 
-**Status (2026-10-01):** all phases, feedback rounds 1–6 and the final test are done; the case
+**Status (2026-10-01):** all phases, feedback rounds 1–7 and the final test are done; the case
 study and a 20–30s video are planned for later. Product and
 post photos are in (`public/products`, mapped in `data/photos.ts`).
 
@@ -305,3 +306,33 @@ post photos are in (`public/products`, mapped in `data/photos.ts`).
   Filters and tabs switch at once (`Segmented`). History's Sand reel brief draws the Instagram
   page (the PNG and `PlaceholderPage` are gone). Known gap: Dayo's 5:10 PM brief from yesterday
   draws today's Customers inbox — there's no yesterday inbox data.
+- Every order (feedback 7, `data/orders.ts`): the online store opened Mon 3 Aug 2026 with order
+  #1; 1,098 orders to now, generated with a fixed seed and pinned to the rest of the prototype —
+  this and last week's orders and revenue per day are the Analytics series exactly, Chioma's
+  Sand set is #1042 (History), today's 6 to pack are the inbox customers at their messages'
+  times, the Adire dress isn't sold after it sold out. Numbers follow the time an order was
+  placed, so today's to-pack orders are #1080–#1098 now (they were #1043–#1048). Sales, the
+  customer details and Hop's order answers all count from it; a customer's spend changed with
+  it (Chioma $605, was a hand-written $1,240). `orders.ts` throws if #1042 ever moves.
+- Sales periods (feedback 7): the top bar's menu picks Weekly / Monthly / All time, the chart's
+  toggle this or last (Analytics' toggle, shared as `ModeToggle`). Days not reached have no data:
+  the line stops at today over a dashed baseline, as on Analytics. All time lists from #1 (the
+  user: "the serial will start from 1"); other periods newest first. Placed: "2:02 PM" / "Wed
+  4:10 PM" / "12 Sep, 4:10 PM" / all time "12/09/26, 4:10 PM". The orders card fills what's left
+  of the window and keeps that size for every period and filter; its rows (49px) are drawn only
+  where they're in view. Frame ids carry the period (`sales.tile.revenue.thisWeek`); a chat tag
+  brings its period back and scrolls a row into the drawn window.
+- Customers layout (feedback 7): details on the left at 250 (Instagram's list width) — numbers,
+  Instagram handle, city, customer since, notes, tags, then every order; the chat header is the
+  name alone. The inbox and the chat share one area with a drag handle (inbox 180–420, the chat
+  keeps 300); the order list fills what the details leave until its handle is dragged.
+  `Splitter` is the side panel's resize handle, shared.
+- One stroke at the side panel (feedback 7): the panel's left line is the only one there —
+  nothing in a page draws a right border at that edge (the Customers chat used to, once its
+  profile column hid under 800px). `feedback7.mjs` checks every page at 1440 and 1336.
+- Instagram calendar (feedback 7): a 13px icon beside "Posted this week" opens August and
+  September; days with posts have a 4px dot in `action-primary` and list that day's posts.
+  16 earlier posts back it (the four Analytics already showed from 12–16 Sep, and 12 back to the
+  store's opening), their numbers seeded around the account's usual. Scrollbars are 3px.
+- `split()` (now `data/random.ts`) handed out only half the remainder: last week's follower
+  sources were a follower short on some days and their shares summed to 99%. Fixed in round 7.

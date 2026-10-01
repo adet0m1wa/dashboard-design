@@ -2,12 +2,15 @@
 
 import { IG_HANDLE } from '@/data/instagram';
 import { THREADS } from '@/data/customers';
+import { SALES_PERIODS } from '@/data/sales';
 import { useHop } from '@/lib/store';
 import { Chev13Icon, DownloadIcon, FunnelIcon, SearchIcon } from '@/components/icons/figma';
+import { MenuButton } from '@/components/ui/MenuButton';
 import { OutlineButton } from '@/components/ui/OutlineButton';
 
-// Top-bar pieces for Sales, Instagram and Customers (designed 2026-10-01). The period picker,
-// export and filter are stubs, like Inventory's (brief B7.4); the customer search filters the inbox.
+// Top-bar pieces for Sales, Instagram and Customers (designed 2026-10-01). Sales's period menu
+// works (round 7); Instagram's period, export and filter are stubs, like Inventory's (brief B7.4);
+// the customer search filters the inbox.
 
 function Period() {
   const showToast = useHop((s) => s.showToast);
@@ -19,11 +22,14 @@ function Period() {
   );
 }
 
+/** Sales: Weekly / Monthly / All time (user feedback 2026-10-01: "where they go to see more"). */
 export function SalesTopActions() {
   const showToast = useHop((s) => s.showToast);
+  const period = useHop((s) => s.pages.salesPeriod);
+  const setPages = useHop((s) => s.setPages);
   return (
     <div className="flex items-center gap-8">
-      <Period />
+      <MenuButton label="Period" options={SALES_PERIODS} value={period} onChange={(salesPeriod) => setPages({ salesPeriod })} />
       <OutlineButton onClick={() => showToast('Export is coming soon')}>
         <DownloadIcon className="text-text-secondary" />
         Export

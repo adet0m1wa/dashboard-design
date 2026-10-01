@@ -1,7 +1,7 @@
 import { CUSTOMERS_ANSWERS } from './customers';
 import { INSTAGRAM_ANSWERS } from './instagram';
 import { LAST_WEEK_URGENT_ANSWERS } from './lastWeekDays';
-import { SALES_ANSWERS } from './sales';
+import { orderAnswer, SALES_ANSWERS } from './sales';
 import type { Page } from './types';
 
 // Scripted Hop answers (brief B9). Keyed by the tagged frame's id, or by the prompt-cue text.
@@ -194,6 +194,10 @@ export const ANSWERS_BY_FRAME: Record<string, Answer> = {
 /** A new scripted answer lookup: tagged frame first, then cue text, then the fallback. */
 export function answerFor(frameId: string | undefined, question: string): Answer {
   if (frameId && ANSWERS_BY_FRAME[frameId]) return ANSWERS_BY_FRAME[frameId];
+  // Order rows (Sales, and a customer's order list) are answered from the order itself: there
+  // are over a thousand of them.
+  const order = frameId?.match(/^(?:sales|customers)\.order\.(\d+)$/);
+  if (order) return orderAnswer(Number(order[1])) ?? FALLBACK;
   if (ANSWERS_BY_CUE[question]) return ANSWERS_BY_CUE[question];
   return FALLBACK;
 }

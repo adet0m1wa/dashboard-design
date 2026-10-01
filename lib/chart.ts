@@ -31,19 +31,21 @@ const areaGen = area<Pt>()
   .y1((d) => d[1])
   .curve(curveMonotoneX);
 
-/** Everything that depends on the plot's width. `ratios` are values ÷ the KPI's chart max. */
-export function chartGeometry(width: number) {
-  const step = (width - 2 * CHART.x0) / (DAYS - 1);
+/** Everything that depends on the plot's width. `ratios` are values ÷ the KPI's chart max; a
+ *  null is a day with nothing to draw (before the store opened, or not reached yet). `days` is
+ *  how many points the axis holds: a week everywhere, a month or more on Sales. */
+export function chartGeometry(width: number, days: number = DAYS) {
+  const step = (width - 2 * CHART.x0) / (days - 1);
   const xAt = (i: number) => CHART.x0 + i * step;
-  const points = (ratios: number[]): Pt[] => ratios.map((r, i) => [xAt(i), yAt(r)]);
+  const points = (ratios: (number | null)[]): Pt[] => ratios.flatMap((r, i) => (r === null ? [] : [[xAt(i), yAt(r)] as Pt]));
   return {
     width,
     step,
     xAt,
     /** Nearest day to an x position inside the plot. */
     dayAt: (x: number) => Math.round((x - CHART.x0) / step),
-    linePath: (ratios: number[]) => lineGen(points(ratios)) ?? '',
-    areaPath: (ratios: number[]) => areaGen(points(ratios)) ?? '',
+    linePath: (ratios: (number | null)[]) => lineGen(points(ratios)) ?? '',
+    areaPath: (ratios: (number | null)[]) => areaGen(points(ratios)) ?? '',
   };
 }
 

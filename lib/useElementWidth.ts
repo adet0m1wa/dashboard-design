@@ -18,3 +18,21 @@ export function useElementWidth<T extends HTMLElement>(fallback: number) {
 
   return [ref, width] as const;
 }
+
+/** Height of an element, kept up to date (Customers: how tall the details column is). */
+export function useElementHeight<T extends HTMLElement>(fallback: number) {
+  const ref = useRef<T>(null);
+  const [height, setHeight] = useState(fallback);
+
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    // The border box: what a style height sets (border-box sizing), so a drag starts from it.
+    setHeight(el.offsetHeight);
+    const ro = new ResizeObserver(() => setHeight(el.offsetHeight));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  return [ref, height] as const;
+}

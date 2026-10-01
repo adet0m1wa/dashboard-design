@@ -1,6 +1,7 @@
 'use client';
 
-import { IG_ACCOUNT, IG_HANDLE, IG_POSTS, igPost, type IgPost } from '@/data/instagram';
+import { IG_ACCOUNT, IG_HANDLE, IG_WEEK, igPost, listMeta, postsOn, type IgPost } from '@/data/instagram';
+import { dateOf, weekdayOf } from '@/data/orders';
 import { useHop } from '@/lib/store';
 import { ExternalIcon, PlayIcon } from '@/components/icons/figma';
 import { HopFrame } from '@/components/select/HopFrame';
@@ -8,13 +9,15 @@ import { OutlineButton } from '@/components/ui/OutlineButton';
 import { InitialsAvatar } from '@/components/ui/PersonAvatar';
 import { Thumb } from '@/components/ui/Thumb';
 import { Truncate } from '@/components/ui/Truncate';
+import { PostCalendar, useBackToWeek } from './PostCalendar';
 
 // Instagram (designed 2026-10-01): the Figma Instagram card in History ("asked on another page",
 // 1839:3721) drawn at full size — that card is this page at 0.83, so every value here is the
 // Figma one ÷ 0.83. Left: the account and the week's posts; right: the picked post — preview,
 // how it did against the usual, and the comments worth answering. Picking a post swaps the right
 // side at once. History's 1:40 PM brief now draws this page instead of a flat image. Under 800px
-// wide the preview shrinks so the stats keep two readable columns.
+// wide the preview shrinks so the stats keep two readable columns. Round 7: a calendar beside
+// "Posted this week" lists any day's posts instead.
 export function InstagramPage() {
   const postId = useHop((s) => s.pages.igPost);
   const post = igPost(postId);
@@ -29,6 +32,10 @@ export function InstagramPage() {
 
 function PostList({ selected }: { selected: string }) {
   const setPages = useHop((s) => s.setPages);
+  const day = useHop((s) => s.pages.igDay);
+  const backToWeek = useBackToWeek();
+  const posts = day === null ? IG_WEEK : postsOn(day);
+  const heading = day === null ? 'Posted this week' : `Posted ${weekdayOf(((day % 7) + 7) % 7)} ${dateOf(day).d} ${dateOf(day).month}`;
   return (
     <div className="flex w-[250px] shrink-0 flex-col border-r border-surface-divider-tint">
       <div className="flex gap-6 border-b border-surface-divider-tint px-16 py-14">
@@ -39,9 +46,19 @@ function PostList({ selected }: { selected: string }) {
           </HopFrame>
         ))}
       </div>
-      <h2 className="px-16 pb-6 pt-14 text-11-5 font-500 text-text-muted">Posted this week</h2>
+      <div className="flex items-center justify-between gap-8 px-16 pb-6 pt-14">
+        <h2 className="text-11-5 font-500 text-text-muted">{heading}</h2>
+        <div className="flex items-center gap-10">
+          {day !== null && (
+            <button type="button" onClick={backToWeek} className="relative rounded-4 text-11-5 font-500 text-text-secondary transition-colors duration-(--dur-fast) ease-hop-color after:absolute after:-inset-6 hover:text-text-primary">
+              This week
+            </button>
+          )}
+          <PostCalendar />
+        </div>
+      </div>
       <ul>
-        {IG_POSTS.map((p) => {
+        {posts.map((p) => {
           const on = p.id === selected;
           return (
             <li key={p.id}>
@@ -56,7 +73,7 @@ function PostList({ selected }: { selected: string }) {
                   <Thumb id={p.id} swatch={p.swatch} className="h-[52px] w-[40px] rounded-6" />
                   <span className="flex min-w-0 flex-1 flex-col gap-3">
                     <Truncate className="text-12-5 font-500 text-text-primary">{p.title}</Truncate>
-                    <Truncate className="text-11 text-text-muted">{p.listMeta}</Truncate>
+                    <Truncate className="text-11 text-text-muted">{listMeta(p, day !== null)}</Truncate>
                   </span>
                   {p.lift && <span className="shrink-0 rounded-10 bg-status-success-soft px-6 py-1 text-10-5 font-600 text-status-success-text">{p.lift}</span>}
                 </button>
