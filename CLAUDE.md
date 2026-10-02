@@ -94,7 +94,7 @@ npm run check      # typecheck + token check
 | Feedback 4 | done | Emil Kowalski skills installed (`npx skills add emilkowalski/skills`); History snapshots no longer share the KPI pill / week thumb with the live page; bottom card follows the KPI in every period (new past-period cards), titled with the KPI's name, fixed 246 row so Urgent never moves; Urgent card selectable; hint "Click the ⌗ to select a frame"; "All pages" 105; brief rows follow a panel resize at once; tags restore their view; exits ease out, nothing grows from scale 0. `feedback4.mjs` 16/16 both modes |
 | Feedback 5 | done | Every bottom card has the Revenue card's rhythm (posts 29×36, follower rows 18 apart); Emil Kowalski pass over all motion (curves, <300ms, keyboard changes instant, transform strings, no scale(0), clip-path stock bars, toast recipe, reduced motion for cues/chips); photos for all 19 products/posts. `feedback4.mjs` 18/18; all 28 runs green on the production build |
 | Feedback 6 | done | Last week's days pick (seeded random data; KPIs, bottom card, Urgent follow); one sidebar layout for open/rail (icons keep y, press works in the rail); History: scroll kept across Expand/Back, expand icon grows with the highlight's slide, filters instant (rows no longer layout elements), cues static on Analytics; Sales, Instagram, Customers designed and built (every section a Hop frame; fit the 720 main column); Sand reel brief draws the Instagram page; reduced motion no longer grows the selection outline/handles from scale 0. `feedback6.mjs` 20/20, reduced 19/19; all 30 runs green on the production build |
-| Feedback 7 | done | Every order since the store opened (1,098, seeded, pinned to Analytics and the inbox); Sales by this/last week, this/last month or all time (from #1, dd/mm/yy), one orders-card size, rows drawn in view; Customers: details left (250) with every order and a draggable list height, inbox and chat with a drag handle, name-only chat header; one stroke at the side panel; Instagram calendar (16 earlier posts); 3px scrollbars; split() remainder fix. `feedback7.mjs` 18/18 |
+| Feedback 7 | done | Every order since the store opened (1,098, seeded, pinned to Analytics and the inbox); Sales by this/last week, this/last month or all time (from #1, dd/mm/yy), one orders-card size, rows drawn in view; Customers: details left (250) with every order and a draggable list height, the chat over the conversation list with a height handle, name-only chat header; one stroke at the side panel; Instagram calendar (16 earlier posts); 3px scrollbars; split() remainder fix. `feedback7.mjs` 18/18 |
 
 **Status (2026-10-01):** all phases, feedback rounds 1–7 and the final test are done; the case
 study and a 20–30s video are planned for later. Product and
@@ -324,8 +324,9 @@ post photos are in (`public/products`, mapped in `data/photos.ts`).
   brings its period back and scrolls a row into the drawn window.
 - Customers layout (feedback 7): details on the left at 250 (Instagram's list width) — numbers,
   Instagram handle, city, customer since, notes, tags, then every order; the chat header is the
-  name alone. The inbox and the chat share one area with a drag handle (inbox 180–420, the chat
-  keeps 300); the order list fills what the details leave until its handle is dragged.
+  name alone. The chat sits over the conversation list in one area (user feedback 2026-10-02);
+  the list's height drags like the order list's (from 280, ≥140; the chat keeps 260); the
+  order list fills what the details leave until its handle is dragged.
   `Splitter` is the side panel's resize handle, shared.
 - One stroke at the side panel (feedback 7): the panel's left line is the only one there —
   nothing in a page draws a right border at that edge (the Customers chat used to, once its

@@ -5,7 +5,7 @@ import { profileOf, STATUS_TONE, thread as findThread, THREADS, WAITING_COUNT, w
 import { dateOf, itemLabel } from '@/data/orders';
 import { money } from '@/lib/format';
 import { useHop } from '@/lib/store';
-import { useElementHeight, useElementWidth } from '@/lib/useElementWidth';
+import { useElementHeight } from '@/lib/useElementWidth';
 import { UpIcon } from '@/components/icons/figma';
 import { HopAvatar } from '@/components/hop/HopAvatar';
 import { HopFrame } from '@/components/select/HopFrame';
@@ -20,8 +20,8 @@ import { Truncate } from '@/components/ui/Truncate';
 // Customers (designed 2026-10-01 after the older "04 · Customers" Figma reference, in today's
 // styling). Round 7 (user feedback 2026-10-01), laid out like Instagram: on the left, who the
 // customer is — what they've spent, where they are, the team's notes and every order they've
-// placed (a list whose height can be dragged); then the DM inbox and the open conversation as one
-// area, with a handle to drag between them. Picking a conversation or a tab changes things at
+// placed (a list whose height can be dragged); then the open conversation with the DM inbox under
+// it as one area, the list's height dragged like the order list's (user feedback 2026-10-02). Picking a conversation or a tab changes things at
 // once. The header drops its wait tag when the conversation gets narrow.
 export function CustomersPage() {
   const threadId = useHop((s) => s.pages.thread);
@@ -34,22 +34,21 @@ export function CustomersPage() {
   );
 }
 
-const INBOX_MIN = 180;
-const INBOX_MAX = 420;
-const CHAT_MIN = 300;
+const INBOX_MIN = 140;
+const CHAT_MIN = 260;
 
-/** The inbox and the open chat, side by side; the chat always keeps 300px. */
+/** The open chat with the inbox under it; the list's height drags, the chat keeps 260px. */
 function Conversations({ t }: { t: Thread }) {
-  const stored = useHop((s) => s.pages.inboxWidth);
+  const stored = useHop((s) => s.pages.inboxHeight);
   const setPages = useHop((s) => s.setPages);
-  const [box, width] = useElementWidth<HTMLDivElement>(574);
-  const max = Math.max(INBOX_MIN, Math.min(INBOX_MAX, width - CHAT_MIN));
+  const [box, height] = useElementHeight<HTMLDivElement>(828);
+  const max = Math.max(INBOX_MIN, height - CHAT_MIN);
   const inbox = Math.min(max, Math.max(INBOX_MIN, stored));
   return (
-    <div ref={box} className="flex min-w-0 flex-1">
-      <Inbox selected={t.id} width={inbox} />
-      <Splitter label="Conversation list width" orientation="vertical" value={inbox} min={INBOX_MIN} max={max} onChange={(inboxWidth) => setPages({ inboxWidth })} />
+    <div ref={box} className="flex min-w-0 flex-1 flex-col">
       <Conversation key={t.id} t={t} />
+      <Splitter label="Conversation list height" orientation="horizontal" after value={inbox} min={INBOX_MIN} max={max} onChange={(inboxHeight) => setPages({ inboxHeight })} />
+      <Inbox selected={t.id} height={inbox} />
     </div>
   );
 }
@@ -60,14 +59,14 @@ const TABS: { id: InboxTab; label: string; count?: number }[] = [
   { id: 'vip', label: 'VIP' },
 ];
 
-function Inbox({ selected, width }: { selected: string; width: number }) {
+function Inbox({ selected, height }: { selected: string; height: number }) {
   const tab = useHop((s) => s.pages.inboxTab);
   const query = useHop((s) => s.pages.inboxQuery.trim().toLowerCase());
   const setPages = useHop((s) => s.setPages);
   const rows = THREADS.filter((x) => (tab === 'waiting' ? x.waiting : tab === 'vip' ? x.vip : true)).filter((x) => !query || x.name.toLowerCase().includes(query));
 
   return (
-    <div className="flex shrink-0 flex-col border-r border-surface-divider-tint" style={{ width }}>
+    <div className="flex shrink-0 flex-col border-t border-surface-divider-tint" style={{ height }}>
       <div className="px-12 py-12">
         <Segmented label="Show conversations" options={TABS} value={tab} onChange={(inboxTab) => setPages({ inboxTab })} stretch />
       </div>
@@ -122,7 +121,7 @@ function Conversation({ t }: { t: Thread }) {
   let lastDay: Bubble['day'] | null = null;
   return (
     // No right border: it ends at the side panel's own line (user feedback 2026-10-01: one stroke).
-    <HopFrame id="customers.thread" label={`Conversation · ${t.name}`} page="customers" className="@container flex min-w-0 flex-1 flex-col">
+    <HopFrame id="customers.thread" label={`Conversation · ${t.name}`} page="customers" className="@container flex min-h-0 min-w-0 flex-1 flex-col">
       <div className="flex items-center justify-between gap-12 border-b border-surface-divider-tint px-20 py-12">
         <div className="flex min-w-0 items-center gap-10">
           <InitialsAvatar initials={t.initials} color={t.avatar} size={40} />
