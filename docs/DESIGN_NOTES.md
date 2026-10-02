@@ -222,7 +222,7 @@ The "fresh" section is now a single section (id 1816:4657, x 1694); the old dupl
 - Round 7 (2026-10-01): Sales — top-bar menu (outline button, list 4px inside a radius-8 card,
   rows px8 py6 12.5, `shadow-screenshot-card`), the chart header holds the Analytics toggle; the
   orders table's columns are 52 / ≥100 / ≥106 / 56 / 52 / 76 / 124, rows 49. Customers — details
-  250 | inbox 240 (drag 180–420) | chat; details: tiles as Instagram's account tiles, a label/value
+  250 | the chat over the inbox (280 tall, dragged ≥140; the chat keeps 260); details: tiles as Instagram's account tiles, a label/value
   list (12, secondary / 500 primary), notes, tags, then "Orders N" with rows of item 12/500,
   "#1042 · 23 Sep · $90" 11 muted and a status tag. Drag handles: 6px hit area on the divider,
   2px line (`palette-tone-27` hover, `selection` while dragging or focused). Instagram calendar —

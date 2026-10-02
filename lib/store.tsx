@@ -76,7 +76,7 @@ export interface PagesState {
   thread: string;
   inboxTab: InboxTab;
   inboxQuery: string;
-  inboxWidth: number; // the conversation list's width, dragged (Customers)
+  inboxHeight: number; // the conversation list's height under the chat, dragged (Customers)
   /** The customer's order list's height once dragged (Customers); null = whatever the details leave. */
   ordersHeight: number | null;
 }
@@ -152,7 +152,7 @@ export function createHopStore(initialPage: Page, init: Partial<HopState> = {}) 
   return createStore<HopState>()((set, get) => ({
     page: initialPage,
     analytics: { kpi: 'revenue', range: 'thisWeek', day: null },
-    pages: { salesFilter: 'all', salesPeriod: 'week', salesWhich: 'this', igPost: IG_DEFAULT_POST, igDay: null, thread: DEFAULT_THREAD, inboxTab: 'all', inboxQuery: '', inboxWidth: 240, ordersHeight: null },
+    pages: { salesFilter: 'all', salesPeriod: 'week', salesWhich: 'this', igPost: IG_DEFAULT_POST, igDay: null, thread: DEFAULT_THREAD, inboxTab: 'all', inboxQuery: '', inboxHeight: 280, ordersHeight: null },
     selection: null,
     jumpOrigin: null,
     history: { selectedId: 'b-2-33', expanded: false, person: 'all', pageFilter: 'all', query: '' },

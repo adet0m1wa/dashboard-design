@@ -130,25 +130,25 @@ export default async function (t) {
     const header = document.querySelector('[data-hop-frame="customers.thread"] > div').textContent;
     const orders = document.querySelectorAll('[data-hop-frame^="customers.order."]').length;
     const tile = document.querySelector('[data-hop-frame^="customers.profile."]').textContent;
-    return { order: details.left < inbox.left && inbox.left < chat.left, width: Math.round(details.width), header, orders, tile };
+    return { order: details.right <= inbox.left + 1 && details.right <= chat.left + 1 && chat.bottom <= inbox.top + 1, width: Math.round(details.width), header, orders, tile };
   });
-  await t.check(`${m}3 Customers: details (${layout.width}px) left of the inbox, left of the chat`, layout.order && layout.width === 250);
+  await t.check(`${m}3 Customers: details (${layout.width}px) on the left; the chat with the conversation list under it`, layout.order && layout.width === 250);
   await t.check(`${m}5 the chat header is the name alone; handle and city are in the details`, !layout.header.includes('@chioma') && layout.tile.includes('@chioma.styles') && layout.tile.includes('Lagos'));
   await t.check(`${m}5 every one of Chioma's ${layout.orders} orders is listed, #1042 among them`, layout.orders === 7 && layout.tile.includes('#1042'));
 
   const handle = async (label) => (await t.page.$(`[role=separator][aria-label="${label}"]`)).boundingBox();
-  const inboxW = () => t.eval(() => Math.round(document.querySelector('ul[aria-label=Conversations]').getBoundingClientRect().width));
+  const inboxW = () => t.eval(() => Math.round(document.querySelector('ul[aria-label=Conversations]').parentElement.getBoundingClientRect().height));
   const w0 = await inboxW();
-  const hb = await handle('Conversation list width');
-  await t.page.mouse.move(hb.x + hb.width / 2, hb.y + 200);
+  const hb = await handle('Conversation list height');
+  await t.page.mouse.move(hb.x + 200, hb.y + hb.height / 2);
   await t.page.mouse.down();
-  await t.page.mouse.move(hb.x + hb.width / 2 + 30, hb.y + 200, { steps: 4 });
+  await t.page.mouse.move(hb.x + 200, hb.y + hb.height / 2 - 30, { steps: 4 });
   await t.page.mouse.up();
   const w1 = await inboxW();
-  await t.eval(() => document.querySelector('[role=separator][aria-label="Conversation list width"]').focus());
-  await t.page.keyboard.press('ArrowLeft');
+  await t.eval(() => document.querySelector('[role=separator][aria-label="Conversation list height"]').focus());
+  await t.page.keyboard.press('ArrowDown');
   const w2 = await inboxW();
-  await t.check(`${m}3 the inbox drags ${w0} → ${w1} and steps back to ${w2} with ←`, w1 === w0 + 30 && w2 === w1 - 8);
+  await t.check(`${m}3 the conversation list's height drags ${w0} → ${w1} and steps back to ${w2} with ↓`, w1 === w0 + 30 && w2 === w1 - 8);
 
   const listH = () => t.eval(() => Math.round(document.querySelector('section[aria-labelledby=customer-orders]').getBoundingClientRect().height));
   const h0 = await listH();
