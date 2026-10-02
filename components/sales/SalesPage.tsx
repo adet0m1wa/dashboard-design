@@ -1,8 +1,8 @@
 'use client';
 
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { CUSTOMERS, itemLabel, type Order } from '@/data/orders';
-import { FULFILMENT_TONE, placedLabel, RANGES, SALES_CHART, SALES_FILTERS, SALES_ORDERS, SALES_TILES, type SalesFilter, type SalesRange } from '@/data/sales';
+import { dayOrders, dayTiles, dayTitle, FULFILMENT_TONE, placedLabel, RANGES, SALES_CHART, SALES_FILTERS, SALES_ORDERS, SALES_TILES, type SalesFilter, type SalesRange } from '@/data/sales';
 import { CHART, chartGeometry, yAt } from '@/lib/chart';
 import { money } from '@/lib/format';
 import { salesRange, useHop, useHopApi } from '@/lib/store';
@@ -20,17 +20,33 @@ import { Truncate } from '@/components/ui/Truncate';
 // up front. Round 7 (user feedback 2026-10-01): any period — this or last week (the chart's
 // toggle, as on Analytics), this or last month, all time (the top bar's menu); the page fills the
 // window and the orders card keeps one size whatever the period or filter, scrolling inside.
-// Nothing animates but the toggle's thumb: it's a page for reading and checking.
+// Nothing animates but the toggle's thumb: it's a page for reading and checking. Round 8 (user
+// feedback 2026-10-02): a day can be picked on the chart, as on Analytics.
 export function SalesPage() {
   const range = useHop((s) => salesRange(s.pages));
+  const day = useHop((s) => s.pages.salesDay);
+  const setPages = useHop((s) => s.setPages);
+  const api = useHopApi();
+  const scope = day === null ? range : `day${day}`;
+  const scopeLabel = day === null ? RANGES[range].label : dayTitle(day);
+
+  // Esc goes back from a picked day to the whole period, as on Analytics.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && !e.defaultPrevented && api.getState().pages.salesDay !== null) setPages({ salesDay: null });
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [api, setPages]);
+
   return (
     <div className="flex h-full min-h-[680px] flex-col gap-16 px-24 py-20">
       <div className="flex gap-12">
-        {SALES_TILES[range].map((t) => (
+        {(day === null ? SALES_TILES[range] : dayTiles(day)).map((t) => (
           <HopFrame
             key={t.id}
-            id={`sales.tile.${t.id}.${range}`}
-            label={`${t.label} · ${RANGES[range].label}`}
+            id={`sales.tile.${t.id}.${scope}`}
+            label={`${t.label} · ${scopeLabel}`}
             page="sales"
             radius={10}
             className="flex min-w-0 flex-1 flex-col gap-2 rounded-10 border border-surface-border-tint px-14 py-10"
@@ -43,8 +59,8 @@ export function SalesPage() {
           </HopFrame>
         ))}
       </div>
-      <RevenueByDay range={range} />
-      <Orders range={range} />
+      <RevenueByDay range={range} day={day} />
+      <Orders range={range} day={day} />
     </div>
   );
 }
@@ -58,19 +74,42 @@ const MONTHS = [
   { id: 'last', label: 'Last month' },
 ] as const;
 
-/** Revenue by day — the Analytics chart's drawing, read-only. A day not reached yet has nothing
- *  drawn: the line stops at today and the baseline turns dashed, as on Analytics. */
-function RevenueByDay({ range }: { range: SalesRange }) {
+/** Revenue by day — the Analytics chart's drawing. A day not reached yet has nothing drawn: the
+ *  line stops at today and the baseline turns dashed. Days can be picked as on Analytics (user
+ *  feedback 2026-10-02): hover shows the day's takings, a click (or a day's label, or ← → once
+ *  the chart has focus) picks it, the same day again or Esc goes back to the whole period.
+ *  Picking lands at once; the hover guide and tooltip follow quickly, as on Analytics. */
+function RevenueByDay({ range, day }: { range: SalesRange; day: number | null }) {
   const period = useHop((s) => s.pages.salesPeriod);
   const which = useHop((s) => s.pages.salesWhich);
   const setPages = useHop((s) => s.setPages);
   const [box, width] = useElementWidth<HTMLDivElement>(CHART.width);
+  const [hover, setHover] = useState<number | null>(null);
   const chart = SALES_CHART[range];
+  const from = RANGES[range].axisFrom;
   const g = chartGeometry(width, chart.values.length);
   const share = (v: number | null) => (v === null ? null : v / chart.max);
   const now = chart.values.map(share);
-  const lastDrawn = chart.today ?? now.length - 1;
+  const has = (i: number) => chart.values[i] !== null && chart.values[i] !== undefined;
+  const picked = day !== null ? day - from : null;
+  const dot = picked ?? chart.today ?? now.length - 1;
   const split = chart.today !== null ? g.xAt(chart.today) : g.width;
+  const pick = (i: number) => has(i) && setPages({ salesDay: from + i === day ? null : from + i });
+
+  // The nearest day with takings to a point on the plot.
+  const nearest = (x: number) => {
+    const i = Math.max(0, Math.min(now.length - 1, g.dayAt(x)));
+    for (let k = 0; k < now.length; k++) for (const j of [i - k, i + k]) if (j >= 0 && j < now.length && has(j)) return j;
+    return null;
+  };
+  const onKey = (e: React.KeyboardEvent) => {
+    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+    e.preventDefault();
+    const step = e.key === 'ArrowRight' ? 1 : -1;
+    let i = (picked ?? (step > 0 ? -1 : now.length)) + step;
+    while (i >= 0 && i < now.length && !has(i)) i += step;
+    if (i >= 0 && i < now.length) setPages({ salesDay: from + i });
+  };
 
   return (
     <HopFrame
@@ -82,12 +121,21 @@ function RevenueByDay({ range }: { range: SalesRange }) {
       className="flex shrink-0 flex-col gap-12 rounded-12 border border-surface-border-tint px-20 pb-10 pt-14"
     >
       <div className="flex min-h-[44px] items-center justify-between gap-12">
-        <h2 className="text-13 font-600 text-text-primary">Revenue by day{range === 'all' ? ' · since 3 Aug' : ''}</h2>
+        {/* Changes at once with the pick, like the Analytics chart title. */}
+        <h2 className="text-13 font-600 text-text-primary">{day !== null ? dayTitle(day) : `Revenue by day${range === 'all' ? ' · since 3 Aug' : ''}`}</h2>
         {period !== 'all' && (
-          <ModeToggle label="Compare" options={period === 'week' ? WEEKS : MONTHS} value={which} onChange={(salesWhich) => setPages({ salesWhich })} thumbId="sales-thumb" />
+          <ModeToggle label="Compare" options={period === 'week' ? WEEKS : MONTHS} value={which} onChange={(salesWhich) => setPages({ salesWhich, salesDay: null })} thumbId="sales-thumb" />
         )}
       </div>
-      <div ref={box} className="w-full" style={{ height: CHART.height }}>
+      <div
+        ref={box}
+        className="relative w-full rounded-4 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-selection"
+        style={{ height: CHART.height }}
+        tabIndex={0}
+        role="group"
+        aria-label={`Days: ← and → pick one${day !== null ? `, ${dayTitle(day)} picked` : ''}`}
+        onKeyDown={onKey}
+      >
         <svg
           width={width}
           height={CHART.height}
@@ -95,7 +143,7 @@ function RevenueByDay({ range }: { range: SalesRange }) {
           className="overflow-visible"
           role="img"
           aria-label={`Revenue by day, ${RANGES[range].label.toLowerCase()}${chart.compareLabel ? `, ${chart.compareLabel.toLowerCase()} in grey` : ''}: ${chart.values
-            .flatMap((v, i) => (v === null ? [] : [`${chart.ticks.find((t) => t.at === i)?.label ?? `day ${i + 1}`} ${money(v)}`]))
+            .flatMap((v, i) => (v === null ? [] : [`${dayTitle(from + i)} ${money(v)}`]))
             .join(', ')}`}
         >
           <path d={`M0 ${CHART.baseline}H${split}`} className="stroke-surface-border-tint" strokeWidth={1} />
@@ -103,19 +151,56 @@ function RevenueByDay({ range }: { range: SalesRange }) {
           <path d={g.areaPath(now)} className="fill-chart-fill" />
           {chart.compare && <path d={g.linePath(chart.compare.map(share))} className="stroke-chart-compare" strokeWidth={1.5} fill="none" />}
           <path d={g.linePath(now)} className="stroke-status-success" strokeWidth={2} fill="none" />
-          <circle cx={g.xAt(lastDrawn)} cy={yAt(now[lastDrawn] ?? 0)} r={5} className="fill-status-success stroke-surface-default" strokeWidth={2} />
+          {picked !== null && (
+            <path d={`M${g.xAt(picked)} ${yAt(now[picked] ?? 0) + 8}V${CHART.baseline}`} className="stroke-status-success" strokeWidth={1} strokeDasharray="2 3" />
+          )}
+          {hover !== null && hover !== picked && (
+            <>
+              <line x1={g.xAt(hover)} x2={g.xAt(hover)} y1={CHART.topY - 6} y2={CHART.baseline} className="pointer-events-none stroke-chart-compare" strokeWidth={1} />
+              <circle cx={g.xAt(hover)} cy={yAt(now[hover] ?? 0)} r={4.5} className="pointer-events-none fill-surface-default stroke-status-success" strokeWidth={1.5} />
+            </>
+          )}
+          <circle cx={g.xAt(dot)} cy={yAt(now[dot] ?? 0)} r={5} className="fill-status-success stroke-surface-default" strokeWidth={2} />
+          {/* Pointer surface: snaps to the nearest day with takings; a click picks it. */}
+          <rect
+            x={0}
+            y={0}
+            width={width}
+            height={CHART.height}
+            fill="transparent"
+            className="cursor-pointer"
+            data-interactive
+            onPointerMove={(e) => setHover(nearest(e.clientX - e.currentTarget.getBoundingClientRect().left))}
+            onPointerLeave={() => setHover(null)}
+            onClick={() => hover !== null && pick(hover)}
+          />
         </svg>
-      </div>
-      <div className="relative h-[15px] w-full" aria-hidden="true">
-        {chart.ticks.map((t) => (
-          <span
-            key={t.at}
-            className={`absolute top-0 -translate-x-1/2 whitespace-nowrap text-11-5 ${t.at === chart.today ? 'font-500 text-status-success-text' : 'text-chart-future'}`}
-            style={{ left: g.xAt(t.at) }}
+        {hover !== null && chart.values[hover] !== null && (
+          <div
+            role="status"
+            className="pointer-events-none absolute left-0 top-0 flex -translate-x-1/2 -translate-y-full flex-col gap-2 whitespace-nowrap rounded-8 bg-action-primary px-8 py-6 transition-transform duration-(--dur-fast) ease-hop-out"
+            style={{ transform: `translate(${g.xAt(hover)}px, ${yAt(now[hover] ?? 0) - 12}px)` }}
           >
-            {t.label}
-          </span>
-        ))}
+            <span className="text-12 font-600 text-text-on-dark tabular-nums">{money(chart.values[hover] ?? 0)}</span>
+            <span className="text-11 text-chip-off-text tabular-nums">{dayTitle(from + hover)}</span>
+          </div>
+        )}
+      </div>
+      <div className="relative h-[15px] w-full" role="group" aria-label="Days">
+        {chart.ticks.map((t) => {
+          const cls = `absolute top-0 -translate-x-1/2 whitespace-nowrap text-11-5 ${
+            t.at === picked || (picked === null && t.at === chart.today) ? 'font-500 text-status-success-text' : 'text-chart-future'
+          }`;
+          return has(t.at) ? (
+            <button key={t.at} type="button" className={`${cls} rounded-4`} style={{ left: g.xAt(t.at) }} aria-pressed={t.at === picked} aria-label={`${dayTitle(from + t.at)}, show that day`} onClick={() => pick(t.at)}>
+              {t.label}
+            </button>
+          ) : (
+            <span key={t.at} className={cls} style={{ left: g.xAt(t.at) }} aria-hidden="true">
+              {t.label}
+            </span>
+          );
+        })}
       </div>
     </HopFrame>
   );
@@ -126,17 +211,18 @@ const ROW = 49; // py 10 + the 28px thumbnail + the 1px divider
 const OVERSCAN = 6;
 let revealed = 0; // the last tag request (revealPulse) an order list has scrolled to
 
-function Orders({ range }: { range: SalesRange }) {
+function Orders({ range, day }: { range: SalesRange; day: number | null }) {
   const filter = useHop((s) => s.pages.salesFilter);
   const setPages = useHop((s) => s.setPages);
-  const all = SALES_ORDERS[range];
+  const all = day === null ? SALES_ORDERS[range] : dayOrders(day, range);
   const rows = filter === 'all' ? all : all.filter((o) => o.fulfilment === filter);
   const toPack = all.filter((o) => o.fulfilment === 'To pack').length;
-  const label = RANGES[range].label;
+  const label = day === null ? RANGES[range].label : dayTitle(day);
+  const scope = day === null ? range : `day${day}`;
 
   return (
     <HopFrame
-      id={`sales.orders.${range}`}
+      id={`sales.orders.${scope}`}
       label={`Orders · ${label}`}
       page="sales"
       jumpTarget="customers"
@@ -164,7 +250,7 @@ function Orders({ range }: { range: SalesRange }) {
           ))}
         </div>
         {/* Keyed by period and filter: a new list starts at its top. */}
-        <OrderRows key={`${range}-${filter}`} rows={rows} range={range} empty={`No orders ${filter === 'all' ? '' : `${filter.toLowerCase()} `}${label.toLowerCase()}.`} />
+        <OrderRows key={`${scope}-${filter}`} rows={rows} range={range} empty={`No orders ${filter === 'all' ? '' : `${filter.toLowerCase()} `}${label.toLowerCase()}.`} />
       </div>
     </HopFrame>
   );

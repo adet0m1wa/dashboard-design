@@ -44,7 +44,7 @@ export default async function (t) {
   await t.wait(100);
   const week = await t.eval(() => {
     const tiles = [...document.querySelectorAll('[data-hop-frame^="sales.tile."]')].map((f) => f.textContent);
-    const ticks = [...document.querySelectorAll('[data-hop-frame^="sales.chart."] .relative.h-\\[15px\\] span')].map((s) => ({ label: s.textContent, x: Math.round(parseFloat(s.style.left)) }));
+    const ticks = [...document.querySelectorAll('[data-hop-frame^="sales.chart."] .relative.h-\\[15px\\] > *')].map((s) => ({ label: s.textContent, x: Math.round(parseFloat(s.style.left)) }));
     const dot = document.querySelector('[data-hop-frame^="sales.chart."] circle');
     return { tiles, ticks, dotX: Math.round(Number(dot.getAttribute('cx'))), dashed: !!document.querySelector('[data-hop-frame^="sales.chart."] path[stroke-dasharray]') };
   });
@@ -56,6 +56,35 @@ export default async function (t) {
   const last = await t.eval(() => [...document.querySelectorAll('[data-hop-frame^="sales.tile."]')].map((f) => f.textContent));
   await t.check(`${m}2 last week: $15,810 and 209 orders (Analytics' last week)`, last[0].includes('$15,810') && last[1].includes('209'));
   await t.eval(radio, 'This week');
+
+  // 2b. Days can be picked as on Analytics (feedback 2026-10-02): a label, ← →, the same day or Esc
+  const dayState = () =>
+    t.eval(() => ({
+      title: document.querySelector('[data-hop-frame^="sales.chart."] h2').textContent,
+      revenue: document.querySelector('[data-hop-frame^="sales.tile.revenue."]').textContent,
+      orders: Number(document.querySelector('[data-hop-frame^="sales.orders."] h2 span').textContent.replace(/,/g, '')),
+      h: Math.round(document.querySelector('[data-hop-frame^="sales.orders."]').getBoundingClientRect().height),
+    }));
+  await t.click('button[aria-label="Wednesday, 23 Sep, show that day"]');
+  await t.wait(100);
+  const wed = await dayState();
+  await t.eval(() => document.querySelector('[data-hop-frame^="sales.chart."] [role=group][tabindex]').focus());
+  await t.page.keyboard.press('ArrowLeft');
+  await t.wait(100);
+  const tue = await dayState();
+  await t.page.keyboard.press('Escape');
+  await t.wait(100);
+  const whole = await dayState();
+  await t.check(
+    `${m}2b pick Wed: "${wed.title}", ${wed.revenue.replace('Revenue', '')}, ${wed.orders} orders; ← "${tue.title}" (${tue.orders}); Esc "${whole.title}" (${whole.orders}); card ${wed.h}/${tue.h}/${whole.h}px`,
+    wed.title === 'Wednesday, 23 Sep' && wed.revenue.includes('$3,120') && wed.orders === 41 && tue.title === 'Tuesday, 22 Sep' && tue.orders === 30 && whole.title === 'Revenue by day' && whole.orders === 131 && wed.h === whole.h && tue.h === whole.h,
+  );
+  await t.click('button[aria-label="Today, Thursday, 24 Sep, show that day"]');
+  await t.wait(100);
+  const today = await dayState();
+  await t.click('button[aria-label="Today, Thursday, 24 Sep, show that day"]');
+  await t.wait(100);
+  await t.check(`${m}2b today: ${today.revenue.replace('Revenue', '')} and ${today.orders} orders (Analytics' today); picked again it lets go ("${(await dayState()).title}")`, today.revenue.includes('$2,480') && today.orders === 34 && (await dayState()).title === 'Revenue by day');
 
   // 3. Monthly and All time; all time starts at #1, its dates read dd/mm/yy
   await period(t, 'Monthly');

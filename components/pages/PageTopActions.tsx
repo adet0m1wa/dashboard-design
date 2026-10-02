@@ -29,7 +29,7 @@ export function SalesTopActions() {
   const setPages = useHop((s) => s.setPages);
   return (
     <div className="flex items-center gap-8">
-      <MenuButton label="Period" options={SALES_PERIODS} value={period} onChange={(salesPeriod) => setPages({ salesPeriod })} />
+      <MenuButton label="Period" options={SALES_PERIODS} value={period} onChange={(salesPeriod) => setPages({ salesPeriod, salesDay: null })} />
       <OutlineButton onClick={() => showToast('Export is coming soon')}>
         <DownloadIcon className="text-text-secondary" />
         Export
