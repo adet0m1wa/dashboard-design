@@ -93,18 +93,19 @@ export interface SalesTile {
   tone: 'success' | 'danger' | 'muted';
 }
 
-function tilesFor(range: SalesRange): SalesTile[] {
-  const r = RANGES[range];
-  const now = inDays(r.from, r.to);
-  const then = r.before ? inDays(r.before.from, r.before.to) : null;
+type Before = { from: number; to: number; label: string } | null;
+
+/** The four tiles for any stretch of days, against the stretch before it when there is one. */
+function spanTiles(from: number, to: number, before: Before, since: string): SalesTile[] {
+  const now = inDays(from, to);
+  const then = before ? inDays(before.from, before.to) : null;
   const change = (a: number, b: number): Pick<SalesTile, 'note' | 'tone'> => {
     const p = pct(a, b);
     return p === 0 ? { note: 'same as before', tone: 'muted' } : { note: p > 0 ? `+${p}%` : `−${-p}%`, tone: p > 0 ? 'success' : 'danger' };
   };
-  const avg = sum(now) / now.length;
-  const back = returningShare(r.from, r.to);
-  const since = range === 'all' ? 'since 3 Aug' : 'first month';
-  if (!then) {
+  const avg = now.length ? sum(now) / now.length : 0;
+  const back = returningShare(from, to);
+  if (!then?.length) {
     return [
       { id: 'revenue', label: 'Revenue', value: money(sum(now)), note: since, tone: 'muted' },
       { id: 'orders', label: 'Orders', value: now.length.toLocaleString('en-US'), note: since, tone: 'muted' },
@@ -113,7 +114,7 @@ function tilesFor(range: SalesRange): SalesTile[] {
     ];
   }
   const avgThen = sum(then) / then.length;
-  const backThen = returningShare(r.before!.from, r.before!.to);
+  const backThen = returningShare(before!.from, before!.to);
   const dAvg = Math.round(avg - avgThen);
   const dBack = back - backThen;
   return [
@@ -123,6 +124,23 @@ function tilesFor(range: SalesRange): SalesTile[] {
     { id: 'returning', label: 'Returning customers', value: `${back}%`, note: dBack === 0 ? 'same as before' : `${dBack > 0 ? '+' : '−'}${Math.abs(dBack)} pts`, tone: dBack > 0 ? 'success' : dBack < 0 ? 'danger' : 'muted' },
   ];
 }
+
+function tilesFor(range: SalesRange): SalesTile[] {
+  const r = RANGES[range];
+  return spanTiles(r.from, r.to, r.before ?? null, range === 'all' ? 'since 3 Aug' : 'first month');
+}
+
+// A single day picked on the chart (user feedback 2026-10-02: move between days, as on Analytics):
+// its tiles against the same day a week before, its orders.
+const DAY_NAMES = { Mon: 'Monday', Tue: 'Tuesday', Wed: 'Wednesday', Thu: 'Thursday', Fri: 'Friday', Sat: 'Saturday', Sun: 'Sunday' } as const;
+export const dayTitle = (day: number) => `${day === TODAY ? 'Today, ' : ''}${DAY_NAMES[weekdayOf(day)]}, ${shortDate(day)}`;
+const dayBefore = (day: number): Before => (day >= 7 ? { from: day - 7, to: day - 7, label: `the ${DAY_NAMES[weekdayOf(day)]} before` } : null);
+export const dayTiles = (day: number) => spanTiles(day, day, dayBefore(day), 'first week');
+/** A day's orders, in the period's order (all time oldest first). */
+export const dayOrders = (day: number, range: SalesRange) => {
+  const list = inDays(day, day);
+  return range === 'all' ? list : [...list].reverse();
+};
 
 export interface SalesChart {
   values: (number | null)[]; // null: before the store opened, or not reached yet
@@ -224,6 +242,25 @@ function answersFor(range: SalesRange): [string, Answer][] {
 }
 
 export const SALES_ANSWERS: Record<string, Answer> = Object.fromEntries((Object.keys(RANGES) as SalesRange[]).flatMap(answersFor));
+
+/** Frames while a day is picked: `sales.tile.revenue.day51`, `sales.orders.day51`. */
+export function dayAnswer(frameId: string): Answer | undefined {
+  const m = frameId.match(/^sales\.(?:tile\.(\w+)|orders)\.day(\d+)$/);
+  if (!m) return undefined;
+  const day = Number(m[2]);
+  const [revenue, orders, average, returning] = dayTiles(day);
+  const before = dayBefore(day);
+  const vs = (t: SalesTile) => (before && t.tone !== 'muted' ? ` (${t.note} on ${before.label})` : '');
+  const when = day === TODAY ? 'today so far' : `on ${dayTitle(day)}`;
+  const packing = day === TODAY ? ` ${toPack().length} are still to pack.` : '';
+  const say: Record<string, string> = {
+    revenue: `${revenue.value} ${when}${vs(revenue)}.`,
+    orders: `${orders.value} orders ${when}${vs(orders)}.${packing}`,
+    average: `The average order ${when} was ${average.value}${vs(average)}.`,
+    returning: `${returning.value} of the orders ${when} came from customers who had ordered before.`,
+  };
+  return { reads: ['sales'], blocks: [text(m[1] ? say[m[1]] : `${orders.value} orders ${when}, ${revenue.value} in all.${packing}`)] };
+}
 
 /** A single order row (`sales.order.1042`, or the same order in a customer's list). */
 export function orderAnswer(n: number): Answer | undefined {

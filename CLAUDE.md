@@ -322,6 +322,11 @@ post photos are in (`public/products`, mapped in `data/photos.ts`).
   of the window and keeps that size for every period and filter; its rows (49px) are drawn only
   where they're in view. Frame ids carry the period (`sales.tile.revenue.thisWeek`); a chat tag
   brings its period back and scrolls a row into the drawn window.
+- Sales days (feedback 2026-10-02): any day with takings can be picked on the chart, as on
+  Analytics — hover shows the day's revenue, a click or a day's label picks it, ← → move once the
+  plot has focus, the same day again or Esc lets go. A picked day's tiles compare with the same
+  weekday a week before; the orders card lists that day (same size). Frame ids use `day51`; a
+  chat tag brings the day back (`openItem` "thisWeek@51").
 - Customers layout (feedback 7): details on the left at 250 (Instagram's list width) — numbers,
   Instagram handle, city, customer since, notes, tags, then every order; the chat header is the
   name alone. The chat sits over the conversation list in one area (user feedback 2026-10-02);

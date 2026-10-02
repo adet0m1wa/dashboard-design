@@ -1,7 +1,7 @@
 import { CUSTOMERS_ANSWERS } from './customers';
 import { INSTAGRAM_ANSWERS } from './instagram';
 import { LAST_WEEK_URGENT_ANSWERS } from './lastWeekDays';
-import { orderAnswer, SALES_ANSWERS } from './sales';
+import { dayAnswer, orderAnswer, SALES_ANSWERS } from './sales';
 import type { Page } from './types';
 
 // Scripted Hop answers (brief B9). Keyed by the tagged frame's id, or by the prompt-cue text.
@@ -198,6 +198,8 @@ export function answerFor(frameId: string | undefined, question: string): Answer
   // are over a thousand of them.
   const order = frameId?.match(/^(?:sales|customers)\.order\.(\d+)$/);
   if (order) return orderAnswer(Number(order[1])) ?? FALLBACK;
+  const day = frameId ? dayAnswer(frameId) : undefined;
+  if (day) return day;
   if (ANSWERS_BY_CUE[question]) return ANSWERS_BY_CUE[question];
   return FALLBACK;
 }
