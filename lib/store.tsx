@@ -106,6 +106,8 @@ export interface HopState {
   toast: { id: number; text: string } | null;
   sidebarCollapsed: boolean; // Figma "example 1"
   panelCollapsed: boolean; // Figma "example 2": only the mascot shows
+  /** Analytics only (user feedback 2026-10-02): the panel takes the whole workspace. */
+  panelExpanded: boolean;
   /** The side panel's width, shared by every page (Hop chat, History chain). Dragged between
    *  PANEL_MIN and PANEL_MAX; kept when the panel is closed and reopened. */
   panelWidth: number;
@@ -143,6 +145,7 @@ export interface HopState {
   toggleSidebar: () => void;
   togglePanel: () => void;
   setPanelWidth: (width: number) => void;
+  setPanelExpanded: (on: boolean) => void;
   setHighlightMode: (on: boolean) => void;
   setPages: (pages: Partial<PagesState>) => void;
 }
@@ -173,6 +176,7 @@ export function createHopStore(initialPage: Page, init: Partial<HopState> = {}) 
     toast: null,
     sidebarCollapsed: false,
     panelCollapsed: false,
+    panelExpanded: false,
     panelWidth: PANEL_MAX,
     highlightMode: false,
 
@@ -194,6 +198,8 @@ export function createHopStore(initialPage: Page, init: Partial<HopState> = {}) 
         activeTagId: null,
         // History has no Hop panel, so no highlight switch either; and it opens on the chain.
         ...(page === 'history' ? { highlightMode: false } : {}),
+        // Full screen is an Analytics thing: any other page gets the panel's usual width back.
+        ...(page !== 'analytics' ? { panelExpanded: false } : {}),
         ...(s.page === 'history' ? { history: { ...s.history, expanded: false } } : {}),
       });
     },
@@ -262,7 +268,7 @@ export function createHopStore(initialPage: Page, init: Partial<HopState> = {}) 
       if (!msg || msg.kind !== 'hop') return;
       set({
         hopStatus: 'idle',
-        announce: msg.blocks.map((b) => (b.kind === 'text' ? b.text : '')).join(' ').trim(),
+        announce: msg.blocks.map((b) => (b.kind === 'text' ? b.text : b.kind === 'list' ? b.items.map((i) => `${i.title}. ${i.detail}`).join(' ') : '')).join(' ').trim(),
         messages: s.messages.map((m) => (m.id === id && m.kind === 'hop' ? { ...m, status: 'done' } : m)),
       });
     },
@@ -297,6 +303,7 @@ export function createHopStore(initialPage: Page, init: Partial<HopState> = {}) 
       if (msg.tag.page !== s.page) get().navigate(msg.tag.page, 'tag');
       const now = get();
       set({
+        panelExpanded: false, // the frame has to be on screen to be shown
         // A card row or a period's Urgent card only exists in the view it was asked in, so that
         // view comes back with it (otherwise the tag pointed at nothing).
         ...(msg.tag.page === 'analytics' && msg.view ? { analytics: msg.view } : {}),
@@ -366,7 +373,7 @@ export function createHopStore(initialPage: Page, init: Partial<HopState> = {}) 
     togglePanel: () => {
       const s = get();
       if (s.panelCollapsed) return set({ panelCollapsed: false });
-      set({ panelCollapsed: true });
+      set({ panelCollapsed: true, panelExpanded: false });
       s.setHighlightMode(false);
     },
     // Switching highlight off also puts away a frame it picked (unless Hop is reading it).
@@ -374,6 +381,11 @@ export function createHopStore(initialPage: Page, init: Partial<HopState> = {}) 
       if (on) return set({ highlightMode: true });
       const s = get();
       set({ highlightMode: false, hoverId: null, ...(s.selection && !s.scanning ? { selection: null, activeTagId: null } : {}) });
+    },
+    // Expanding hides the page, so highlight mode (which picks on the page) goes off with it.
+    setPanelExpanded: (on) => {
+      if (on) get().setHighlightMode(false);
+      set({ panelExpanded: on && get().page === 'analytics' });
     },
     setPanelWidth: (width) => set({ panelWidth: Math.round(Math.min(PANEL_MAX, Math.max(PANEL_MIN, width))) }),
     ...init,

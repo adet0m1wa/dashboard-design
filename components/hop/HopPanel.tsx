@@ -7,7 +7,8 @@ import { PAGE_TITLES } from '@/data/nav';
 import { duration, easeExit, easeOut, press, rise, timing } from '@/lib/motion';
 import { CHAT_FADE, PANEL_MAX, PANEL_MIN } from '@/lib/layout';
 import { useHop, type Message } from '@/lib/store';
-import { ArrowRIcon, BoundingBoxIcon, ChatCenteredIcon } from '@/components/icons/figma';
+import { ArrowRIcon, ArrowsInIcon, ArrowsOutIcon, BoundingBoxIcon, ChatCenteredIcon } from '@/components/icons/figma';
+import { viaKeyboard } from '@/lib/input';
 import { HopAvatar, type HopAvatarState } from './HopAvatar';
 import { Composer } from './Composer';
 import { HopMessage, Marker, UserMessage } from './Message';
@@ -24,6 +25,10 @@ import { HistoryPanel, HistoryTitle } from '@/components/history/HistoryPanel';
 //     closed (user feedback 2026-09-29). The chat stays mounted underneath.
 //   • Prompt cues only on an empty chat (starting a new one); the conversation fades out at the
 //     bottom only while there's more below (see MessageList).
+//   • On Analytics it can go full screen (user feedback 2026-10-02): the icon beside the highlight
+//     switch grows it over the whole workspace while the page gives its width up — 250ms, in-out,
+//     at once from the keyboard — with no stroke between. The chat sits in a centred column.
+//     Esc, the icon again, another page or a chat tag brings it back.
 export function HopPanel() {
   const page = useHop((s) => s.page);
   const selection = useHop((s) => s.selection);
@@ -41,6 +46,36 @@ export function HopPanel() {
   const onHistory = page === 'history';
   const collapsed = useHop((s) => s.panelCollapsed) && !onHistory;
   const hidden = collapsed ? 'opacity-0' : '';
+  const expanded = useHop((s) => s.panelExpanded) && page === 'analytics' && !collapsed;
+  const setPanelExpanded = useHop((s) => s.setPanelExpanded);
+  const reduce = useReducedMotion();
+
+  // Full screen = the whole workspace (the panel's parent), followed as the window resizes.
+  const aside = useRef<HTMLElement>(null);
+  const [full, setFull] = useState(0);
+  useLayoutEffect(() => {
+    const workspace = aside.current?.parentElement;
+    if (!workspace) return;
+    const update = () => setFull(workspace.clientWidth);
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(workspace);
+    return () => ro.disconnect();
+  }, []);
+  // Only going in or out of full screen eases; dragging the edge or opening/closing stays instant.
+  const [easing, setEasing] = useState(false);
+  const toggleExpanded = (on: boolean) => {
+    setEasing(!reduce && !viaKeyboard());
+    setPanelExpanded(on);
+  };
+  useEffect(() => {
+    if (!expanded) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && !e.defaultPrevented) toggleExpanded(false);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  });
 
   const avatar: HopAvatarState = scanning ? 'scanning' : hopStatus === 'thinking' ? 'thinking' : 'idle';
   // Jump chips (brief B3): Analytics with a selection that has a jump target, or any page
@@ -52,13 +87,18 @@ export function HopPanel() {
 
   return (
     <aside
-      className="relative shrink-0 overflow-hidden border-l border-surface-divider-tint bg-surface-default"
-      style={{ width: collapsed ? 'var(--spacing-panel-rail)' : width }}
+      ref={aside}
+      className={`relative shrink-0 overflow-hidden bg-surface-default ${expanded ? '' : 'border-l border-surface-divider-tint'} ${
+        easing ? 'transition-[width] duration-(--dur-slow) ease-hop-in-out' : ''
+      }`}
+      style={{ width: collapsed ? 'var(--spacing-panel-rail)' : expanded ? full : width }}
+      onTransitionEnd={(e) => e.target === e.currentTarget && setEasing(false)}
       aria-label={onHistory ? 'Hop: History' : 'Hop'}
     >
-      {!collapsed && <ResizeHandle width={width} />}
-      {/* Its own width inside, so closing clips the panel instead of squashing it. */}
-      <div className="flex h-full flex-col" style={{ width }}>
+      {!collapsed && !expanded && <ResizeHandle width={width} />}
+      {/* Its own width inside, so closing clips the panel instead of squashing it; in full screen,
+          the whole panel. */}
+      <div className="flex h-full flex-col" style={{ width: expanded ? '100%' : width }}>
         <header className="flex h-bar shrink-0 items-center justify-between border-b border-surface-faint px-16">
           <div className="flex items-center gap-10">
             {onHistory ? (
@@ -82,11 +122,13 @@ export function HopPanel() {
               <motion.button type="button" whileTap={press} onClick={newChat} aria-label="New chat" className="relative rounded-4 text-text-black after:absolute after:-inset-4">
                 <ChatCenteredIcon />
               </motion.button>
-              {/* Highlight mode: only while it's on can frames on the page be hovered and picked. */}
+              {/* Highlight mode: only while it's on can frames on the page be hovered and picked
+                  (from full screen it brings the page back first). */}
               <motion.button
                 type="button"
                 whileTap={press}
                 onClick={(e) => {
+                  if (expanded) toggleExpanded(false);
                   setHighlightMode(!highlightMode);
                   // From the keyboard (detail 0), turning it on jumps to the page's first frame:
                   // the frames sit before this button in the Tab order.
@@ -109,13 +151,25 @@ export function HopPanel() {
               >
                 <BoundingBoxIcon />
               </motion.button>
+              {page === 'analytics' && (
+                <motion.button
+                  type="button"
+                  whileTap={press}
+                  onClick={() => toggleExpanded(!expanded)}
+                  aria-label={expanded ? 'Exit full screen' : 'Full screen'}
+                  aria-pressed={expanded}
+                  className="relative rounded-4 text-text-black after:absolute after:-inset-4"
+                >
+                  {expanded ? <ArrowsInIcon /> : <ArrowsOutIcon />}
+                </motion.button>
+              )}
             </div>
           )}
         </header>
 
         {/* Hop's conversation: mounted on every page (a streaming answer carries on); on History
             the brief chain takes its place. */}
-        <div className={`min-h-0 flex-1 flex-col ${onHistory ? 'hidden' : 'flex'} ${hidden}`} inert={collapsed || onHistory}>
+        <div className={`min-h-0 flex-1 flex-col ${onHistory ? 'hidden' : 'flex'} ${hidden} ${expanded ? 'mx-auto w-full max-w-[760px]' : ''}`} inert={collapsed || onHistory}>
           <div className="flex min-h-0 flex-1 flex-col gap-16 px-16 py-14">
             <MessageList />
             <AnimatePresence initial={false} mode="wait">

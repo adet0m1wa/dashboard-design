@@ -122,7 +122,9 @@ function Conversation({ t }: { t: Thread }) {
   return (
     // No right border: it ends at the side panel's own line (user feedback 2026-10-01: one stroke).
     <HopFrame id="customers.thread" label={`Conversation · ${t.name}`} page="customers" className="@container flex min-h-0 min-w-0 flex-1 flex-col">
-      <div className="flex items-center justify-between gap-12 border-b border-surface-divider-tint px-20 py-12">
+      {/* 76 tall, the same as the details header beside it, so their bottom lines meet (user
+          feedback 2026-10-02); the content sits in the middle. */}
+      <div className="flex h-[76px] shrink-0 items-center justify-between gap-12 border-b border-surface-divider-tint px-20">
         <div className="flex min-w-0 items-center gap-10">
           <InitialsAvatar initials={t.initials} color={t.avatar} size={40} />
           {/* Just the name: who they are is in the details on the left (user feedback 2026-10-01). */}
@@ -235,7 +237,7 @@ function Details({ t }: { t: Thread }) {
   return (
     <HopFrame id={`customers.profile.${t.id}`} label={`${t.name} · customer`} page="customers" jumpTarget="sales" className="flex w-[250px] shrink-0 border-r border-surface-divider-tint">
       <div ref={column} className="flex min-w-0 flex-1 flex-col">
-        <div className="flex gap-6 border-b border-surface-divider-tint px-16 py-14">
+        <div className="flex h-[76px] shrink-0 items-center gap-6 border-b border-surface-divider-tint px-16">
           {[
             ['Spent', p.spent],
             ['Orders', p.count],

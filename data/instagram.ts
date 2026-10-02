@@ -67,11 +67,11 @@ const WEEK: IgPost[] = [
     swatch: 'post-sand-reel',
     stats: [
       { id: 'views', label: 'Views', value: '41.2k', note: '3.1× your usual', good: true },
-      { id: 'watched', label: 'Watched past 3s', value: '78%', note: 'You usually get 52%', good: true },
+      { id: 'watched', label: 'Viewed past 3s', value: '78%', note: 'Usually 52%', good: true },
       { id: 'likes', label: 'Likes', value: '3,410', note: '2.4× your usual', good: false },
-      { id: 'comments', label: 'Comments', value: '188', note: '62 asked the price', good: true },
-      { id: 'saves', label: 'Saves', value: '902', note: 'People planning to buy', good: false },
+      { id: 'comments', label: 'Comments', value: '188', note: '62 asked price', good: true },
       { id: 'followers', label: 'New followers', value: '+214', note: 'From this reel', good: false },
+      { id: 'saves', label: 'Saves', value: '902', note: 'Planning to buy', good: false },
     ],
     commentTotal: 188,
     comments: [
@@ -98,12 +98,12 @@ const WEEK: IgPost[] = [
     image: '/products/large/emerald-post.webp',
     swatch: 'swatch-emerald',
     stats: [
-      { id: 'reach', label: 'Reach', value: '9.8k', note: 'About your usual', good: false },
+      { id: 'reach', label: 'Reach', value: '9.8k', note: 'As usual', good: false },
       { id: 'likes', label: 'Likes', value: '1,240', note: '1.2× your usual', good: true },
-      { id: 'comments', label: 'Comments', value: '64', note: '21 asked about sizes', good: true },
-      { id: 'saves', label: 'Saves', value: '318', note: 'People planning to buy', good: false },
-      { id: 'clicks', label: 'Link clicks', value: '412', note: '6 sold from the post', good: true },
+      { id: 'comments', label: 'Comments', value: '64', note: '21 on sizing', good: true },
       { id: 'followers', label: 'New followers', value: '+38', note: 'From this post', good: false },
+      { id: 'clicks', label: 'Link clicks', value: '412', note: '6 sold from it', good: true },
+      { id: 'saves', label: 'Saves', value: '318', note: 'Planning to buy', good: false },
     ],
     commentTotal: 64,
     comments: [
@@ -126,11 +126,11 @@ const WEEK: IgPost[] = [
     image: '/products/large/packing-day.webp',
     swatch: 'swatch-ecru',
     stats: [
-      { id: 'views', label: 'Views', value: '6.1k', note: 'About your usual', good: false },
-      { id: 'completion', label: 'Watched to the end', value: '64%', note: 'You usually get 58%', good: true },
-      { id: 'replies', label: 'Replies', value: '27', note: '9 asked about delivery', good: false },
-      { id: 'taps', label: 'Taps forward', value: '1.9k', note: 'Fewer than usual', good: true },
-      { id: 'shares', label: 'Shares', value: '84', note: 'Shared to stories', good: false },
+      { id: 'views', label: 'Views', value: '6.1k', note: 'As usual', good: false },
+      { id: 'completion', label: 'Viewed to end', value: '64%', note: 'Usually 58%', good: true },
+      { id: 'replies', label: 'Replies', value: '27', note: '9 on delivery', good: false },
+      { id: 'taps', label: 'Taps forward', value: '1.9k', note: 'Below usual', good: true },
+      { id: 'shares', label: 'Shares', value: '84', note: 'To stories', good: false },
       { id: 'followers', label: 'New followers', value: '+19', note: 'From this story', good: false },
     ],
     commentTotal: 27,
@@ -153,12 +153,12 @@ const WEEK: IgPost[] = [
     image: '/products/large/kimono-restock.webp',
     swatch: 'swatch-indigo',
     stats: [
-      { id: 'reach', label: 'Reach', value: '8.2k', note: 'About your usual', good: false },
-      { id: 'likes', label: 'Likes', value: '980', note: 'About your usual', good: false },
-      { id: 'comments', label: 'Comments', value: '41', note: '12 asked the price', good: true },
-      { id: 'saves', label: 'Saves', value: '204', note: 'People planning to buy', good: false },
-      { id: 'clicks', label: 'Link clicks', value: '286', note: '11 sold since Saturday', good: true },
+      { id: 'reach', label: 'Reach', value: '8.2k', note: 'As usual', good: false },
+      { id: 'likes', label: 'Likes', value: '980', note: 'As usual', good: false },
+      { id: 'comments', label: 'Comments', value: '41', note: '12 asked price', good: true },
       { id: 'followers', label: 'New followers', value: '+22', note: 'From this post', good: false },
+      { id: 'clicks', label: 'Link clicks', value: '286', note: '11 sold so far', good: true },
+      { id: 'saves', label: 'Saves', value: '204', note: 'Planning to buy', good: false },
     ],
     commentTotal: 41,
     comments: [
@@ -181,11 +181,11 @@ const WEEK: IgPost[] = [
     swatch: 'post-fit-check',
     stats: [
       { id: 'views', label: 'Views', value: '12.4k', note: '0.9× your usual', good: false },
-      { id: 'watched', label: 'Watched past 3s', value: '61%', note: 'You usually get 52%', good: true },
+      { id: 'watched', label: 'Viewed past 3s', value: '61%', note: 'Usually 52%', good: true },
       { id: 'likes', label: 'Likes', value: '1,560', note: '1.1× your usual', good: false },
-      { id: 'comments', label: 'Comments', value: '73', note: '18 asked the price', good: true },
-      { id: 'saves', label: 'Saves', value: '341', note: 'People planning to buy', good: false },
+      { id: 'comments', label: 'Comments', value: '73', note: '18 asked price', good: true },
       { id: 'followers', label: 'New followers', value: '+41', note: 'From this reel', good: false },
+      { id: 'saves', label: 'Saves', value: '341', note: 'Planning to buy', good: false },
     ],
     commentTotal: 73,
     comments: [
@@ -238,7 +238,7 @@ const POOL: [string, AvatarColor, string][] = [
 
 const USUAL = { Reel: 13300, Post: 8500, Story: 6000 } as const;
 const compactK = (n: number) => (n >= 1000 ? `${(n / 1000).toFixed(1)}k` : `${n}`);
-const versus = (did: number) => (did >= 0.95 && did <= 1.05 ? 'About your usual' : `${did.toFixed(1)}× your usual`);
+const versus = (did: number) => (did >= 0.95 && did <= 1.05 ? 'As usual' : `${did.toFixed(1)}× your usual`);
 
 function earlier(e: Earlier, i: number): IgPost {
   const r = rng(7001 + i * 131);
@@ -253,27 +253,27 @@ function earlier(e: Earlier, i: number): IgPost {
     e.kind === 'Reel'
       ? [
           { id: 'views', label: 'Views', value: compactK(reach), note: versus(e.did), good: e.did > 1.05 },
-          { id: 'watched', label: 'Watched past 3s', value: `${between(r, 46, 66)}%`, note: 'You usually get 52%', good: e.did > 1 },
+          { id: 'watched', label: 'Viewed past 3s', value: `${between(r, 46, 66)}%`, note: 'Usually 52%', good: e.did > 1 },
           { id: 'likes', label: 'Likes', value: Math.round(reach * (0.08 + r() * 0.04)).toLocaleString('en-US'), note: versus(e.did), good: false },
-          { id: 'comments', label: 'Comments', value: `${comments}`, note: `${Math.min(asked, comments)} asked the price`, good: true },
-          { id: 'saves', label: 'Saves', value: saves.toLocaleString('en-US'), note: 'People planning to buy', good: false },
+          { id: 'comments', label: 'Comments', value: `${comments}`, note: `${Math.min(asked, comments)} asked price`, good: true },
           { id: 'followers', label: 'New followers', value: `+${followers}`, note: 'From this reel', good: false },
+          { id: 'saves', label: 'Saves', value: saves.toLocaleString('en-US'), note: 'Planning to buy', good: false },
         ]
       : e.kind === 'Post'
         ? [
             { id: 'reach', label: 'Reach', value: compactK(reach), note: versus(e.did), good: e.did > 1.05 },
             { id: 'likes', label: 'Likes', value: Math.round(reach * (0.1 + r() * 0.04)).toLocaleString('en-US'), note: versus(e.did), good: false },
-            { id: 'comments', label: 'Comments', value: `${comments}`, note: `${Math.min(asked, comments)} asked the price`, good: true },
-            { id: 'saves', label: 'Saves', value: saves.toLocaleString('en-US'), note: 'People planning to buy', good: false },
-            { id: 'clicks', label: 'Link clicks', value: `${Math.round(reach * 0.03)}`, note: `${between(r, 3, 9)} sold from the post`, good: true },
+            { id: 'comments', label: 'Comments', value: `${comments}`, note: `${Math.min(asked, comments)} asked price`, good: true },
             { id: 'followers', label: 'New followers', value: `+${followers}`, note: 'From this post', good: false },
+            { id: 'clicks', label: 'Link clicks', value: `${Math.round(reach * 0.03)}`, note: `${between(r, 3, 9)} sold from it`, good: true },
+            { id: 'saves', label: 'Saves', value: saves.toLocaleString('en-US'), note: 'Planning to buy', good: false },
           ]
         : [
             { id: 'views', label: 'Views', value: compactK(reach), note: versus(e.did), good: e.did > 1.05 },
-            { id: 'completion', label: 'Watched to the end', value: `${between(r, 54, 68)}%`, note: 'You usually get 58%', good: true },
+            { id: 'completion', label: 'Viewed to end', value: `${between(r, 54, 68)}%`, note: 'Usually 58%', good: true },
             { id: 'replies', label: 'Replies', value: `${comments}`, note: `${Math.min(asked, comments)} asked when`, good: false },
-            { id: 'taps', label: 'Taps forward', value: compactK(Math.round(reach * 0.3)), note: 'About usual', good: false },
-            { id: 'shares', label: 'Shares', value: `${Math.round(reach * 0.012)}`, note: 'Shared to stories', good: false },
+            { id: 'taps', label: 'Taps forward', value: compactK(Math.round(reach * 0.3)), note: 'As usual', good: false },
+            { id: 'shares', label: 'Shares', value: `${Math.round(reach * 0.012)}`, note: 'To stories', good: false },
             { id: 'followers', label: 'New followers', value: `+${followers}`, note: 'From this story', good: false },
           ];
   return {

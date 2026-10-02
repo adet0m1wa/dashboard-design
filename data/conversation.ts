@@ -1,6 +1,7 @@
 import { CUSTOMERS_ANSWERS } from './customers';
 import { INSTAGRAM_ANSWERS } from './instagram';
 import { LAST_WEEK_URGENT_ANSWERS } from './lastWeekDays';
+import { CUSTOMERS, ORDERS } from './orders';
 import { dayAnswer, orderAnswer, SALES_ANSWERS } from './sales';
 import type { Page } from './types';
 
@@ -10,7 +11,9 @@ import type { Page } from './types';
 export type Block =
   | { kind: 'text'; text: string }
   | { kind: 'sizes'; title: string; sizes: { size: string; left: number }[] }
-  | { kind: 'actions'; buttons: { label: string; toast: string; style: 'primary' | 'secondary' }[] };
+  | { kind: 'actions'; buttons: { label: string; toast: string; style: 'primary' | 'secondary' }[] }
+  /** A numbered list of things to do (round 8: "tell me what needs to be attended to"). */
+  | { kind: 'list'; items: { title: string; detail: string }[] };
 
 export interface Answer {
   reads: Page[]; // "read Inventory, Sales"
@@ -192,6 +195,41 @@ export const ANSWERS_BY_FRAME: Record<string, Answer> = {
 };
 
 /** A new scripted answer lookup: tagged frame first, then cue text, then the fallback. */
+// "What needs attending to?" (user feedback 2026-10-02, asked from the full-screen panel on
+// Analytics): everything waiting on the team today, most urgent first, then Hop's offer to take
+// care of all of it. Asked in her own words, so it matches on the gist, not the exact text.
+const ATTENTION_ASKED = /attend|attention|worked on|work on|to-?do|priorit|what should i|what do i need|what needs|needs? (doing|done|fixing|me)|go through/i;
+const toPack = ORDERS.filter((o) => o.fulfilment === 'To pack');
+const first = (id: string) => CUSTOMERS[id].name.split(' ')[0];
+export const ATTENTION: Answer = {
+  reads: ['customers', 'sales', 'inventory', 'instagram'],
+  blocks: [
+    text('Here’s what needs you today, most urgent first:'),
+    {
+      kind: 'list',
+      items: [
+        { title: '3 customers have waited over 2 hours', detail: 'Chioma (8h, her order #1042 shipped this morning), Tolu (3h 34m, the slip dress in a 12) and Grace (2h 19m, a new address). Replies are drafted.' },
+        {
+          title: `${toPack.length} orders to pack`,
+          detail: `${toPack.map((o) => `#${o.number} ${first(o.customer)}`).join(', ')}. Hold Grace’s until her new address is in; Ada wants hers by Saturday.`,
+        },
+        { title: 'The Sand linen set is nearly gone', detail: '4 left at about 4 a day, so it sells out by Saturday. 25 more arrive next Wednesday.' },
+        { title: 'The Adire shirt dress isn’t on the restock', detail: 'Sold out since Monday, and 14 people have asked about it in DMs.' },
+        { title: '62 people asked the price on the Sand reel', detail: 'A pinned reply with the price and the link would answer them all.' },
+        { title: '6 more DMs are waiting', detail: 'Nneka, Bisi, Funke, Zainab, Ngozi and Ada, all under 2 hours.' },
+      ],
+    },
+    text('I can go ahead and take care of all of it: send the three drafted replies, line the orders up for Ife (holding Grace’s), add the Adire dress to the restock order, pin a price reply on the reel and draft answers for the other six DMs. Just say the word.'),
+    {
+      kind: 'actions',
+      buttons: [
+        { label: 'Handle all of it', toast: 'Hop handling everything is coming soon', style: 'primary' },
+        { label: 'Pick which ones', toast: 'Picking tasks is coming soon', style: 'secondary' },
+      ],
+    },
+  ],
+};
+
 export function answerFor(frameId: string | undefined, question: string): Answer {
   if (frameId && ANSWERS_BY_FRAME[frameId]) return ANSWERS_BY_FRAME[frameId];
   // Order rows (Sales, and a customer's order list) are answered from the order itself: there
@@ -201,5 +239,6 @@ export function answerFor(frameId: string | undefined, question: string): Answer
   const day = frameId ? dayAnswer(frameId) : undefined;
   if (day) return day;
   if (ANSWERS_BY_CUE[question]) return ANSWERS_BY_CUE[question];
+  if (!frameId && ATTENTION_ASKED.test(question)) return ATTENTION;
   return FALLBACK;
 }

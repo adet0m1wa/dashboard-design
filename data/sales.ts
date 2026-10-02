@@ -89,6 +89,9 @@ export interface SalesTile {
   id: 'revenue' | 'orders' | 'average' | 'returning';
   label: string;
   value: string;
+  /** The number itself, for the count-up (round 8: the tiles move like Analytics' KPIs). */
+  raw: number;
+  unit: 'currency' | 'int' | 'percent';
   note: string;
   tone: 'success' | 'danger' | 'muted';
 }
@@ -107,10 +110,10 @@ function spanTiles(from: number, to: number, before: Before, since: string): Sal
   const back = returningShare(from, to);
   if (!then?.length) {
     return [
-      { id: 'revenue', label: 'Revenue', value: money(sum(now)), note: since, tone: 'muted' },
-      { id: 'orders', label: 'Orders', value: now.length.toLocaleString('en-US'), note: since, tone: 'muted' },
-      { id: 'average', label: 'Average order', value: money(avg), note: since, tone: 'muted' },
-      { id: 'returning', label: 'Returning customers', value: `${back}%`, note: since, tone: 'muted' },
+      { id: 'revenue', label: 'Revenue', value: money(sum(now)), raw: sum(now), unit: 'currency', note: since, tone: 'muted' },
+      { id: 'orders', label: 'Orders', value: now.length.toLocaleString('en-US'), raw: now.length, unit: 'int', note: since, tone: 'muted' },
+      { id: 'average', label: 'Average order', value: money(avg), raw: Math.round(avg), unit: 'currency', note: since, tone: 'muted' },
+      { id: 'returning', label: 'Returning customers', value: `${back}%`, raw: back, unit: 'percent', note: since, tone: 'muted' },
     ];
   }
   const avgThen = sum(then) / then.length;
@@ -118,10 +121,10 @@ function spanTiles(from: number, to: number, before: Before, since: string): Sal
   const dAvg = Math.round(avg - avgThen);
   const dBack = back - backThen;
   return [
-    { id: 'revenue', label: 'Revenue', value: money(sum(now)), ...change(sum(now), sum(then)) },
-    { id: 'orders', label: 'Orders', value: now.length.toLocaleString('en-US'), ...change(now.length, then.length) },
-    { id: 'average', label: 'Average order', value: money(avg), note: dAvg === 0 ? 'same as before' : `${dAvg > 0 ? '+' : '−'}$${Math.abs(dAvg)}`, tone: dAvg > 0 ? 'success' : dAvg < 0 ? 'danger' : 'muted' },
-    { id: 'returning', label: 'Returning customers', value: `${back}%`, note: dBack === 0 ? 'same as before' : `${dBack > 0 ? '+' : '−'}${Math.abs(dBack)} pts`, tone: dBack > 0 ? 'success' : dBack < 0 ? 'danger' : 'muted' },
+    { id: 'revenue', label: 'Revenue', value: money(sum(now)), raw: sum(now), unit: 'currency', ...change(sum(now), sum(then)) },
+    { id: 'orders', label: 'Orders', value: now.length.toLocaleString('en-US'), raw: now.length, unit: 'int', ...change(now.length, then.length) },
+    { id: 'average', label: 'Average order', value: money(avg), raw: Math.round(avg), unit: 'currency', note: dAvg === 0 ? 'same as before' : `${dAvg > 0 ? '+' : '−'}$${Math.abs(dAvg)}`, tone: dAvg > 0 ? 'success' : dAvg < 0 ? 'danger' : 'muted' },
+    { id: 'returning', label: 'Returning customers', value: `${back}%`, raw: back, unit: 'percent', note: dBack === 0 ? 'same as before' : `${dBack > 0 ? '+' : '−'}${Math.abs(dBack)} pts`, tone: dBack > 0 ? 'success' : dBack < 0 ? 'danger' : 'muted' },
   ];
 }
 

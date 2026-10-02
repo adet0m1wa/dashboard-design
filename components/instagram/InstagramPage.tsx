@@ -23,7 +23,7 @@ export function InstagramPage() {
   const post = igPost(postId);
 
   return (
-    <div className="@container flex h-full min-h-[640px]">
+    <div className="@container flex h-full min-h-[480px]">
       <PostList selected={post.id} />
       <PostCanvas post={post} />
     </div>
@@ -91,7 +91,9 @@ function PostCanvas({ post }: { post: IgPost }) {
   const playable = post.kind !== 'Post';
 
   return (
-    <div className="flex min-w-0 flex-1 flex-col gap-16 bg-surface-canvas px-24 py-20">
+    // Scrolls inside itself, so its scrollbar sits on the grey canvas — scrolling the page put it
+    // on a white strip down the canvas edge (user feedback 2026-10-02).
+    <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-16 overflow-y-auto bg-surface-canvas px-24 py-20">
       <div className="flex items-center justify-between gap-12">
         <div className="flex min-w-0 flex-col gap-4">
           <h2 className="truncate text-17 font-600 tracking-px-0-166 text-text-primary">{post.title}</h2>
@@ -109,11 +111,13 @@ function PostCanvas({ post }: { post: IgPost }) {
           label={`${post.kind} preview`}
           page="instagram"
           radius={14}
-          className="flex h-[347px] w-[225px] shrink-0 flex-col items-center justify-between overflow-hidden rounded-14 p-12 @max-[800px]:h-[278px] @max-[800px]:w-[180px]"
+          className="flex h-[347px] w-[225px] shrink-0 flex-col items-center justify-between rounded-14 p-12 @max-[800px]:h-[278px] @max-[800px]:w-[180px]"
         >
-          {/* The photo, with a dark wash at the foot so the caption reads (Figma's was a gradient stand-in). */}
-          <img src={post.image} alt="" decoding="async" className="absolute inset-0 size-full object-cover" />
-          <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-1/2 bg-linear-to-t from-palette-tone-11/60 to-transparent" />
+          {/* The photo, with a dark wash at the foot so the caption reads (Figma's was a gradient
+              stand-in). They round their own corners: the frame doesn't clip, so its outline
+              and handles can sit outside it. */}
+          <img src={post.image} alt="" decoding="async" className="absolute inset-0 size-full rounded-14 object-cover" />
+          <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-1/2 rounded-b-14 bg-linear-to-t from-palette-tone-11/60 to-transparent" />
           <span className="relative self-start rounded-6 bg-surface-default px-7 py-2 text-10-5 font-600 text-text-primary">{post.kind}</span>
           {playable ? (
             <span aria-hidden="true" className="relative flex size-[40px] items-center justify-center rounded-full bg-surface-default text-text-primary">
@@ -128,7 +132,7 @@ function PostCanvas({ post }: { post: IgPost }) {
           </span>
         </HopFrame>
 
-        <div className="grid min-w-0 flex-1 grid-cols-2 gap-10 pt-8">
+        <div className="grid min-w-0 flex-1 grid-cols-2 gap-10">
           {post.stats.map((s) => (
             <HopFrame
               key={s.id}
@@ -138,9 +142,10 @@ function PostCanvas({ post }: { post: IgPost }) {
               radius={10}
               className="flex min-w-0 flex-col gap-3 rounded-10 border border-surface-border-tint bg-surface-default px-12 py-10"
             >
-              <span className="text-11-5 text-text-secondary">{s.label}</span>
+              {/* Each line stays on one line (user feedback 2026-10-02): the copy is written to fit. */}
+              <span className="whitespace-nowrap text-11-5 text-text-secondary">{s.label}</span>
               <span className="text-18 font-600 tracking-px-0-166 text-text-primary tabular-nums">{s.value}</span>
-              <span className={`text-11 leading-15 ${s.good ? 'text-status-success-text' : 'text-text-muted'}`}>{s.note}</span>
+              <span className={`whitespace-nowrap text-11 ${s.good ? 'text-status-success-text' : 'text-text-muted'}`}>{s.note}</span>
             </HopFrame>
           ))}
         </div>
