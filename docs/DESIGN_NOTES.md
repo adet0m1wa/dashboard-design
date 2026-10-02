@@ -230,3 +230,9 @@ The "fresh" section is now a single section (id 1816:4657, x 1694); the old dupl
   12 tabular; posted days 500 primary with a 4px `action-primary` dot 4px from the bottom; the
   picked day `action-primary` with a white dot; today ringed `surface-border-tint`; days to come
   `chart-future`.
+- Round 8 (2026-10-02): Hop's icon = the user's SVG (30×30, head r7.5 `gradient/hop-head`,
+  screen 4,4 22×16 r6 `hop-screen` with a 1.5 inner `hop-bezel` stroke, eyes 3.75×7.5 r1.875 at
+  x 10 / 16.75, y 8, `hop-eye` with the `hop-eye` glow). Customers headers are both 76 tall
+  (content centred). Full-screen icon: Phosphor ArrowsOutSimple / ArrowsInSimple 18px, after the
+  highlight switch, Analytics only. Hop's list block: 20px numbered circles (`surface-subtle`,
+  11/600), title 13/500, detail 12.5 secondary, 10 apart.

@@ -95,8 +95,9 @@ npm run check      # typecheck + token check
 | Feedback 5 | done | Every bottom card has the Revenue card's rhythm (posts 29×36, follower rows 18 apart); Emil Kowalski pass over all motion (curves, <300ms, keyboard changes instant, transform strings, no scale(0), clip-path stock bars, toast recipe, reduced motion for cues/chips); photos for all 19 products/posts. `feedback4.mjs` 18/18; all 28 runs green on the production build |
 | Feedback 6 | done | Last week's days pick (seeded random data; KPIs, bottom card, Urgent follow); one sidebar layout for open/rail (icons keep y, press works in the rail); History: scroll kept across Expand/Back, expand icon grows with the highlight's slide, filters instant (rows no longer layout elements), cues static on Analytics; Sales, Instagram, Customers designed and built (every section a Hop frame; fit the 720 main column); Sand reel brief draws the Instagram page; reduced motion no longer grows the selection outline/handles from scale 0. `feedback6.mjs` 20/20, reduced 19/19; all 30 runs green on the production build |
 | Feedback 7 | done | Every order since the store opened (1,098, seeded, pinned to Analytics and the inbox); Sales by this/last week, this/last month or all time (from #1, dd/mm/yy), one orders-card size, rows drawn in view; Customers: details left (250) with every order and a draggable list height, the chat over the conversation list with a height handle, name-only chat header; one stroke at the side panel; Instagram calendar (16 earlier posts); 3px scrollbars; split() remainder fix. `feedback7.mjs` 18/18 |
+| Feedback 8 | done | Outlines never cut off (fitOutline; 164 frames checked at 2 widths); Analytics full-screen panel + "what needs attending to" list; Instagram tiles level with the reel, one-line copy, New followers before Saves, canvas scrolls itself; user's Hop icon; Sales chart drawn and animated like Analytics, counting tiles; Customers headers 76 so their lines meet. `feedback8.mjs` 12/12 both modes; all 34 runs green on the production build |
 
-**Status (2026-10-01):** all phases, feedback rounds 1–7 and the final test are done; the case
+**Status (2026-10-01):** all phases, feedback rounds 1–8 and the final test are done; the case
 study and a 20–30s video are planned for later. Product and
 post photos are in (`public/products`, mapped in `data/photos.ts`).
 
@@ -327,6 +328,29 @@ post photos are in (`public/products`, mapped in `data/photos.ts`).
   plot has focus, the same day again or Esc lets go. A picked day's tiles compare with the same
   weekday a week before; the orders card lists that day (same size). Frame ids use `day51`; a
   chat tag brings the day back (`openItem` "thisWeek@51").
+- Feedback 8 — selection outlines are never cut off (`fitOutline` in `lib/outline.ts`): a side
+  whose 5px corner handles would cross a clipping edge (a scroll list, the page area, a card)
+  steps in just far enough; a frame scrolled well past an edge is left alone. Handles past the
+  page's right edge used to make it scroll sideways (a 3px scrollbar that shrank the Customers
+  conversation). Frames must not clip their own content (`overflow-hidden` on a frame clips its
+  own outline): round the image instead. `feedback8.mjs` picks all 164 frames at two widths.
+- Full screen (feedback 8, Analytics only): the icon beside the highlight switch grows the panel
+  over the workspace (CSS width transition, 250ms in-out, instant from the keyboard) while the
+  page column gives its width up, clipped not squashed; no stroke between; the chat in a 760
+  column. Esc, the icon, another page, a chat tag or the highlight switch brings it back. While
+  expanded the workspace mustn't size to its content (`min-w-min`): the page's 720 would grow it
+  as the panel grows into it — a loop.
+- "What needs attending to" (feedback 8): matched on the gist (`ATTENTION_ASKED`), answered with
+  a numbered `list` block (6 things, numbers from the data) and an offer to handle all of it.
+- Instagram stats (feedback 8): tiles start level with the reel; "Viewed" (was Watched); every
+  label and note is written to fit one line at the narrowest tile (82px): "As usual", "62 asked
+  price", "Usually 52%"…; New followers comes before Saves; the canvas scrolls inside itself
+  (scrolling the page put a white scrollbar strip beside the grey canvas).
+- Hop's icon (feedback 8) is the user's: 30×30 rounded square, inset-bezel screen, glowing eyes,
+  no antenna; "reading" pulses the eyes' glow instead.
+- Sales chart (feedback 8) is drawn like Analytics: a dot on every day (smaller on all time),
+  each period draws its line in (first visit 600ms, a switch 280ms), dashed guide on a picked
+  day, hover guide and tooltip that glide; the tiles count up (`AnimatedNumber`).
 - Customers layout (feedback 7): details on the left at 250 (Instagram's list width) — numbers,
   Instagram handle, city, customer since, notes, tags, then every order; the chat header is the
   name alone. The chat sits over the conversation list in one area (user feedback 2026-10-02);

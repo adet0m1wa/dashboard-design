@@ -82,7 +82,12 @@ export function HopMessage({ msg, onAction }: { msg: Extract<Message, { kind: 'h
       } else {
         setProgress({ block: b, words: 1 }); // mount it; its own fade-up runs
         b += 1;
-        const wait = block.kind === 'actions' ? duration.base + block.buttons.length * timing.actionStagger : duration.base;
+        const wait =
+          block.kind === 'actions'
+            ? duration.base + block.buttons.length * timing.actionStagger
+            : block.kind === 'list'
+              ? duration.base + block.items.length * timing.actionStagger
+              : duration.base;
         timer = setTimeout(step, wait * 1000);
       }
     };
@@ -117,6 +122,29 @@ function AnswerBlock({ block, partial, animate, onAction }: { block: Block; part
     : {};
 
   if (block.kind === 'text') return <p className={para}>{partial ?? block.text}</p>;
+
+  if (block.kind === 'list') {
+    // Numbered, each item fading up a beat after the one before (as the action buttons do).
+    return (
+      <ol className="flex w-full flex-col gap-10">
+        {block.items.map((item, i) => (
+          <motion.li
+            key={item.title}
+            className="flex gap-10"
+            initial={animate ? { opacity: 0, transform: 'translateY(6px)' } : false}
+            animate={{ opacity: 1, transform: 'translateY(0px)' }}
+            transition={{ duration: duration.base, ease: easeOut, delay: i * timing.actionStagger }}
+          >
+            <span className="flex size-[20px] shrink-0 items-center justify-center rounded-full bg-surface-subtle text-11 font-600 text-text-secondary tabular-nums">{i + 1}</span>
+            <span className="flex min-w-0 flex-col gap-2">
+              <span className="text-13 font-500 leading-18 text-text-primary">{item.title}</span>
+              <span className="text-12-5 leading-18 text-text-secondary">{item.detail}</span>
+            </span>
+          </motion.li>
+        ))}
+      </ol>
+    );
+  }
 
   if (block.kind === 'sizes') {
     return (

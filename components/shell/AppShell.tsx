@@ -34,17 +34,39 @@ export function AppShell({ initialPage }: { initialPage: Page }) {
         </a>
         <div className="flex h-screen gap-8 overflow-x-auto overflow-y-hidden bg-background-app p-8">
           <Sidebar />
-          <div className="flex min-w-min flex-1 overflow-hidden rounded-12 bg-surface-default">
-            <main id="main" className="relative flex min-w-main-min flex-1 flex-col">
-              <TopBar />
-              <PageArea />
-              <Toast />
-            </main>
+          <Workspace>
+            <PageColumn>
+              <main id="main" className="relative flex min-w-main-min flex-1 flex-col">
+                <TopBar />
+                <PageArea />
+                <Toast />
+              </main>
+            </PageColumn>
             <HopPanel />
-          </div>
+          </Workspace>
         </div>
       </MotionConfig>
     </HopStoreProvider>
+  );
+}
+
+/** The white workspace: the page and the side panel. It's never narrower than the page's
+ *  minimum plus the panel (the app scrolls sideways instead) — except in full screen, where the
+ *  page's width doesn't count (it would grow the workspace as the panel grows into it). */
+function Workspace({ children }: { children: React.ReactNode }) {
+  const expanded = useHop((s) => s.panelExpanded);
+  return <div className={`flex flex-1 overflow-hidden rounded-12 bg-surface-default ${expanded ? 'min-w-0' : 'min-w-min'}`}>{children}</div>;
+}
+
+/** The page's side of the workspace. While the side panel is full screen (Analytics) it gives
+ *  all its width up: the page never gets narrower than its minimum, it's clipped away instead,
+ *  and it's inert. */
+function PageColumn({ children }: { children: React.ReactNode }) {
+  const expanded = useHop((s) => s.panelExpanded);
+  return (
+    <div className={`flex flex-1 overflow-hidden ${expanded ? 'min-w-0' : 'min-w-min'}`} inert={expanded}>
+      {children}
+    </div>
   );
 }
 

@@ -6,11 +6,11 @@ import { duration, timing } from '@/lib/motion';
 
 export type HopAvatarState = 'idle' | 'thinking' | 'scanning' | 'done';
 
-// Hop's face: the Figma component "Agent character" (40×40), also used as the panel's
-// "Hop · character (Rive slot)" at 30px. A dark head, a screen face, two glowing mint eyes and
-// a green antenna light. Placeholder until the Rive character lands (@rive-app/react-canvas) —
-// keep the state names, they map to the state machine.
-//   thinking → the eyes blink · scanning → the antenna light pulses (brief B6) · idle/done → still
+// Hop's face: the user's icon (2026-10-02, replacing the Figma "Agent character" with its
+// antenna): a 30×30 dark rounded square, a screen with a 1.5px inner bezel, two mint eyes with a
+// green glow. Drawn from the icon's own geometry, in the palette's tokens. Placeholder until the
+// Rive character lands — keep the state names, they map to the state machine.
+//   thinking → the eyes blink · scanning → the eyes' glow pulses (brief B6) · idle/done → still
 export function HopAvatar({ state = 'idle', size = 30 }: { state?: HopAvatarState; size?: number }) {
   const reduce = useReducedMotion();
   const id = useId();
@@ -22,7 +22,7 @@ export function HopAvatar({ state = 'idle', size = 30 }: { state?: HopAvatarStat
     <svg
       width={size}
       height={size}
-      viewBox="0 0 40 40"
+      viewBox="0 0 30 30"
       fill="none"
       role="img"
       aria-label={state === 'thinking' ? 'Hop is thinking' : state === 'scanning' ? 'Hop is reading' : 'Hop'}
@@ -30,36 +30,29 @@ export function HopAvatar({ state = 'idle', size = 30 }: { state?: HopAvatarStat
       className="shrink-0 overflow-visible"
     >
       <defs>
-        <linearGradient id={`${id}-head`} x1="20" y1="7" x2="20" y2="40" gradientUnits="userSpaceOnUse">
+        <linearGradient id={`${id}-head`} x1="15" y1="0" x2="15" y2="30" gradientUnits="userSpaceOnUse">
           <stop style={{ stopColor: 'var(--gradient-hop-head-from)' }} />
           <stop offset="1" style={{ stopColor: 'var(--gradient-hop-head-to)' }} />
         </linearGradient>
       </defs>
-      <rect x="19" y="3" width="2" height="5" className="fill-palette-tone-25" />
-      <motion.circle
-        cx="20"
-        cy="3"
-        r="3"
-        className="fill-status-live"
-        style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
-        // SVG: Motion's scale props (a transform string becomes a broken SVG attribute).
-        animate={pulse ? { opacity: [1, 0.35, 1], scale: [1, 1.25, 1] } : { opacity: 1, scale: 1 }}
-        transition={pulse ? loop : { duration: duration.fast }}
-      />
-      <rect y="7" width="40" height="33" rx="13" fill={`url(#${id}-head)`} />
-      <rect x="5.5" y="14.5" width="29" height="18" rx="7.5" className="fill-hop-screen stroke-hop-bezel" />
-      {[13, 22].map((x) => (
+      <rect width="30" height="30" rx="7.5" fill={`url(#${id}-head)`} />
+      {/* The icon's screen (4,4 22×16, r6) with its 1.5px stroke drawn inside: a 1.5px stroke on
+          a rect inset by 0.75 covers the same pixels. */}
+      <rect x="4" y="4" width="22" height="16" rx="6" className="fill-hop-screen" />
+      <rect x="4.75" y="4.75" width="20.5" height="14.5" rx="5.25" strokeWidth="1.5" className="stroke-hop-bezel" />
+      {[10, 16.75].map((x) => (
         <motion.rect
           key={x}
           x={x}
-          y="19"
-          width="5"
-          height="9"
-          rx="2.5"
+          y="8"
+          width="3.75"
+          height="7.5"
+          rx="1.875"
           className="fill-hop-eye"
-          style={{ filter: 'drop-shadow(0 0 2px var(--color-hop-glow))', transformBox: 'fill-box', transformOrigin: 'center' }}
-          animate={blink ? { scaleY: [1, 1, 0.2, 1, 1] } : { scaleY: 1 }}
-          transition={blink ? loop : { duration: duration.fast }}
+          style={{ filter: 'drop-shadow(0 0 3px var(--color-hop-glow))', transformBox: 'fill-box', transformOrigin: 'center' }}
+          // SVG: Motion's scale props (a transform string becomes a broken SVG attribute).
+          animate={blink ? { scaleY: [1, 1, 0.2, 1, 1] } : pulse ? { opacity: [1, 0.55, 1] } : { scaleY: 1, opacity: 1 }}
+          transition={blink || pulse ? loop : { duration: duration.fast }}
         />
       ))}
     </svg>

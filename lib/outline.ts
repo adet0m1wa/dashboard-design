@@ -115,3 +115,52 @@ export function outlineBox(frame: HTMLElement, fallbackRadius: number): OutlineB
   const radii = own.radii.some((r) => r > 0) ? own.radii : [0, 0, 0, 0].map(() => fallbackRadius);
   return inset(f, radii);
 }
+
+// Never cut off (user feedback 2026-10-02: "they shouldn't be locked by anything"). A frame on the
+// edge of a scroll list, the page or a card put its outline's corner handles — 5px outside the
+// outline — beyond what that box shows: they were clipped, and past the page's right edge they
+// even made the page scroll sideways (a 3px scrollbar that shrank the Customers conversation).
+// So any side whose handles would cross a clipping edge steps in just far enough to fit. A frame
+// scrolled well past an edge is left alone: it's the scrolling that hides it, not the outline.
+const HANDLE = 5; // how far a handle reaches past the outline (7px square at −5)
+
+function clipBox(frame: Element) {
+  const box = { top: -Infinity, right: Infinity, bottom: Infinity, left: -Infinity };
+  for (let el = frame.parentElement; el; el = el.parentElement) {
+    const cs = getComputedStyle(el);
+    const r = el.getBoundingClientRect();
+    const k = el instanceof HTMLElement && el.offsetWidth ? r.width / el.offsetWidth : 1;
+    if (cs.overflowX !== 'visible') {
+      box.left = Math.max(box.left, r.left + el.clientLeft * k);
+      box.right = Math.min(box.right, r.left + (el.clientLeft + el.clientWidth) * k);
+    }
+    if (cs.overflowY !== 'visible') {
+      box.top = Math.max(box.top, r.top + el.clientTop * k);
+      box.bottom = Math.min(box.bottom, r.top + (el.clientTop + el.clientHeight) * k);
+    }
+  }
+  return box;
+}
+
+export function fitOutline(frame: HTMLElement, box: OutlineBox): OutlineBox {
+  const f = frame.getBoundingClientRect();
+  const k = frame.offsetWidth ? f.width / frame.offsetWidth : 1;
+  const own = strokes(frame);
+  const clip = clipBox(frame);
+  const reach = (HANDLE + 0.5) * k;
+  const near = reach + 6 * k; // further out than this, the frame itself is scrolled away
+  const o = {
+    top: f.top + (own.top + box.top) * k,
+    left: f.left + (own.left + box.left) * k,
+    right: f.right - (own.right + box.right) * k,
+    bottom: f.bottom - (own.bottom + box.bottom) * k,
+  };
+  const over = {
+    top: clip.top - (o.top - reach),
+    left: clip.left - (o.left - reach),
+    right: o.right + reach - clip.right,
+    bottom: o.bottom + reach - clip.bottom,
+  };
+  const step = (n: number) => (n > 0 && n <= near ? n / k : 0);
+  return { ...box, top: box.top + step(over.top), left: box.left + step(over.left), right: box.right + step(over.right), bottom: box.bottom + step(over.bottom) };
+}

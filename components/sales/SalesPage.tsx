@@ -1,13 +1,17 @@
 'use client';
 
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { CUSTOMERS, itemLabel, type Order } from '@/data/orders';
-import { dayOrders, dayTiles, dayTitle, FULFILMENT_TONE, placedLabel, RANGES, SALES_CHART, SALES_FILTERS, SALES_ORDERS, SALES_TILES, type SalesFilter, type SalesRange } from '@/data/sales';
-import { CHART, chartGeometry, yAt } from '@/lib/chart';
+import { dayOrders, dayTiles, dayTitle, FULFILMENT_TONE, placedLabel, RANGES, SALES_CHART, SALES_FILTERS, SALES_ORDERS, SALES_TILES, type SalesChart, type SalesFilter, type SalesRange } from '@/data/sales';
+import { CHART, chartGeometry, yAt, type ChartGeometry } from '@/lib/chart';
+import { viaKeyboard } from '@/lib/input';
+import { duration, easeExit, easeOut, timing } from '@/lib/motion';
 import { money } from '@/lib/format';
 import { salesRange, useHop, useHopApi } from '@/lib/store';
 import { useElementWidth } from '@/lib/useElementWidth';
 import { HopFrame } from '@/components/select/HopFrame';
+import { AnimatedNumber } from '@/components/ui/AnimatedNumber';
 import { ModeToggle } from '@/components/ui/ModeToggle';
 import { InitialsAvatar } from '@/components/ui/PersonAvatar';
 import { Segmented } from '@/components/ui/Segmented';
@@ -53,7 +57,11 @@ export function SalesPage() {
           >
             <span className="text-12 text-text-secondary">{t.label}</span>
             <span className="flex items-baseline gap-6 whitespace-nowrap">
-              <span className="text-20 font-600 tracking-px-0-2 text-text-primary tabular-nums">{t.value}</span>
+              {/* Counts to its new value when the period or day changes, like Analytics' KPIs. */}
+              <span className="text-20 font-600 tracking-px-0-2 text-text-primary tabular-nums">
+                <AnimatedNumber value={t.raw} format={t.unit === 'currency' ? 'currency' : 'int'} />
+                {t.unit === 'percent' && '%'}
+              </span>
               <span className={`text-12 font-500 ${t.tone === 'success' ? 'text-status-success-text' : t.tone === 'danger' ? 'text-status-danger-text' : 'text-text-muted'}`}>{t.note}</span>
             </span>
           </HopFrame>
@@ -74,42 +82,58 @@ const MONTHS = [
   { id: 'last', label: 'Last month' },
 ] as const;
 
-/** Revenue by day — the Analytics chart's drawing. A day not reached yet has nothing drawn: the
- *  line stops at today and the baseline turns dashed. Days can be picked as on Analytics (user
- *  feedback 2026-10-02): hover shows the day's takings, a click (or a day's label, or ← → once
- *  the chart has focus) picks it, the same day again or Esc goes back to the whole period.
- *  Picking lands at once; the hover guide and tooltip follow quickly, as on Analytics. */
+type Draw = { duration: number } | null;
+let drawnOnce = false; // the line draws in on the first visit, not on every revisit (as Analytics)
+
+/** Revenue by day — the Analytics chart's drawing and motion (user feedback 2026-10-02): a dot on
+ *  every day, the active one filled; a new period draws its line in (and fades the old one out);
+ *  hover shows a guide and the day's takings; a picked day gets the dashed guide. A day not
+ *  reached yet has nothing drawn: the line stops at today over a dashed baseline. A click (or a
+ *  day's label, or ← → once the plot has focus) picks a day; the same day again or Esc lets go.
+ *  Anything a key changed lands at once. */
 function RevenueByDay({ range, day }: { range: SalesRange; day: number | null }) {
   const period = useHop((s) => s.pages.salesPeriod);
   const which = useHop((s) => s.pages.salesWhich);
   const setPages = useHop((s) => s.setPages);
+  const reduce = useReducedMotion();
   const [box, width] = useElementWidth<HTMLDivElement>(CHART.width);
   const [hover, setHover] = useState<number | null>(null);
   const chart = SALES_CHART[range];
   const from = RANGES[range].axisFrom;
   const g = chartGeometry(width, chart.values.length);
   const share = (v: number | null) => (v === null ? null : v / chart.max);
-  const now = chart.values.map(share);
   const has = (i: number) => chart.values[i] !== null && chart.values[i] !== undefined;
   const picked = day !== null ? day - from : null;
-  const dot = picked ?? chart.today ?? now.length - 1;
-  const split = chart.today !== null ? g.xAt(chart.today) : g.width;
   const pick = (i: number) => has(i) && setPages({ salesDay: from + i === day ? null : from + i });
+
+  // A period's line draws in when it first shows: on the first visit, and when the toggle or the
+  // menu changes the period — not from the keyboard, not under reduced motion.
+  const prevRange = useRef(range);
+  let draw: Draw = null;
+  if (!reduce && !viaKeyboard()) {
+    if (!drawnOnce) draw = { duration: timing.lineDraw };
+    else if (prevRange.current !== range) draw = { duration: timing.weekLineDraw };
+  }
+  useEffect(() => {
+    drawnOnce = true;
+    prevRange.current = range;
+  }, [range]);
 
   // The nearest day with takings to a point on the plot.
   const nearest = (x: number) => {
-    const i = Math.max(0, Math.min(now.length - 1, g.dayAt(x)));
-    for (let k = 0; k < now.length; k++) for (const j of [i - k, i + k]) if (j >= 0 && j < now.length && has(j)) return j;
+    const i = Math.max(0, Math.min(chart.values.length - 1, g.dayAt(x)));
+    for (let k = 0; k < chart.values.length; k++) for (const j of [i - k, i + k]) if (j >= 0 && j < chart.values.length && has(j)) return j;
     return null;
   };
   const onKey = (e: React.KeyboardEvent) => {
     if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
     e.preventDefault();
     const step = e.key === 'ArrowRight' ? 1 : -1;
-    let i = (picked ?? (step > 0 ? -1 : now.length)) + step;
-    while (i >= 0 && i < now.length && !has(i)) i += step;
-    if (i >= 0 && i < now.length) setPages({ salesDay: from + i });
+    let i = (picked ?? (step > 0 ? -1 : chart.values.length)) + step;
+    while (i >= 0 && i < chart.values.length && !has(i)) i += step;
+    if (i >= 0 && i < chart.values.length) setPages({ salesDay: from + i });
   };
+  const hv = hover !== null ? chart.values[hover] : null;
 
   return (
     <HopFrame
@@ -146,21 +170,28 @@ function RevenueByDay({ range, day }: { range: SalesRange; day: number | null })
             .flatMap((v, i) => (v === null ? [] : [`${dayTitle(from + i)} ${money(v)}`]))
             .join(', ')}`}
         >
-          <path d={`M0 ${CHART.baseline}H${split}`} className="stroke-surface-border-tint" strokeWidth={1} />
-          {split < g.width && <path d={`M${split} ${CHART.baseline}H${g.width}`} className="stroke-surface-border-tint" strokeWidth={1} strokeDasharray="3 4" />}
-          <path d={g.areaPath(now)} className="fill-chart-fill" />
-          {chart.compare && <path d={g.linePath(chart.compare.map(share))} className="stroke-chart-compare" strokeWidth={1.5} fill="none" />}
-          <path d={g.linePath(now)} className="stroke-status-success" strokeWidth={2} fill="none" />
-          {picked !== null && (
-            <path d={`M${g.xAt(picked)} ${yAt(now[picked] ?? 0) + 8}V${CHART.baseline}`} className="stroke-status-success" strokeWidth={1} strokeDasharray="2 3" />
-          )}
-          {hover !== null && hover !== picked && (
-            <>
-              <line x1={g.xAt(hover)} x2={g.xAt(hover)} y1={CHART.topY - 6} y2={CHART.baseline} className="pointer-events-none stroke-chart-compare" strokeWidth={1} />
-              <circle cx={g.xAt(hover)} cy={yAt(now[hover] ?? 0)} r={4.5} className="pointer-events-none fill-surface-default stroke-status-success" strokeWidth={1.5} />
-            </>
-          )}
-          <circle cx={g.xAt(dot)} cy={yAt(now[dot] ?? 0)} r={5} className="fill-status-success stroke-surface-default" strokeWidth={2} />
+          {/* No initial={false}: it would also stop the layer's own draw-in. */}
+          <AnimatePresence>
+            <SalesLayer key={range} g={g} chart={chart} share={share} picked={picked} hover={hover} draw={draw} />
+          </AnimatePresence>
+
+          {/* Hover guide: glides to the day under the pointer, as on Analytics. */}
+          <AnimatePresence>
+            {hover !== null && (
+              <motion.line
+                key="guide"
+                y1={CHART.topY - 6}
+                y2={CHART.baseline}
+                className="pointer-events-none stroke-chart-compare"
+                strokeWidth={1}
+                initial={{ opacity: 0, x1: g.xAt(hover), x2: g.xAt(hover) }}
+                animate={{ opacity: 1, x1: g.xAt(hover), x2: g.xAt(hover) }}
+                exit={{ opacity: 0, transition: { duration: duration.fast, ease: easeExit } }}
+                transition={{ opacity: { duration: duration.fast, ease: easeOut }, default: { duration: timing.tooltipFollow, ease: easeOut } }}
+              />
+            )}
+          </AnimatePresence>
+
           {/* Pointer surface: snaps to the nearest day with takings; a click picks it. */}
           <rect
             x={0}
@@ -175,20 +206,28 @@ function RevenueByDay({ range, day }: { range: SalesRange; day: number | null })
             onClick={() => hover !== null && pick(hover)}
           />
         </svg>
-        {hover !== null && chart.values[hover] !== null && (
-          <div
-            role="status"
-            className="pointer-events-none absolute left-0 top-0 flex -translate-x-1/2 -translate-y-full flex-col gap-2 whitespace-nowrap rounded-8 bg-action-primary px-8 py-6 transition-transform duration-(--dur-fast) ease-hop-out"
-            style={{ transform: `translate(${g.xAt(hover)}px, ${yAt(now[hover] ?? 0) - 12}px)` }}
-          >
-            <span className="text-12 font-600 text-text-on-dark tabular-nums">{money(chart.values[hover] ?? 0)}</span>
-            <span className="text-11 text-chip-off-text tabular-nums">{dayTitle(from + hover)}</span>
-          </div>
-        )}
+
+        <AnimatePresence>
+          {hover !== null && hv !== null && hv !== undefined && (
+            <motion.div
+              key="tooltip"
+              role="status"
+              className="pointer-events-none absolute left-0 top-0 flex -translate-x-1/2 -translate-y-full flex-col gap-2 whitespace-nowrap rounded-8 bg-action-primary px-8 py-6"
+              // Positioned by transform, not left/top, so following the pointer never lays out.
+              initial={{ opacity: 0, transform: `translate(${g.xAt(hover)}px, ${yAt(share(hv) ?? 0) - 12}px)` }}
+              animate={{ opacity: 1, transform: `translate(${g.xAt(hover)}px, ${yAt(share(hv) ?? 0) - 12}px)` }}
+              exit={{ opacity: 0, transition: { duration: duration.fast, ease: easeExit } }}
+              transition={{ opacity: { duration: duration.fast, ease: easeOut }, transform: { duration: timing.tooltipFollow, ease: easeOut } }}
+            >
+              <span className="text-12 font-600 text-text-on-dark tabular-nums">{money(hv)}</span>
+              <span className="text-11 text-chip-off-text tabular-nums">{dayTitle(from + hover)}</span>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
       <div className="relative h-[15px] w-full" role="group" aria-label="Days">
         {chart.ticks.map((t) => {
-          const cls = `absolute top-0 -translate-x-1/2 whitespace-nowrap text-11-5 ${
+          const cls = `absolute top-0 -translate-x-1/2 whitespace-nowrap text-11-5 transition-colors duration-(--dur-base) ease-hop-color ${
             t.at === picked || (picked === null && t.at === chart.today) ? 'font-500 text-status-success-text' : 'text-chart-future'
           }`;
           return has(t.at) ? (
@@ -203,6 +242,86 @@ function RevenueByDay({ range, day }: { range: SalesRange; day: number | null })
         })}
       </div>
     </HopFrame>
+  );
+}
+
+/** One period's drawing, keyed by period so a new one swaps whole layers (Analytics' SeriesLayer). */
+function SalesLayer({
+  g,
+  chart,
+  share,
+  picked,
+  hover,
+  draw: drawProp,
+}: {
+  g: ChartGeometry;
+  chart: SalesChart;
+  share: (v: number | null) => number | null;
+  picked: number | null;
+  hover: number | null;
+  draw: Draw;
+}) {
+  const reduce = useReducedMotion();
+  const [draw] = useState(drawProp); // only the value it was created with matters
+  const now = chart.values.map(share);
+  const split = chart.today !== null ? g.xAt(chart.today) : g.width;
+  const active = picked ?? chart.today ?? now.length - 1;
+  const dense = g.step < 18; // all time: smaller dots so 53 of them stay dots
+  const radius = (i: number) => (hover === i ? (dense ? 4.5 : 5.5) : i === active ? (dense ? 4 : 5) : dense ? 2.5 : 4);
+
+  const drawIn = draw ? { pathLength: 0 } : false;
+  const fadeIn = draw ? { opacity: 0 } : false;
+  const drawT = draw ? { duration: draw.duration, ease: easeOut } : undefined;
+  const dotsStart = draw ? draw.duration * 0.5 : 0;
+  const stagger = Math.min(timing.dotStagger, 0.3 / now.length); // a month of dots still lands quickly
+
+  return (
+    <motion.g exit={{ opacity: 0, transition: { duration: duration.fast, ease: easeExit } }}>
+      <path d={`M0 ${CHART.baseline}H${split}`} className="stroke-surface-border-tint" strokeWidth={1} />
+      {split < g.width && <path d={`M${split} ${CHART.baseline}H${g.width}`} className="stroke-surface-border-tint" strokeWidth={1} strokeDasharray="3 4" />}
+      <motion.path d={g.areaPath(now)} className="fill-chart-fill" initial={fadeIn} animate={{ opacity: 1 }} transition={drawT} />
+      {chart.compare && (
+        <motion.path d={g.linePath(chart.compare.map(share))} className="stroke-chart-compare" strokeWidth={1.5} fill="none" initial={fadeIn} animate={{ opacity: 1 }} transition={drawT} />
+      )}
+      <motion.path d={g.linePath(now)} className="stroke-status-success" strokeWidth={2} fill="none" initial={drawIn} animate={{ pathLength: 1 }} transition={drawT} />
+
+      {picked !== null && (
+        <motion.path
+          key={`day-${picked}`}
+          d={`M${g.xAt(picked)} ${yAt(now[picked] ?? 0) + 8}V${CHART.baseline}`}
+          className="stroke-status-success"
+          strokeWidth={1}
+          strokeDasharray="2 3"
+          initial={reduce || viaKeyboard() ? false : { opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: timing.guideDraw, ease: easeOut }}
+        />
+      )}
+
+      {now.map((v, i) => {
+        if (v === null) return null;
+        const on = i === active;
+        return (
+          <motion.circle
+            key={i}
+            cx={g.xAt(i)}
+            cy={yAt(v)}
+            className={on ? 'fill-status-success stroke-surface-default' : 'fill-surface-default stroke-status-success'}
+            strokeWidth={on ? 2 : 1.5}
+            style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
+            // Each dot fades in growing 0.9 → 1 as the line reaches it (never from 0).
+            // SVG: Motion's scale props (a transform string becomes a broken SVG attribute).
+            initial={draw ? { scale: 0.9, opacity: 0, r: radius(i) } : false}
+            animate={{ scale: 1, opacity: 1, r: radius(i) }}
+            transition={{
+              scale: { duration: duration.fast, ease: easeOut, delay: dotsStart + i * stagger },
+              opacity: { duration: duration.fast, ease: easeOut, delay: dotsStart + i * stagger },
+              r: { duration: viaKeyboard() ? 0 : duration.fast, ease: easeOut },
+            }}
+          />
+        );
+      })}
+    </motion.g>
   );
 }
 
@@ -227,7 +346,7 @@ function Orders({ range, day }: { range: SalesRange; day: number | null }) {
       page="sales"
       jumpTarget="customers"
       radius={14}
-      className="flex min-h-[300px] flex-1 flex-col overflow-hidden rounded-12 border border-surface-border-tint"
+      className="flex min-h-[300px] flex-1 flex-col rounded-12 border border-surface-border-tint"
     >
       <div className="flex shrink-0 items-center justify-between gap-12 px-16 py-12">
         <h2 className="flex items-baseline gap-6 text-13 font-600 text-text-primary">

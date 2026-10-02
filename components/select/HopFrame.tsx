@@ -5,7 +5,7 @@ import { createContext, useContext, useLayoutEffect, useState, type ElementType,
 import type { Page } from '@/data/types';
 import { viaKeyboard } from '@/lib/input';
 import { duration, easeExit, easeOut, exitOf, timing } from '@/lib/motion';
-import { outlineBox, surfaceOf, type OutlineBox } from '@/lib/outline';
+import { fitOutline, outlineBox, surfaceOf, type OutlineBox } from '@/lib/outline';
 import { useHop, type HopFrameRef } from '@/lib/store';
 
 // Wraps every selectable part of a page (brief B6). The frame itself only carries data
@@ -72,18 +72,33 @@ export const StillOutline = createContext(false);
 // Figma "example 3": handles are 7×7 white squares with a 1.2px blue edge, on the outline's corners.
 const CORNERS = ['-left-5 -top-5', '-right-5 -top-5', '-left-5 -bottom-5', '-right-5 -bottom-5'] as const;
 
-/** Measures where the outline goes while it's showing, and again whenever the frame or its box resizes. */
+/** Measures where the outline goes while it's showing, and again whenever the frame or its box
+ *  resizes or anything scrolls (scrolling changes which edges it would be cut off at). */
 function useOutline(el: HTMLElement | null, showing: boolean, radius: number) {
   const [box, setBox] = useState<OutlineBox | null>(null);
   useLayoutEffect(() => {
     if (!showing || !el) return;
-    const update = () => setBox(outlineBox(el, radius));
+    const update = () =>
+      setBox((prev) => {
+        const next = fitOutline(el, outlineBox(el, radius));
+        return prev && (['top', 'right', 'bottom', 'left'] as const).every((k) => Math.abs(prev[k] - next[k]) < 0.1) && prev.radius === next.radius ? prev : next;
+      });
     update();
     const ro = new ResizeObserver(update);
     ro.observe(el);
     const surface = surfaceOf(el);
     if (surface) ro.observe(surface);
-    return () => ro.disconnect();
+    let raf = 0;
+    const onScroll = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(update);
+    };
+    window.addEventListener('scroll', onScroll, true);
+    return () => {
+      ro.disconnect();
+      cancelAnimationFrame(raf);
+      window.removeEventListener('scroll', onScroll, true);
+    };
   }, [el, showing, radius]);
   return box;
 }
