@@ -130,7 +130,8 @@ function spanTiles(from: number, to: number, before: Before, since: string): Sal
 
 function tilesFor(range: SalesRange): SalesTile[] {
   const r = RANGES[range];
-  return spanTiles(r.from, r.to, r.before ?? null, range === 'all' ? 'since 3 Aug' : 'first month');
+  // All time has nothing to compare with and needs no note (round 9: "since 3 Aug" on every tile).
+  return spanTiles(r.from, r.to, r.before ?? null, range === 'all' ? '' : 'first month');
 }
 
 // A single day picked on the chart (user feedback 2026-10-02: move between days, as on Analytics):
@@ -144,6 +145,17 @@ export const dayOrders = (day: number, range: SalesRange) => {
   const list = inDays(day, day);
   return range === 'all' ? list : [...list].reverse();
 };
+
+/** The chart's title with no day picked (user feedback 2026-10-03): a period still running is
+ *  "Revenue so far for this week", a finished one names its days ("Total revenue from Mon 14 –
+ *  Sun 20 Sep"), all time is "Revenue of all time". */
+export function periodTitle(range: SalesRange) {
+  if (range === 'all') return 'Revenue of all time';
+  if (range === 'thisWeek' || range === 'thisMonth') return `Revenue so far for ${RANGES[range].label.toLowerCase()}`;
+  const { from, to } = RANGES[range];
+  const start = dateOf(from).month === dateOf(to).month ? `${weekdayOf(from)} ${dateOf(from).d}` : `${weekdayOf(from)} ${shortDate(from)}`;
+  return `Total revenue from ${start} – ${weekdayOf(to)} ${shortDate(to)}`;
+}
 
 export interface SalesChart {
   values: (number | null)[]; // null: before the store opened, or not reached yet

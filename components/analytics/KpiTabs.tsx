@@ -40,7 +40,8 @@ export function KpiTabs() {
         const selected = id === kpi;
         const reading = snapshot.kpis[id];
         return (
-          <HopFrame key={id} id={`analytics.kpi.${id}`} label={KPIS[id].todayLabel} page="analytics" jumpTarget={KPIS[id].jumpTarget} radius={8} viaControl className="min-w-0 flex-1">
+          // The week so far has frames (and answers) of its own; a single day keeps today's.
+          <HopFrame key={id} id={period === 'thisWeek' ? `analytics.kpi.${id}.thisWeek` : `analytics.kpi.${id}`} label={kpiLabel(id, period)} page="analytics" jumpTarget={KPIS[id].jumpTarget} radius={8} viaControl className="min-w-0 flex-1">
             <button
               ref={(el) => {
                 tabs.current[index] = el;

@@ -30,7 +30,8 @@ export function UrgentCard({
 }) {
   return (
     <HopFrame
-      id={period === 'today' ? 'analytics.urgent' : `analytics.urgent-${period}`}
+      // This week so far and today share the live card.
+      id={period === 'today' || period === 'thisWeek' ? 'analytics.urgent' : `analytics.urgent-${period}`}
       label="Urgent"
       page="analytics"
       radius={14}

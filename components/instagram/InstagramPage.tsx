@@ -132,7 +132,10 @@ function PostCanvas({ post }: { post: IgPost }) {
           </span>
         </HopFrame>
 
-        <div className="grid min-w-0 flex-1 grid-cols-2 gap-10">
+        {/* As tall as the preview, three even rows down it, so the last two tiles sit on the
+            preview's bottom edge (round 9). The tiles take up the height rather than the gaps:
+            spreading the gaps left 53px holes beside the larger preview. */}
+        <div className="grid min-w-0 flex-1 grid-cols-2 grid-rows-3 gap-x-10 gap-y-16 self-stretch">
           {post.stats.map((s) => (
             <HopFrame
               key={s.id}
@@ -140,7 +143,7 @@ function PostCanvas({ post }: { post: IgPost }) {
               label={`${s.label} · ${post.title}`}
               page="instagram"
               radius={10}
-              className="flex min-w-0 flex-col gap-3 rounded-10 border border-surface-border-tint bg-surface-default px-12 py-10"
+              className="flex min-w-0 flex-col justify-center gap-3 rounded-10 border border-surface-border-tint bg-surface-default px-12 py-10"
             >
               {/* Each line stays on one line (user feedback 2026-10-02): the copy is written to fit. */}
               <span className="whitespace-nowrap text-11-5 text-text-secondary">{s.label}</span>

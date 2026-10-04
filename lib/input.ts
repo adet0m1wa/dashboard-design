@@ -9,7 +9,9 @@ let keyboard = false;
 
 if (typeof window !== 'undefined') {
   window.addEventListener('keydown', () => (keyboard = true), true);
-  window.addEventListener('pointerdown', () => (keyboard = false), true);
+  // Only a real pointer: Motion's whileTap answers Enter on a button with a synthetic
+  // pointerdown of its own (round 9: full screen from the keyboard still eased because of it).
+  window.addEventListener('pointerdown', (e) => e.isTrusted && (keyboard = false), true);
 }
 
 export const viaKeyboard = () => keyboard;

@@ -85,7 +85,7 @@ export default async function (t) {
   const full = await t.eval(() => {
     const aside = document.querySelector('aside[aria-label^=Hop]');
     const ws = aside.parentElement;
-    return { aside: Math.round(aside.getBoundingClientRect().width), ws: ws.clientWidth, page: Math.round(document.querySelector('main').parentElement.getBoundingClientRect().width), border: getComputedStyle(aside).borderLeftWidth };
+    return { aside: Math.round(aside.getBoundingClientRect().width), ws: ws.clientWidth, page: Math.round(document.querySelector('main').parentElement.parentElement.getBoundingClientRect().width), border: getComputedStyle(aside).borderLeftWidth };
   });
   await t.check(`${m}6 full screen: the panel is ${full.aside}/${full.ws}px, the page ${full.page}px, no stroke (${full.border})`, full.aside === full.ws && full.page === 0 && full.border === '0px');
   await t.click('textarea[aria-label="Message Hop"]');

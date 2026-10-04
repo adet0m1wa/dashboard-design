@@ -42,7 +42,7 @@ export default async function (t) {
   const tab = await (await t.page.$('#kpi-tab-orders')).boundingBox();
   await t.page.mouse.move(tab.x + 30, tab.y + 20);
   await t.wait(200);
-  await t.check(`${m}hover: outline over a tab too`, () => t.eval(hoverOutline, '[data-hop-frame="analytics.kpi.orders"]'));
+  await t.check(`${m}hover: outline over a tab too`, () => t.eval(hoverOutline, '[data-hop-frame="analytics.kpi.orders.thisWeek"]'));
 
   // Select the Sand row
   await t.page.mouse.click(row.x + 120, row.y + 10);

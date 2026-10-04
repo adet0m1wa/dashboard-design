@@ -63,11 +63,22 @@ export function HopPanel() {
     return () => ro.disconnect();
   }, []);
   // Only going in or out of full screen eases; dragging the edge or opening/closing stays instant.
-  const [easing, setEasing] = useState(false);
+  // While it eases, both sides hold the layout they had in full screen (round 9: coming back out
+  // was jumpy): the chat stays a centred column inside the narrowing panel, and the page stays
+  // at its own width, uncovered rather than reflowed (AppShell). It all settles once it lands.
+  const easing = useHop((s) => s.panelMoving);
+  const setEasing = useHop((s) => s.setPanelMoving);
   const toggleExpanded = (on: boolean) => {
     setEasing(!reduce && !viaKeyboard());
     setPanelExpanded(on);
   };
+  // A safety net: if no transition runs (nothing to move), don't leave the page held.
+  useEffect(() => {
+    if (!easing) return;
+    const t = setTimeout(() => setEasing(false), (duration.slow + 0.1) * 1000);
+    return () => clearTimeout(t);
+  }, [easing, expanded, setEasing]);
+  const wide = expanded || easing;
   useEffect(() => {
     if (!expanded) return;
     const onKey = (e: KeyboardEvent) => {
@@ -95,10 +106,10 @@ export function HopPanel() {
       onTransitionEnd={(e) => e.target === e.currentTarget && setEasing(false)}
       aria-label={onHistory ? 'Hop: History' : 'Hop'}
     >
-      {!collapsed && !expanded && <ResizeHandle width={width} />}
+      {!collapsed && !wide && <ResizeHandle width={width} />}
       {/* Its own width inside, so closing clips the panel instead of squashing it; in full screen,
           the whole panel. */}
-      <div className="flex h-full flex-col" style={{ width: expanded ? '100%' : width }}>
+      <div className="flex h-full flex-col" style={{ width: wide ? '100%' : width }}>
         <header className="flex h-bar shrink-0 items-center justify-between border-b border-surface-faint px-16">
           <div className="flex items-center gap-10">
             {onHistory ? (
@@ -169,7 +180,7 @@ export function HopPanel() {
 
         {/* Hop's conversation: mounted on every page (a streaming answer carries on); on History
             the brief chain takes its place. */}
-        <div className={`min-h-0 flex-1 flex-col ${onHistory ? 'hidden' : 'flex'} ${hidden} ${expanded ? 'mx-auto w-full max-w-[760px]' : ''}`} inert={collapsed || onHistory}>
+        <div className={`min-h-0 flex-1 flex-col ${onHistory ? 'hidden' : 'flex'} ${hidden} ${wide ? 'mx-auto w-full max-w-[760px]' : ''}`} inert={collapsed || onHistory}>
           <div className="flex min-h-0 flex-1 flex-col gap-16 px-16 py-14">
             <MessageList />
             <AnimatePresence initial={false} mode="wait">

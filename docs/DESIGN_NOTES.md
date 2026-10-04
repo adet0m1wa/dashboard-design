@@ -236,3 +236,9 @@ The "fresh" section is now a single section (id 1816:4657, x 1694); the old dupl
   (content centred). Full-screen icon: Phosphor ArrowsOutSimple / ArrowsInSimple 18px, after the
   highlight switch, Analytics only. Hop's list block: 20px numbered circles (`surface-subtle`,
   11/600), title 13/500, detail 12.5 secondary, 10 apart.
+- Round 9 (2026-10-03): Instagram stats are three even rows as tall as the preview (row gap 16,
+  column gap 10; the tiles grow, content centred), so the last row sits on the preview's bottom
+  edge. Sales: no note on the all-time tiles; the all-time chart is titled "Revenue of all time";
+  no dot is filled (and no day label green) until a day is picked. Analytics' last week: no dot
+  filled while the whole week shows. The composer shows a chip per picked frame (wrapping, 6
+  apart); a question tagged with several shows them all, right-aligned.

@@ -27,7 +27,13 @@ export function UserMessage({ msg, onTagClick, tagActive }: { msg: Extract<Messa
         </span>
         <PersonAvatar person={person} size={16} />
       </div>
-      {msg.tag && <TagChip label={msg.tag.label} active={tagActive} onClick={onTagClick} />}
+      {msg.tag && (
+        <div className="flex max-w-full flex-wrap justify-end gap-6">
+          {[msg.tag, ...(msg.moreTags ?? [])].map((t) => (
+            <TagChip key={t.id} label={t.label} active={tagActive} onClick={onTagClick} />
+          ))}
+        </div>
+      )}
       <div className={`max-w-[85%] rounded-t-12 rounded-bl-12 rounded-br-4 bg-background-app px-14 py-10 ${para}`}>{msg.text}</div>
     </div>
   );
