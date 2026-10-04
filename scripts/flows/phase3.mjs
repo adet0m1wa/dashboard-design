@@ -23,16 +23,16 @@ export default async function (t) {
   await t.wait(1400);
   const late = await t.eval(revenue);
   if (reduced) {
-    await t.check(`${mode}entrance: numbers appear at once (${early})`, early === '$2,480');
+    await t.check(`${mode}entrance: numbers appear at once (${early})`, early === '$9,900');
     await t.check(`${mode}entrance: cards visible at once (opacity ${earlyCardOpacity})`, earlyCardOpacity === 1);
     await t.check(`${mode}entrance: no line drawing (dash ${earlyLine})`, !earlyLine || earlyLine === '1 1');
   } else {
-    await t.check(`entrance: revenue counts up from 0 (at 120ms: ${early})`, early !== '$2,480' && /^\$/.test(early));
+    await t.check(`entrance: revenue counts up from 0 (at 120ms: ${early})`, early !== '$9,900' && /^\$/.test(early));
     await t.check(`entrance: cards fade up (opacity at 120ms: ${earlyCardOpacity.toFixed(2)})`, earlyCardOpacity < 1);
     await t.check(`entrance: line draws in (dash at 120ms: ${String(earlyLine).slice(0, 5)})`, earlyLine && parseFloat(earlyLine) < 0.95);
     await t.check(`entrance: dots come in later (today's dot opacity at 120ms: ${earlyDot})`, earlyDot === '0');
   }
-  await t.check(`${mode}entrance: settles on $2,480 (${late})`, late === '$2,480');
+  await t.check(`${mode}entrance: settles on the week so far, $9,900 (${late})`, late === '$9,900');
   await t.shot(`phase3-${reduced ? 'reduced-' : ''}first-load`);
 
   // Entrance is first-load only: leave and come back.
@@ -42,7 +42,7 @@ export default async function (t) {
   await t.click('text=Analytics');
   // right after the page swaps in (mid-reveal), the number is already final
   await t.page.waitForFunction(() => document.querySelector('[data-page=analytics] #kpi-tab-revenue'), { polling: 'raf' });
-  await t.check(`${mode}entrance does not replay on return (${await t.eval(revenue)})`, (await t.eval(revenue)) === '$2,480');
+  await t.check(`${mode}entrance does not replay on return (${await t.eval(revenue)})`, (await t.eval(revenue)) === '$9,900');
   await t.wait(400);
 
   // 2. KPI switch: line morphs, card swaps, heights stay equal ----------------------------
@@ -55,7 +55,7 @@ export default async function (t) {
   if (reduced) await t.check(`${mode}KPI switch: line swaps instantly`, mid === after && after !== before);
   else await t.check('KPI switch: line morphs (mid-path differs from start and end)', mid !== before && mid !== after);
   await t.check(`${mode}KPI switch: card is "Orders"`, (await t.eval(cardTitle)) === 'Orders');
-  await t.check(`${mode}KPI switch: title "Orders over the last 7 days"`, (await t.eval(chartTitle)) === 'Orders over the last 7 days');
+  await t.check(`${mode}KPI switch: title "Orders so far for this week"`, (await t.eval(chartTitle)) === 'Orders so far for this week');
   const heights = () =>
     t.eval(() => [...document.querySelector('[data-hop-frame="analytics.card"]').closest('.grid').children].map((c) => Math.round(c.getBoundingClientRect().height)));
   const hs = await heights();
@@ -104,7 +104,7 @@ export default async function (t) {
   await t.shot(`phase3-${reduced ? 'reduced-' : ''}wednesday`);
   await t.page.keyboard.press('Escape');
   await t.wait(700);
-  await t.check(`${mode}Esc returns to today`, (await t.eval(chartTitle)) === 'Revenue over the last 7 days' && (await t.eval(revenue)) === '$2,480');
+  await t.check(`${mode}Esc returns to the week so far`, (await t.eval(chartTitle)) === 'Revenue so far for this week' && (await t.eval(revenue)) === '$9,900');
 
   // 5. Week toggle ---------------------------------------------------------------------------
   await t.click('text=Last week');
@@ -116,7 +116,7 @@ export default async function (t) {
   await t.shot(`phase3-${reduced ? 'reduced-' : ''}lastweek`);
   await t.click('text=This week');
   await t.wait(700);
-  await t.check(`${mode}This week again: back to today`, (await t.eval(revenue)) === '$2,480' && (await t.eval(() => document.querySelectorAll('#kpi-chart circle').length)) === 4);
+  await t.check(`${mode}This week again: back to the week so far`, (await t.eval(revenue)) === '$9,900' && (await t.eval(() => document.querySelectorAll('#kpi-chart circle').length)) === 4);
 
   // 6. Last sync -----------------------------------------------------------------------------
   await t.click('text=Last sync: 14:00');

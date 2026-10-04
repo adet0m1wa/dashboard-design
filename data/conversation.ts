@@ -37,9 +37,10 @@ export const URGENT_QUESTIONS = {
 /** When a tag is sent with no typed text, this is what gets asked (matches the frames). */
 export const DEFAULT_TAGGED_QUESTION = 'Tell me more about this';
 
+const NOT_YET = 'I can answer that once this page is connected.';
 export const FALLBACK: Answer = {
   reads: [],
-  blocks: [{ kind: 'text', text: 'I can answer that once this page is connected.' }],
+  blocks: [{ kind: 'text', text: NOT_YET }],
 };
 
 // ---- Answers from the brief (A7) -------------------------------------------------------
@@ -188,6 +189,13 @@ export const ANSWERS_BY_FRAME: Record<string, Answer> = {
   'analytics.kpi.likes': { reads: ['instagram'], blocks: [text('18.2k likes today, up 31% on last Thursday. The Sand reel alone has 9.4k.')] },
   'analytics.kpi.followers': { reads: ['instagram'], blocks: [text('214 new followers today, up 9%. 62% of them came from the Sand reel.')] },
   'analytics.kpi.dms': { reads: ['customers'], blocks: [text('9 DMs are unanswered and 3 have waited over 2 hours. The oldest is Chioma’s, from 6:12 AM.')] },
+  // The same tabs with the week so far showing (user feedback 2026-10-04): Mon–Thu against the
+  // same days last week (data/thisWeek.ts).
+  'analytics.kpi.revenue.thisWeek': { reads: ['sales'], blocks: [text('$9,900 so far this week, up 13% on the same days last week ($8,760). Wednesday was the best day at $3,120, and the Sand set is the top seller at $1,597.')] },
+  'analytics.kpi.orders.thisWeek': { reads: ['sales'], blocks: [text('131 orders so far this week, up 13% on the same days last week. 6 of today’s are still to pack.')] },
+  'analytics.kpi.likes.thisWeek': { reads: ['instagram'], blocks: [text('61k likes so far this week, up 34% on the same days last week. The Sand reel has 34.8k of them.')] },
+  'analytics.kpi.followers.thisWeek': { reads: ['instagram'], blocks: [text('740 new followers this week, up 52% on the same days last week. 61% came from the Sand reel.')] },
+  'analytics.kpi.dms.thisWeek': { reads: ['customers'], blocks: [text('9 DMs are unanswered right now and 3 have waited over 2 hours. The oldest is Chioma’s, from 6:12 AM.')] },
   'analytics.chart': {
     reads: ['sales'],
     blocks: [text('This is the week so far against last week. Every day since Tuesday is ahead, and Wednesday was the best day at $3,120, 30% up on last Wednesday.')],
@@ -241,4 +249,28 @@ export function answerFor(frameId: string | undefined, question: string): Answer
   if (ANSWERS_BY_CUE[question]) return ANSWERS_BY_CUE[question];
   if (!frameId && ATTENTION_ASKED.test(question)) return ATTENTION;
   return FALLBACK;
+}
+
+/** Several frames picked at once (Shift+click, round 9): each one's answer in turn, led by its
+ *  name; the frames with nothing to say yet share one line, and their actions share one row. */
+export function answerForFrames(frames: { id: string; label: string }[], question: string): Answer {
+  if (frames.length === 1) return answerFor(frames[0].id, question);
+  const parts = frames.map((f) => ({ f, a: answerFor(f.id, question) }));
+  const known = parts.filter((p) => p.a !== FALLBACK);
+  const unknown = parts.filter((p) => p.a === FALLBACK);
+  const blocks: Block[] = [text(`Here’s each of the ${frames.length} frames you picked.`)];
+  const actions = new Map<string, Extract<Block, { kind: 'actions' }>['buttons'][number]>();
+  for (const { f, a } of known) {
+    let named = false;
+    for (const b of a.blocks) {
+      if (b.kind === 'actions') b.buttons.forEach((btn) => actions.set(btn.label, btn));
+      else if (b.kind === 'text' && !named) {
+        blocks.push(text(`${f.label}: ${b.text}`));
+        named = true;
+      } else blocks.push(b);
+    }
+  }
+  if (unknown.length) blocks.push(text(`${unknown.map((p) => p.f.label).join(', ')}: ${NOT_YET}`));
+  if (actions.size) blocks.push({ kind: 'actions', buttons: [...actions.values()] });
+  return { reads: [...new Set(known.flatMap((p) => p.a.reads))], blocks };
 }

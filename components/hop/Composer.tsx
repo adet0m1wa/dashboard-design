@@ -15,13 +15,17 @@ import { Truncate } from '@/components/ui/Truncate';
 // frame instead, since clicking the button again would turn it off. With a frame selected:
 // its tag chip pops in (scale 0.92 → 1, base), the placeholder crossfades to "Ask about this
 // frame…". Once sent, the chip leaves (scale 0.92, fast) while the frame on the page scans.
-// Picked or sent from the keyboard, the chip comes and goes at once (Emil Kowalski).
+// Picked or sent from the keyboard, the chip comes and goes at once (Emil Kowalski). Frames added
+// with Shift (round 9) each get a chip of their own, in the order they were picked.
 const IDLE_PLACEHOLDER = 'Ask Hop about sales, posts, stock or customers…';
 const TAG_PLACEHOLDER = 'Ask about this frame…';
+const TAGS_PLACEHOLDER = 'Ask about these frames…';
 
 export function Composer() {
   const [text, setText] = useState('');
   const selection = useHop((s) => s.selection);
+  const also = useHop((s) => s.alsoSelected);
+  const toggleInSelection = useHop((s) => s.toggleInSelection);
   const highlightMode = useHop((s) => s.highlightMode);
   const scanning = useHop((s) => s.scanning);
   const busy = useHop((s) => s.hopStatus !== 'idle');
@@ -29,9 +33,10 @@ export function Composer() {
   const deselect = useHop((s) => s.deselect);
   const reduce = useReducedMotion();
   const still = reduce || viaKeyboard();
-  const tag = selection && !scanning ? selection : null;
-  const canSend = Boolean(text.trim() || tag) && !busy;
-  const placeholder = tag ? TAG_PLACEHOLDER : IDLE_PLACEHOLDER;
+  const tags = selection && !scanning ? [selection, ...also] : [];
+  const canSend = Boolean(text.trim() || tags.length) && !busy;
+  const placeholder = tags.length > 1 ? TAGS_PLACEHOLDER : tags.length ? TAG_PLACEHOLDER : IDLE_PLACEHOLDER;
+  const chipOut = still ? { opacity: 0, transition: { duration: 0 } } : { opacity: 0, transform: 'scale(0.92)', transition: { duration: duration.fast, ease: easeExit } };
 
   const send = () => {
     if (!canSend) return;
@@ -45,25 +50,32 @@ export function Composer() {
       <div className="flex flex-col gap-14 rounded-14 border border-composer-border bg-surface-default pb-10 pl-14 pr-12 pt-12 shadow-composer transition-colors duration-(--dur-fast) ease-hop-color has-[textarea:focus]:border-selection">
         <div className="grid" aria-live="polite">
           <AnimatePresence initial={false} mode="popLayout">
-            {tag ? (
-              <motion.span
-                key={`tag-${tag.id}`}
-                className="col-start-1 row-start-1 flex max-w-full items-center gap-6 justify-self-start rounded-6 border border-tag-border bg-tag-bg px-8 py-3 text-11-5 font-500 text-tag-text"
-                initial={still ? false : { opacity: 0, transform: 'scale(0.92)' }}
-                animate={{ opacity: 1, transform: 'scale(1)', transition: { duration: duration.base, ease: easeOut } }}
-                exit={still ? { opacity: 0, transition: { duration: 0 } } : { opacity: 0, transform: 'scale(0.92)', transition: { duration: duration.fast, ease: easeExit } }}
-                style={{ transformOrigin: 'left center' }}
-              >
-                <FrameIcon className="shrink-0 text-selection" />
-                <Truncate>{tag.label}</Truncate>
-                <button
-                  type="button"
-                  onClick={deselect}
-                  aria-label={`Remove ${tag.label}`}
-                  className="relative -my-2 -mr-2 flex shrink-0 items-center rounded-4 text-selection transition-colors duration-(--dur-fast) ease-hop-color after:absolute after:-inset-6 hover:bg-tag-border"
-                >
-                  <XIcon />
-                </button>
+            {tags.length ? (
+              <motion.span key="tags" className="col-start-1 row-start-1 flex min-w-0 flex-wrap gap-6" exit={chipOut} style={{ transformOrigin: 'left center' }}>
+                <AnimatePresence mode="popLayout">
+                  {tags.map((tag, i) => (
+                    <motion.span
+                      key={tag.id}
+                      className="flex max-w-full items-center gap-6 rounded-6 border border-tag-border bg-tag-bg px-8 py-3 text-11-5 font-500 text-tag-text"
+                      initial={still ? false : { opacity: 0, transform: 'scale(0.92)' }}
+                      animate={{ opacity: 1, transform: 'scale(1)', transition: { duration: duration.base, ease: easeOut } }}
+                      exit={chipOut}
+                      style={{ transformOrigin: 'left center' }}
+                    >
+                      <FrameIcon className="shrink-0 text-selection" />
+                      <Truncate>{tag.label}</Truncate>
+                      <button
+                        type="button"
+                        // The only chip: put the pick away. One of several: take just that one out.
+                        onClick={() => (i === 0 && tags.length === 1 ? deselect() : toggleInSelection(tag))}
+                        aria-label={`Remove ${tag.label}`}
+                        className="relative -my-2 -mr-2 flex shrink-0 items-center rounded-4 text-selection transition-colors duration-(--dur-fast) ease-hop-color after:absolute after:-inset-6 hover:bg-tag-border"
+                      >
+                        <XIcon />
+                      </button>
+                    </motion.span>
+                  ))}
+                </AnimatePresence>
               </motion.span>
             ) : (
               <motion.span

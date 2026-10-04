@@ -48,7 +48,7 @@ for (const file of files) {
     if (isCss) return;
     for (const m of text.matchAll(/(?<![\w-])-?(bg|text|border|outline|ring|fill|stroke|shadow|from|to|via|rounded|leading|tracking|font|p|px|py|pt|pr|pb|pl|ps|pe|m|mx|my|mt|mr|mb|ml|gap|gap-x|gap-y|space-x|space-y)-\[[^\]]+\]/g))
       report(file, n, `arbitrary value ${m[0]} — use a token`);
-    for (const m of text.matchAll(/(?<![\w-])-?(p|px|py|pt|pr|pb|pl|ps|pe|m|mx|my|mt|mr|mb|ml|gap|gap-x|gap-y|space-x|space-y)-([\w.-]+)/g)) {
+    for (const m of text.matchAll(/(?<![\w-])-?(p|px|py|pt|pr|pb|pl|ps|pe|m|mx|my|mt|mr|mb|ml|gap-x|gap-y|gap|space-x|space-y)-([\w.-]+)/g)) {
       const v = m[2];
       if (v === 'auto' || v.startsWith('(')) continue;
       if (!spacing.has(v)) report(file, n, `${m[0]} is not on the spacing token scale`);

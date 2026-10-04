@@ -28,8 +28,8 @@ export default async function (t) {
   const early = await t.eval(revenue);
   await t.wait(2600);
   const settled = await t.eval(revenue);
-  if (reduced) await t.check(`[reduced] 1 first load: no count-up (${early} → ${settled})`, early === '$2,480' && settled === '$2,480');
-  else await t.check(`1 first load: the entrance counts revenue up (${early} → ${settled})`, early !== '$2,480' && settled === '$2,480');
+  if (reduced) await t.check(`[reduced] 1 first load: no count-up (${early} → ${settled})`, early === '$9,900' && settled === '$9,900');
+  else await t.check(`1 first load: the entrance counts revenue up (${early} → ${settled})`, early !== '$9,900' && settled === '$9,900'); // the week so far (feedback 2026-10-04)
   await t.check(`${m}1 first load: prompt cues, "Click the … to select a frame", sidebar open, Hop open`, async () =>
     (await t.eval(cues)) &&
     (await t.eval(() => document.querySelector('.shadow-composer').textContent.includes('to select a frame') && document.querySelector('aside[aria-label=Sidebar]').offsetWidth === 224 && document.querySelector('aside[aria-label=Hop]').offsetWidth === 368)),
@@ -79,9 +79,13 @@ export default async function (t) {
   await t.check(`${m}3 chart: clicking selects Wednesday ("${await t.eval(title)}", revenue ${await t.eval(revenue)})`, async () => (await t.eval(title)) === 'Wednesday, 23 Sep' && (await t.eval(revenue)) === '$3,120');
   await t.page.mouse.move(700, 880);
   await shot('03b-day-selected');
+  // Today is a day like the others; picked again it goes back to the week so far (feedback 2026-10-04)
   await t.click('button[aria-label="Today"]');
   await t.wait(700);
-  await t.check(`${m}3 chart: Today brings it back`, async () => (await t.eval(title)) === 'Revenue over the last 7 days' && (await t.eval(revenue)) === '$2,480');
+  await t.check(`${m}3 chart: Today shows today ("${await t.eval(title)}", ${await t.eval(revenue)})`, async () => (await t.eval(title)) === 'Today, Thursday, 24 Sep' && (await t.eval(revenue)) === '$2,480');
+  await t.click('button[aria-label="Today"]');
+  await t.wait(700);
+  await t.check(`${m}3 chart: Today again goes back to the week`, async () => (await t.eval(title)) === 'Revenue so far for this week' && (await t.eval(revenue)) === '$9,900');
   await t.click('text=Last week');
   await t.wait(900);
   await t.check(`${m}3 chart: week toggle → last week`, async () => (await t.eval(title)) === 'Last week · 14–20 Sep');

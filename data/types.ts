@@ -25,7 +25,7 @@ export type NumberFormat = 'currency' | 'int' | 'compact';
 /** Which slice of time the Analytics page is showing. */
 /** A day of last week, 0 = Mon 14 Sep (data/lastWeekDays.ts). */
 export type LastWeekDay = `lw${0 | 1 | 2 | 3 | 4 | 5 | 6}`;
-export type PeriodKey = 'today' | 'mon' | 'tue' | 'wed' | 'lastWeek' | LastWeekDay;
+export type PeriodKey = 'thisWeek' | 'today' | 'mon' | 'tue' | 'wed' | 'lastWeek' | LastWeekDay;
 
 export interface KpiDef {
   id: Kpi;

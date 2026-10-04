@@ -2,7 +2,7 @@
 
 import { MotionConfig } from 'motion/react';
 import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { Page } from '@/data/types';
 import { PAGE_TITLES } from '@/data/nav';
 import { NARROW_WINDOW } from '@/lib/layout';
@@ -51,21 +51,41 @@ export function AppShell({ initialPage }: { initialPage: Page }) {
 }
 
 /** The white workspace: the page and the side panel. It's never narrower than the page's
- *  minimum plus the panel (the app scrolls sideways instead) — except in full screen, where the
- *  page's width doesn't count (it would grow the workspace as the panel grows into it). */
+ *  minimum plus the panel (the app scrolls sideways instead) — except in and out of full screen,
+ *  where the page's width doesn't count (it would grow the workspace as the panel grows into it,
+ *  or push it sideways while the panel shrinks back). */
 function Workspace({ children }: { children: React.ReactNode }) {
-  const expanded = useHop((s) => s.panelExpanded);
-  return <div className={`flex flex-1 overflow-hidden rounded-12 bg-surface-default ${expanded ? 'min-w-0' : 'min-w-min'}`}>{children}</div>;
+  const wide = useHop((s) => s.panelExpanded || s.panelMoving);
+  return <div className={`flex flex-1 overflow-hidden rounded-12 bg-surface-default ${wide ? 'min-w-0' : 'min-w-min'}`}>{children}</div>;
 }
 
 /** The page's side of the workspace. While the side panel is full screen (Analytics) it gives
- *  all its width up: the page never gets narrower than its minimum, it's clipped away instead,
- *  and it's inert. */
+ *  all its width up and is inert. In and out of it the page keeps the width it had (round 9): the
+ *  panel covers and uncovers it, nothing on it reflows or moves. */
 function PageColumn({ children }: { children: React.ReactNode }) {
   const expanded = useHop((s) => s.panelExpanded);
+  const wide = useHop((s) => s.panelExpanded || s.panelMoving);
+  const column = useRef<HTMLDivElement>(null);
+  const [held, setHeld] = useState<number | null>(null);
+  // The page's width as it last was beside the panel (followed while it resizes), held from the
+  // moment it starts to give way until the panel is back — measured beforehand, because full
+  // screen from the keyboard takes the width away in the same frame.
+  const last = useRef(0);
+  useLayoutEffect(() => {
+    const el = column.current;
+    if (!el) return;
+    if (wide) return setHeld(last.current || null);
+    setHeld(null);
+    last.current = el.clientWidth;
+    const ro = new ResizeObserver(() => (last.current = el.clientWidth));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [wide]);
   return (
-    <div className={`flex flex-1 overflow-hidden ${expanded ? 'min-w-0' : 'min-w-min'}`} inert={expanded}>
-      {children}
+    <div ref={column} className={`flex flex-1 overflow-hidden ${wide ? 'min-w-0' : 'min-w-min'}`} inert={expanded}>
+      <div className="flex flex-1" style={held !== null ? { width: held, flex: 'none' } : undefined}>
+        {children}
+      </div>
     </div>
   );
 }

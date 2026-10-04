@@ -38,7 +38,9 @@ export interface Brief {
 
 const TODAY = { day: 'Today', date: 'Thu 24 Sep' } as const;
 const YESTERDAY = { day: 'Yesterday', date: 'Wed 23 Sep' } as const;
-const LIVE_VIEW: SnapshotView = { kpi: 'revenue', range: 'thisWeek', day: null };
+// Today's questions were asked looking at today (day 3), not the week so far that Analytics now
+// opens on (user feedback 2026-10-04).
+const LIVE_VIEW: SnapshotView = { kpi: 'revenue', range: 'thisWeek', day: 3 };
 
 const SAND_TAG: HopFrameRef = { id: 'analytics.card.linen-sand', label: 'Linen two-piece (Sand)', page: 'analytics', jumpTarget: 'inventory' };
 const ADIRE_TAG: HopFrameRef = { id: 'inventory.row.adire-blue', label: 'Adire shirt dress', page: 'inventory', jumpTarget: 'inventory' };

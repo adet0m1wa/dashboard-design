@@ -36,7 +36,7 @@ export default async (t) => {
   await t.page.keyboard.press('Enter');
   await t.wait(200);
   const first = await t.eval(stop);
-  await t.check(`highlight on from the keyboard: focus jumps to the first frame (${first.name})`, first.name.startsWith('Revenue today') && first.indicator);
+  await t.check(`highlight on from the keyboard: focus jumps to the first frame (${first.name})`, first.name.startsWith('Revenue') && first.indicator);
   let guard = 0;
   while ((await t.eval(() => document.activeElement?.dataset?.hopFrame)) !== 'analytics.card.linen-sand' && guard++ < 40) {
     await t.page.keyboard.press('Tab');

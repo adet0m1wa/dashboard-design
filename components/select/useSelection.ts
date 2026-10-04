@@ -12,6 +12,8 @@ import { frameRefFrom } from './HopFrame';
 //     A click on empty page space drops the selection.
 //   • mode off: the page behaves normally; nothing highlights on hover or gets picked by clicking
 //     (a click on plain page space still puts away a highlight that's showing).
+//   • Shift+click (or Shift+Enter) with a frame picked adds another to it, or takes one back out
+//     (round 9); they're asked about together.
 //   • Esc: drops the selection first, then (a second Esc) leaves highlight mode.
 //   • keyboard, in highlight mode: frames join the Tab order; focus shows the highlight, Enter or
 //     Space picks the frame (a control inside one picks its frame too), then focus moves on to
@@ -59,6 +61,7 @@ export function useSelection(container: RefObject<HTMLElement | null>) {
       if (frame) {
         e.preventDefault();
         e.stopPropagation();
+        if (e.shiftKey) return s.toggleInSelection(frameRefFrom(frame)); // focus stays to pick more
         s.select(frameRefFrom(frame));
         if (e.detail === 0) toComposer(); // Enter/Space on a control, not a mouse click
       } else {
@@ -70,6 +73,7 @@ export function useSelection(container: RefObject<HTMLElement | null>) {
       const target = e.target as HTMLElement;
       if (!s.highlightMode || (e.key !== 'Enter' && e.key !== ' ') || !target.hasAttribute('data-hop-frame')) return;
       e.preventDefault();
+      if (e.shiftKey) return s.toggleInSelection(frameRefFrom(target));
       s.select(frameRefFrom(target));
       toComposer();
     };

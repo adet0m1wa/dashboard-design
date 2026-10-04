@@ -6,7 +6,7 @@ import type { Page } from '@/data/types';
 import { viaKeyboard } from '@/lib/input';
 import { duration, easeExit, easeOut, exitOf, timing } from '@/lib/motion';
 import { fitOutline, outlineBox, surfaceOf, type OutlineBox } from '@/lib/outline';
-import { useHop, type HopFrameRef } from '@/lib/store';
+import { isPicked, useHop, type HopFrameRef } from '@/lib/store';
 
 // Wraps every selectable part of a page (brief B6). The frame itself only carries data
 // attributes; clicks and hover are handled once for the whole page (useSelection), which picks
@@ -37,7 +37,7 @@ export function HopFrame({ id, label, page, jumpTarget, as: Tag = 'div', classNa
   // Highlight mode makes frames reachable by keyboard: Tab to one, Enter/Space picks it
   // (useSelection). The blue highlight is its focus indicator, so no second ring is drawn.
   const picking = useHop((s) => s.highlightMode) && !viaControl;
-  const selected = useHop((s) => s.selection?.id === id);
+  const selected = useHop((s) => isPicked(s, id));
   return (
     <Tag
       ref={setEl}
@@ -104,10 +104,10 @@ function useOutline(el: HTMLElement | null, showing: boolean, radius: number) {
 }
 
 function FrameOverlay({ id, frame, radius }: { id: string; frame: HTMLElement | null; radius: number }) {
-  const selected = useHop((s) => s.selection?.id === id);
-  const hovered = useHop((s) => s.hoverId === id && s.selection?.id !== id);
-  const scanning = useHop((s) => s.scanning && s.selection?.id === id);
-  const pulse = useHop((s) => (s.selection?.id === id ? s.selectPulse : 0));
+  const selected = useHop((s) => isPicked(s, id));
+  const hovered = useHop((s) => s.hoverId === id && !isPicked(s, id));
+  const scanning = useHop((s) => s.scanning && isPicked(s, id));
+  const pulse = useHop((s) => (isPicked(s, id) ? s.selectPulse : 0));
   const reduce = useReducedMotion();
   const still = useContext(StillOutline);
   const box = useOutline(frame, selected || hovered, radius);

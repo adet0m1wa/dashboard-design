@@ -47,7 +47,8 @@ export function TrendChart() {
 
   const def = KPIS[view.kpi];
   const lastWeek = view.range === 'lastWeek';
-  const active = view.day ?? (lastWeek ? 6 : TODAY_INDEX);
+  // A whole week shown, no day is picked, so no dot is filled (round 9, as on Sales).
+  const active = view.day;
   const hoverable = lastWeek ? 7 : TODAY_INDEX + 1; // future days aren't hoverable
   const title = chartTitle(view);
   const tone = TONE[def.tone];
@@ -173,7 +174,7 @@ export function TrendChart() {
               style={{ left: g.xAt(i) }}
               aria-pressed={isActive}
               aria-label={!lastWeek && i === TODAY_INDEX ? 'Today' : `${d}, show that day`}
-              tabIndex={isActive ? 0 : -1}
+              tabIndex={isActive || (active === null && i === 0) ? 0 : -1}
               onClick={() => setDay(i)}
               onKeyDown={(e) => onDayKey(e, i)}
               // Keyboard focus previews the day like hover; a mouse click just selects it.
@@ -207,7 +208,7 @@ function SeriesLayer({
   g: ChartGeometry;
   def: KpiDef;
   lastWeek: boolean;
-  active: number;
+  active: number | null;
   selectedDay: number | null;
   hover: number | null;
   draw: Draw;

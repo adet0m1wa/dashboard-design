@@ -45,7 +45,8 @@ export default async function (t) {
   const week = await t.eval(() => {
     const tiles = [...document.querySelectorAll('[data-hop-frame^="sales.tile."]')].map((f) => f.textContent);
     const ticks = [...document.querySelectorAll('[data-hop-frame^="sales.chart."] .relative.h-\\[15px\\] > *')].map((s) => ({ label: s.textContent, x: Math.round(parseFloat(s.style.left)) }));
-    const dot = document.querySelector('[data-hop-frame^="sales.chart."] circle.fill-status-success'); // the filled one: there's a dot on every day since round 8
+    // The last dot (none is filled while the whole week shows, round 9)
+    const dot = [...document.querySelectorAll('[data-hop-frame^="sales.chart."] g circle')].at(-1);
     return { tiles, ticks, dotX: Math.round(Number(dot.getAttribute('cx'))), dashed: !!document.querySelector('[data-hop-frame^="sales.chart."] path[stroke-dasharray]') };
   });
   const todayX = week.ticks.find((tk) => tk.label === 'Today')?.x;
@@ -77,14 +78,14 @@ export default async function (t) {
   const whole = await dayState();
   await t.check(
     `${m}2b pick Wed: "${wed.title}", ${wed.revenue.replace('Revenue', '')}, ${wed.orders} orders; ← "${tue.title}" (${tue.orders}); Esc "${whole.title}" (${whole.orders}); card ${wed.h}/${tue.h}/${whole.h}px`,
-    wed.title === 'Wednesday, 23 Sep' && wed.revenue.includes('$3,120') && wed.orders === 41 && tue.title === 'Tuesday, 22 Sep' && tue.orders === 30 && whole.title === 'Revenue by day' && whole.orders === 131 && wed.h === whole.h && tue.h === whole.h,
+    wed.title === 'Wednesday, 23 Sep' && wed.revenue.includes('$3,120') && wed.orders === 41 && tue.title === 'Tuesday, 22 Sep' && tue.orders === 30 && whole.title === 'Revenue so far for this week' && whole.orders === 131 && wed.h === whole.h && tue.h === whole.h,
   );
   await t.click('button[aria-label="Today, Thursday, 24 Sep, show that day"]');
   await t.wait(450); // the tiles count to their new values (round 8)
   const today = await dayState();
   await t.click('button[aria-label="Today, Thursday, 24 Sep, show that day"]');
   await t.wait(450); // the tiles count to their new values (round 8)
-  await t.check(`${m}2b today: ${today.revenue.replace('Revenue', '')} and ${today.orders} orders (Analytics' today); picked again it lets go ("${(await dayState()).title}")`, today.revenue.includes('$2,480') && today.orders === 34 && (await dayState()).title === 'Revenue by day');
+  await t.check(`${m}2b today: ${today.revenue.replace('Revenue', '')} and ${today.orders} orders (Analytics' today); picked again it lets go ("${(await dayState()).title}")`, today.revenue.includes('$2,480') && today.orders === 34 && (await dayState()).title === 'Revenue so far for this week');
 
   // 3. Monthly and All time; all time starts at #1, its dates read dd/mm/yy
   await period(t, 'Monthly');

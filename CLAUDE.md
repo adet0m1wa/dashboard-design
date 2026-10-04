@@ -96,6 +96,8 @@ npm run check      # typecheck + token check
 | Feedback 6 | done | Last week's days pick (seeded random data; KPIs, bottom card, Urgent follow); one sidebar layout for open/rail (icons keep y, press works in the rail); History: scroll kept across Expand/Back, expand icon grows with the highlight's slide, filters instant (rows no longer layout elements), cues static on Analytics; Sales, Instagram, Customers designed and built (every section a Hop frame; fit the 720 main column); Sand reel brief draws the Instagram page; reduced motion no longer grows the selection outline/handles from scale 0. `feedback6.mjs` 20/20, reduced 19/19; all 30 runs green on the production build |
 | Feedback 7 | done | Every order since the store opened (1,098, seeded, pinned to Analytics and the inbox); Sales by this/last week, this/last month or all time (from #1, dd/mm/yy), one orders-card size, rows drawn in view; Customers: details left (250) with every order and a draggable list height, the chat over the conversation list with a height handle, name-only chat header; one stroke at the side panel; Instagram calendar (16 earlier posts); 3px scrollbars; split() remainder fix. `feedback7.mjs` 18/18 |
 | Feedback 8 | done | Outlines never cut off (fitOutline; 164 frames checked at 2 widths); Analytics full-screen panel + "what needs attending to" list; Instagram tiles level with the reel, one-line copy, New followers before Saves, canvas scrolls itself; user's Hop icon; Sales chart drawn and animated like Analytics, counting tiles; Customers headers 76 so their lines meet. `feedback8.mjs` 12/12 both modes; all 34 runs green on the production build |
+| Feedback 9 | done | Full screen comes back out smoothly: both sides hold their full-screen layout while the panel eases (page held at its width, chat a centred column), no sideways overflow; Sales: no "since 3 Aug", "Revenue of all time", no dot filled until a day is picked, the same day again counts back; Analytics' last week likewise; Instagram tiles fill three rows down to the reel's bottom; Shift+click adds frames to a pick, asked about together; Sales chart titles name the period ("Revenue so far for this week", "Total revenue from Mon 14 – Sun 20 Sep"); `viaKeyboard` ignores Motion's synthetic pointerdown (keyboard presses on whileTap buttons were animating). `feedback9.mjs` 8/8, `feedback9b.mjs` 5/5 edge cases; all 38 runs green on the production build |
+| Feedback 10 | done | Analytics opens on the week so far, as Sales does (`data/thisWeek.ts`: $9,900 / 131 from the same orders, notes vs the same days last week); no dot filled until a day is picked, Today is a day like the others, the same day again goes back to the week; week KPI frames `analytics.kpi.<k>.thisWeek` with their own answers; History's same-day snapshots pinned to today. All 38 runs green on the production build |
 
 **Status (2026-10-01):** all phases, feedback rounds 1–8 and the final test are done; the case
 study and a 20–30s video are planned for later. Product and
@@ -340,6 +342,13 @@ post photos are in (`public/products`, mapped in `data/photos.ts`).
   column. Esc, the icon, another page, a chat tag or the highlight switch brings it back. While
   expanded the workspace mustn't size to its content (`min-w-min`): the page's 720 would grow it
   as the panel grows into it — a loop.
+- Full screen, in and out (feedback 9): `panelMoving` is on while the width eases. Until it
+  lands, the panel keeps its full-screen layout (inner width 100%, the 760 column) and the page
+  keeps the width it had (`PageColumn` holds it), so neither reflows; the workspace stays
+  `min-w-0` so the page's width can't push the app sideways while the panel shrinks back.
+- Several frames (feedback 9): Shift+click (or Shift+Enter) adds a frame to the pick or takes it
+  out (`alsoSelected`, after the first `selection`). The question carries them as `tag` +
+  `moreTags`; `answerForFrames` answers each by name. History keeps only the first tag.
 - "What needs attending to" (feedback 8): matched on the gist (`ATTENTION_ASKED`), answered with
   a numbered `list` block (6 things, numbers from the data) and an offer to handle all of it.
 - Instagram stats (feedback 8): tiles start level with the reel; "Viewed" (was Watched); every

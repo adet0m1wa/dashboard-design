@@ -3,7 +3,7 @@
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { CUSTOMERS, itemLabel, type Order } from '@/data/orders';
-import { dayOrders, dayTiles, dayTitle, FULFILMENT_TONE, placedLabel, RANGES, SALES_CHART, SALES_FILTERS, SALES_ORDERS, SALES_TILES, type SalesChart, type SalesFilter, type SalesRange } from '@/data/sales';
+import { dayOrders, dayTiles, dayTitle, FULFILMENT_TONE, periodTitle, placedLabel, RANGES, SALES_CHART, SALES_FILTERS, SALES_ORDERS, SALES_TILES, type SalesChart, type SalesFilter, type SalesRange } from '@/data/sales';
 import { CHART, chartGeometry, yAt, type ChartGeometry } from '@/lib/chart';
 import { viaKeyboard } from '@/lib/input';
 import { duration, easeExit, easeOut, timing } from '@/lib/motion';
@@ -62,7 +62,9 @@ export function SalesPage() {
                 <AnimatedNumber value={t.raw} format={t.unit === 'currency' ? 'currency' : 'int'} />
                 {t.unit === 'percent' && '%'}
               </span>
-              <span className={`text-12 font-500 ${t.tone === 'success' ? 'text-status-success-text' : t.tone === 'danger' ? 'text-status-danger-text' : 'text-text-muted'}`}>{t.note}</span>
+              {t.note && (
+                <span className={`text-12 font-500 ${t.tone === 'success' ? 'text-status-success-text' : t.tone === 'danger' ? 'text-status-danger-text' : 'text-text-muted'}`}>{t.note}</span>
+              )}
             </span>
           </HopFrame>
         ))}
@@ -86,7 +88,7 @@ type Draw = { duration: number } | null;
 let drawnOnce = false; // the line draws in on the first visit, not on every revisit (as Analytics)
 
 /** Revenue by day — the Analytics chart's drawing and motion (user feedback 2026-10-02): a dot on
- *  every day, the active one filled; a new period draws its line in (and fades the old one out);
+ *  every day, a picked day's filled (none while the whole period shows); a new period draws its line in (and fades the old one out);
  *  hover shows a guide and the day's takings; a picked day gets the dashed guide. A day not
  *  reached yet has nothing drawn: the line stops at today over a dashed baseline. A click (or a
  *  day's label, or ← → once the plot has focus) picks a day; the same day again or Esc lets go.
@@ -138,7 +140,7 @@ function RevenueByDay({ range, day }: { range: SalesRange; day: number | null })
   return (
     <HopFrame
       id={`sales.chart.${range}`}
-      label={`Revenue by day · ${RANGES[range].label}`}
+      label={periodTitle(range)}
       page="sales"
       jumpTarget="analytics"
       radius={14}
@@ -146,7 +148,7 @@ function RevenueByDay({ range, day }: { range: SalesRange; day: number | null })
     >
       <div className="flex min-h-[44px] items-center justify-between gap-12">
         {/* Changes at once with the pick, like the Analytics chart title. */}
-        <h2 className="text-13 font-600 text-text-primary">{day !== null ? dayTitle(day) : `Revenue by day${range === 'all' ? ' · since 3 Aug' : ''}`}</h2>
+        <h2 className="text-13 font-600 text-text-primary">{day !== null ? dayTitle(day) : periodTitle(range)}</h2>
         {period !== 'all' && (
           <ModeToggle label="Compare" options={period === 'week' ? WEEKS : MONTHS} value={which} onChange={(salesWhich) => setPages({ salesWhich, salesDay: null })} thumbId="sales-thumb" />
         )}
@@ -228,7 +230,7 @@ function RevenueByDay({ range, day }: { range: SalesRange; day: number | null })
       <div className="relative h-[15px] w-full" role="group" aria-label="Days">
         {chart.ticks.map((t) => {
           const cls = `absolute top-0 -translate-x-1/2 whitespace-nowrap text-11-5 transition-colors duration-(--dur-base) ease-hop-color ${
-            t.at === picked || (picked === null && t.at === chart.today) ? 'font-500 text-status-success-text' : 'text-chart-future'
+            t.at === picked ? 'font-500 text-status-success-text' : 'text-chart-future'
           }`;
           return has(t.at) ? (
             <button key={t.at} type="button" className={`${cls} rounded-4`} style={{ left: g.xAt(t.at) }} aria-pressed={t.at === picked} aria-label={`${dayTitle(from + t.at)}, show that day`} onClick={() => pick(t.at)}>
@@ -265,7 +267,8 @@ function SalesLayer({
   const [draw] = useState(drawProp); // only the value it was created with matters
   const now = chart.values.map(share);
   const split = chart.today !== null ? g.xAt(chart.today) : g.width;
-  const active = picked ?? chart.today ?? now.length - 1;
+  // Only a picked day's dot is filled: with the whole period showing, no day is (round 9).
+  const active = picked;
   const dense = g.step < 18; // all time: smaller dots so 53 of them stay dots
   const radius = (i: number) => (hover === i ? (dense ? 4.5 : 5.5) : i === active ? (dense ? 4 : 5) : dense ? 2.5 : 4);
 
