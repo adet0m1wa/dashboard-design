@@ -1,49 +1,79 @@
-# Static posts: Hop, an AI dashboard for a small fashion brand
+# Static posts: Hop
 
-Six page images (2880×1800, `posts/static/`), each with a caption that fits in a single tweet
-(under 280 characters). The desktop showcase and foldable-iPhone images don't get captions.
+Six page images (2880×1800, `posts/static/`), one X post each. Written to the X caption brief:
+the first line is the job or the surprising behaviour, Hop is named once, one concrete detail, no
+hashtags, emoji or hire-me line. Each has a one-line group-chat version. The desktop showcase and
+foldable-iPhone images don't get captions.
+
+Posting plan, Mon 5 Oct 2026: 1–3 by 3:00 PM, 4–6 by 5:30 PM.
 
 ---
 
-## 1-analytics.png
+## By 3:00 PM
 
-The home page of Hop, an AI side panel for a small fashion brand's dashboard.
+### 1-analytics.png
 
-The week so far at a glance. Ask Hop "what needs attending to?" and it reads every page, then
-lists six things in order of urgency, with an offer to handle them all in one go.
+```text
+A shop owner asks one question and gets today’s priorities in order.
+Hop reads the whole dashboard before it answers.
+First on the list: three customers who have waited over two hours.
+```
 
-## 2-sales.png
+Group chat: Made an AI panel that reads the whole dashboard and tells the shop owner what to deal
+with first.
 
-Sales, built from 1,098 seeded orders so every number adds up.
+### 2-sales.png
 
-Pick any day on the chart: the tiles count to that day, its dot fills, and the orders below
-narrow to it. Pick the same day again and everything counts back to the week.
+```text
+The chart is also the filter.
+Click a day in Hop’s sales view and the totals and the order list switch to it.
+Wednesday: $3,120 from 41 orders, 30% up on the Wednesday before.
+```
 
-## 3-instagram.png
+Group chat: The sales chart doubles as the filter: click a day and the whole page follows.
 
-Instagram, one post at a time.
+### 3-instagram.png
 
-Each reel gets the numbers that matter for a shop, not vanity metrics: saves as "planning to
-buy" and comments as "62 asked the price". It also shows how a post compares with your usual
-reach.
+```text
+These Instagram stats answer one question: is this post selling?
+Hop measures each post against the account’s usual and counts buying signals.
+On this reel, 62 of the 188 comments asked the price.
+```
 
-## 4-inventory.png
+Group chat: Instagram stats for a shop owner: not just likes, but how many people asked the price.
 
-Inventory with an AI that reads the row you point at.
+---
 
-Turn on highlight, click any part of the page, and ask. Here Hop reads the Sand set: 4 left,
-selling out by Saturday, which sizes are gone, and the 25 already on the way.
+## By 5:30 PM
 
-## 5-customers.png
+### 4-inventory.png
 
-Customers: details, chat and inbox in one view.
+```text
+Pick a row, type “tell me more about this”, and the AI knows what “this” is.
+In Hop, anything on the page can be picked and asked about.
+Here: 4 Sand sets left at about 4 a day, so they sell out by Saturday.
+```
 
-Hop has already drafted Chioma's reply, with her order, tracking number and delivery date
-pulled from Sales. One click sends it. Her spend and full order history sit on the left.
+Group chat: You pick a row, type “tell me more about this”, and the AI knows exactly what you mean.
 
-## 6-history.png
+### 5-customers.png
 
-History: every question the team asked Hop, as a timeline.
+```text
+Customers who have waited longest already have a reply drafted.
+Hop writes it from their order, and a person checks it and presses send.
+Chioma’s includes her tracking number.
+```
 
-Each one keeps a snapshot of the page exactly as it looked when it was asked, with the tagged
-part outlined. So "what was Amara looking at?" always has an answer.
+Group chat: The inbox drafts the late replies for you, tracking number and all. Someone just checks
+and sends.
+
+### 6-history.png
+
+```text
+Every question the team asks Hop is saved with a snapshot of the page.
+You see what someone was looking at, not just what they typed.
+Amara’s 2:33 PM question still shows the sold-out Adire dress outlined.
+```
+
+Group chat: Every question the team asks the AI is saved with a screenshot of what they were
+looking at.
