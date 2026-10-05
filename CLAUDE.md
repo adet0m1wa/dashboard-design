@@ -100,8 +100,12 @@ npm run check      # typecheck + token check
 | Feedback 10 | done | Analytics opens on the week so far, as Sales does (`data/thisWeek.ts`: $9,900 / 131 from the same orders, notes vs the same days last week); no dot filled until a day is picked, Today is a day like the others, the same day again goes back to the week; week KPI frames `analytics.kpi.<k>.thisWeek` with their own answers; History's same-day snapshots pinned to today. All 38 runs green on the production build |
 
 **Status (2026-10-01):** all phases, feedback rounds 1–8 and the final test are done; the case
-study and a 20–30s video are planned for later. Product and
+study is planned for later. Product and
 post photos are in (`public/products`, mapped in `data/photos.ts`).
+
+**Promo content (2026-10-05):** the six static posts and their captions are in `posts/static/`.
+The promo videos are done too (screen recording + Remotion), but they live only on the local
+branch `video-pipeline` and are not pushed: the recordings are too large for GitHub.
 
 ## Decisions (not in the brief)
 
