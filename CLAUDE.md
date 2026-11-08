@@ -103,6 +103,9 @@ npm run check      # typecheck + token check
 study is planned for later. Product and
 post photos are in (`public/products`, mapped in `data/photos.ts`).
 
+**Project log for the portfolio:** [PROJECT_LOG.md](PROJECT_LOG.md) (what it is, the problem, who did what,
+desk research with sources, where every asset lives, what is unfinished).
+
 **Promo content (2026-10-05):** the six static posts and their captions are in `posts/static/`.
 The promo videos are done too (screen recording + Remotion), but they live only on the local
 branch `video-pipeline` and are not pushed: the recordings are too large for GitHub.
